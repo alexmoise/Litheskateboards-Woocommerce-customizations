@@ -1,6 +1,6 @@
 <?php
 /**
- * Variable product add to cart
+ * Variable product add to cart 
  *
  * @author  WooThemes
  * @package WooCommerce/Templates
