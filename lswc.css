@@ -1,0 +1,261 @@
+/* product options "table" COLUMNS */
+.table.variations .value.td div {
+  display: inline-block;
+  width: 33.33%;
+}
+/* product options "table" styling */
+#top .variations_form {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+}
+.table.variations .tbody .tr {
+    border: 1px solid #555;
+    margin: 10px 0 0 0;
+    padding: 5px;
+    background-color: #111;
+	border-radius: 4px;
+}
+.table.variations .tbody .tr .label.td {
+    margin-bottom: 5px;
+	  text-align: center;
+    font-size: 1.2em;
+}
+
+/* style disabled radio buttons */
+.has-been-disabled {
+  opacity: 0.3;
+}
+/* style selected radio buttons */
+.has-been-selected {
+  background-color: #444 !important;
+}
+/* style checked radio buttons */
+#table-variations .radio-checked {
+	border: 1px solid #12ff1e;
+	color: #13ff1e;
+}
+/* product tabs removal */
+ul.tabs.wc-tabs {
+  display: none;
+}
+/* Hiding the Add To Cart button */
+form.variations_form.cart .single_variation_wrap {
+  display: none !important;
+}
+
+/* payment options panel (un)hide */
+.attribute-pa_paying-plan.tr {
+  display: none;
+}
+.attribute-pa_paying-plan.tr.unhide-by-model.unhide-by-width {
+  display: block;
+}
+
+
+
+/* make buttons - MODEL options */
+/* set model options in 2 columns */
+.attribute-pa_model.tr .value.td > div {
+    width: 50%;
+}
+.attribute-pa_model > .value.td > div {
+  border: 1px solid #555;
+  background-color: #141414;
+  border-radius: 5px;
+  margin: 8px;
+  padding: 8px;
+  width: calc(50% - 16px) !important;
+  cursor: pointer;
+  text-align: center;
+}
+.attribute-pa_model > .value.td > div:hover {
+    border: 1px solid #888;
+    background-color: #333;
+}
+.attribute-pa_model > .value.td > div > input[type='radio'] {
+    display: none;
+}
+.attribute-pa_model > .value.td > div > label {
+	cursor: pointer;
+	display: block;
+}
+
+
+
+/* making buttons - WIDTHS options */
+.attribute-pa_width > .value.td > div {
+border: 1px solid #555;
+  background-color: #141414;
+  border-radius: 5px;
+  margin: 8px;
+  padding: 8px;
+  width: calc(33% - 14px) !important;
+  cursor: pointer;
+  text-align: center;
+}
+.attribute-pa_width > .value.td > div:hover {
+    border: 1px solid #888;
+    background-color: #333;
+}
+.attribute-pa_width > .value.td > div > input[type='radio'] {
+  width: 20px;
+  float: right;
+  margin-top: 4px;
+}
+.attribute-pa_width > .value.td > div > label {
+  cursor: pointer;
+  display: inline-block;
+  width: calc(100% - 24px);
+  text-align: left;
+}
+
+
+
+/* making buttons - PAYMENT options */
+.attribute-pa_paying-plan > .value.td > div {
+    border: 1px solid #555;
+    background-color: #141414;
+    border-radius: 5px;
+    margin: 8px;
+    padding: 8px;
+    width: calc(33.33% - 16px) !important;
+    cursor: pointer;
+    text-align: center;
+}
+.attribute-pa_paying-plan > .value.td > div:hover {
+    border: 1px solid #888;
+    background-color: #333;
+}
+.attribute-pa_paying-plan > .value.td > div > input[type='radio'] {
+    display: none;
+}
+.attribute-pa_paying-plan > .value.td > div > label {
+	cursor: pointer;
+	display: block;
+}
+
+
+
+
+/* JUST A TEST */
+/* ...with Test 2 Deck options... */
+.postid-4222 #table-variations .tbody .tr .value.td > div {
+    border: 1px solid #555;
+    background-color: #141414;
+    border-radius: 5px;
+    margin: 8px;
+    padding: 8px;
+    width: calc(33% - 14px);
+    cursor: pointer;
+    text-align: center;
+}
+.postid-4222 #table-variations .tbody .tr .value.td > div > input {
+	width: 40px;
+} 
+.postid-4222 #table-variations .tbody .tr .value.td > div.radio-checked {
+    border: 1px solid #13ff1e;
+}
+.postid-4222 #table-variations .tbody .tr .value.td > div > input[type='radio'] {
+  width: 20px;
+  float: right;
+  margin-top: 4px;
+}
+.postid-4222 #table-variations .tbody .tr .value.td > div > label{
+  cursor: pointer;
+  display: inline-block;
+  width: calc(100% - 24px);
+  text-align: left;
+} /* TEST END */
+
+
+
+
+/* product spinner styling */
+.template-shop .images a.threesixty-mfp-anchor {
+  position: absolute !important;
+  border: 0;
+  background-color: transparent;
+}
+.threesixty-images > li > img {
+    border-color: orange;
+}
+.mspc-content .mspc-variation, .mspc-content .mspc-variation.active > .mspc-clearfix {
+    border: 1px solid #12ff1e;
+}
+.mspc-content .mspc-variation {
+    border: 0;
+}
+.mspc-content .mspc-variation, .mspc-content .mspc-variation.active > .mspc-clearfix .mspc-attribute-title {
+    color: #12ff1e;
+}
+
+
+
+
+
+
+
+
+
+/* Multi Step Config Plugin */
+/* NOT USED ANYMORE */
+.mspc-content.ui.segment {
+  border: 1px solid #555;
+	background-color: #111;
+}
+a.mspc-menu-item.ui.step:hover {
+	color: white;
+}
+a.mspc-menu-item.ui.step.item, 
+a.mspc-menu-item.ui.step.item:after {
+  background-color: #111;
+}
+a.mspc-menu-item.ui.step.item.active, 
+a.mspc-menu-item.ui.step.item.active:after {
+  background-color: #555;
+}
+.mspc-menu.ui.steps {
+  border: 1px solid #555;
+}
+.woocommerce-variation-description p {
+  font-size: 15px;
+}
+.main_color .summary div {
+  border-color: #555555;
+}
+.mspc-variation .mspc-text-wrapper > strong {
+		white-space: nowrap;
+}
+.mspc-variation .mspc-clearfix {
+  border: 1px solid white;
+  padding: 8px;
+  border-radius: 6px;
+}
+.mspc-horizontal.mspc-variation .mspc-radio {
+  position: absolute;
+  right: 10px;
+  top: calc(50% + 2px);
+}
+.mspc-horizontal .mspc-text-wrapper {
+  padding-left: 5px;
+}
+.ui.grid>.column {
+  margin: 0;
+}
+.single_variation_wrap {
+  margin: 10px 0px 5px 90px;
+}
+.mspc-wrapper {
+  margin: 40px 0 5px 0;
+}
+.single_variation_wrap {
+  margin: 10px 0px 5px 10px;
+}
+.mspc-content .mspc-variation, .mspc-content .mspc-variation.active {
+  -moz-transform: unset;
+  -webkit-transform: none;
+  -o-transform: unset;
+  -ms-transform: unset;
+  transform: none;
+}
