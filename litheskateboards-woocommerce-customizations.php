@@ -8,5 +8,20 @@
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
- 
- 
+
+if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
+
+// Adding the JS
+function molswc_adding_scripts() {
+	wp_register_script('lswc-script', plugins_url('lswc.js', __FILE__), array('jquery'), true);
+	wp_enqueue_script('lswc-script');
+}
+add_action( 'wp_enqueue_scripts', 'molswc_adding_scripts' ); 
+
+// Adding the styles
+function molswc_adding_styles() {
+	wp_register_style('lswc-styles', plugins_url('lswc.css', __FILE__));
+	wp_enqueue_style('lswc-styles');
+}
+add_action( 'wp_enqueue_scripts', 'molswc_adding_styles', 9999 );
+
