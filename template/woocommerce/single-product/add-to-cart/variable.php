@@ -26,7 +26,6 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 	<?php if ( empty( $available_variations ) && false !== $available_variations ) : ?>
 		<p class="stock out-of-stock"><?php _e( 'This product is currently out of stock and unavailable.', 'woocommerce' ); ?></p>
 	<?php else : ?>
-	<p> EEEEEEE </p>
 		<div id="table-variations" class="table variations" cellspacing="0">
 			<div class="tbody">
 				<?php foreach ( $attributes as $name => $options ) : ?>

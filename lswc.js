@@ -54,6 +54,16 @@ jQuery( document ).ready( function () {
 
 jQuery( document ).delegate( '#table-variations', 'change', function(event) {
 	$(this).unbind('click');
+	
+	
+	if( ('.table.variations input[name="attribute_vert"]').checked)
+	{
+		$('.attribute-pa_paying-plan').addClass('unhide-by-width unhide-by-model');
+	}
+	
+	
+	
+	
 	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
 	jQuery( 'input:not([disabled="disabled"])' ).parent('div').toggleClass('has-been-disabled',false);
 	jQuery( 'input[type="radio"]:checked' ).parent('div').toggleClass('radio-checked',true);
@@ -75,7 +85,7 @@ jQuery(window).load(function() {
 
 // === DOING IT AGAIN, FOR TEST 2 DECK ===
 // Add a class to payment options when WIDTH is selected
-
+/* 
 jQuery( document ).ready( function () {
 	$('.table.variations input[name="attribute_vert"]').change(function(){
 	   if(this.checked) 
@@ -86,7 +96,7 @@ jQuery( document ).ready( function () {
 	   }
 	});
 });
-
+*/ 
 
 // Add a class to payment options when MODEL is selected
 
