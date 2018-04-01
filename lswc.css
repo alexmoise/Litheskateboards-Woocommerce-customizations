@@ -17,8 +17,8 @@
 	border-radius: 4px;
 }
 .table.variations .tbody .tr .label.td {
-    margin-bottom: 5px;
-	  text-align: center;
+    margin: 5px;
+	text-align: center;
     font-size: 1.2em;
 }
 
@@ -32,6 +32,7 @@
 }
 /* style checked radio buttons */
 #table-variations .radio-checked {
+	background-color: #444 !important;
 	border: 1px solid #12ff1e;
 	color: #13ff1e;
 }
@@ -44,131 +45,38 @@ form.variations_form.cart .single_variation_wrap {
   display: none !important;
 }
 
-/* payment options panel (un)hide */
+/* payment options group (un)hide */
 .attribute-pa_paying-plan.tr {
   display: none;
 }
-.attribute-pa_paying-plan.tr.unhide-by-model.unhide-by-width {
+.attribute-pa_paying-plan.tr.unhide-payments {
   display: block;
 }
 
 
-
-/* make buttons - MODEL options */
-/* set model options in 2 columns */
-.attribute-pa_model.tr .value.td > div {
-    width: 50%;
-}
-.attribute-pa_model > .value.td > div {
+/* == MAKE BUTTONS - ALL == */
+.table.variations .tbody .value.td > div {
   border: 1px solid #555;
   background-color: #141414;
   border-radius: 5px;
   margin: 8px;
   padding: 8px;
-  width: calc(50% - 16px) !important;
-  cursor: pointer;
-  text-align: center;
-}
-.attribute-pa_model > .value.td > div:hover {
-    border: 1px solid #888;
-    background-color: #333;
-}
-.attribute-pa_model > .value.td > div > input[type='radio'] {
-    display: none;
-}
-.attribute-pa_model > .value.td > div > label {
-	cursor: pointer;
-	display: block;
-}
-
-
-
-/* making buttons - WIDTHS options */
-.attribute-pa_width > .value.td > div {
-border: 1px solid #555;
-  background-color: #141414;
-  border-radius: 5px;
-  margin: 8px;
-  padding: 8px;
   width: calc(33% - 14px) !important;
+  /* width: calc(50% - 16px) !important; */ /* for 2 columns */
   cursor: pointer;
   text-align: center;
 }
-.attribute-pa_width > .value.td > div:hover {
+.table.variations .tbody .value.td > div:hover {
     border: 1px solid #888;
     background-color: #333;
 }
-.attribute-pa_width > .value.td > div > input[type='radio'] {
-  width: 20px;
-  float: right;
-  margin-top: 4px;
-}
-.attribute-pa_width > .value.td > div > label {
-  cursor: pointer;
-  display: inline-block;
-  width: calc(100% - 24px);
-  text-align: left;
-}
-
-
-
-/* making buttons - PAYMENT options */
-.attribute-pa_paying-plan > .value.td > div {
-    border: 1px solid #555;
-    background-color: #141414;
-    border-radius: 5px;
-    margin: 8px;
-    padding: 8px;
-    width: calc(33.33% - 16px) !important;
-    cursor: pointer;
-    text-align: center;
-}
-.attribute-pa_paying-plan > .value.td > div:hover {
-    border: 1px solid #888;
-    background-color: #333;
-}
-.attribute-pa_paying-plan > .value.td > div > input[type='radio'] {
+.value.td > div > input[type='radio'] {
     display: none;
 }
-.attribute-pa_paying-plan > .value.td > div > label {
+.value.td > div > label {
 	cursor: pointer;
 	display: block;
 }
-
-
-
-
-/* JUST A TEST */
-/* ...with Test 2 Deck options... */
-.postid-4222 #table-variations .tbody .tr .value.td > div {
-    border: 1px solid #555;
-    background-color: #141414;
-    border-radius: 5px;
-    margin: 8px;
-    padding: 8px;
-    width: calc(33% - 14px);
-    cursor: pointer;
-    text-align: center;
-}
-.postid-4222 #table-variations .tbody .tr .value.td > div > input {
-	width: 40px;
-} 
-.postid-4222 #table-variations .tbody .tr .value.td > div.radio-checked {
-    border: 1px solid #13ff1e;
-}
-.postid-4222 #table-variations .tbody .tr .value.td > div > input[type='radio'] {
-  width: 20px;
-  float: right;
-  margin-top: 4px;
-}
-.postid-4222 #table-variations .tbody .tr .value.td > div > label{
-  cursor: pointer;
-  display: inline-block;
-  width: calc(100% - 24px);
-  text-align: left;
-} /* TEST END */
-
-
 
 
 /* product spinner styling */
@@ -189,5 +97,4 @@ border: 1px solid #555;
 .mspc-content .mspc-variation, .mspc-content .mspc-variation.active > .mspc-clearfix .mspc-attribute-title {
     color: #12ff1e;
 }
-
 
