@@ -15,7 +15,7 @@ jQuery( document ).delegate( '#table-variations', 'change', function(event) {
 	$( 'input[type="radio"]:checked'		).parent('div').toggleClass('radio-checked',true);
 	$( 'input[type="radio"]:not(:checked)'	).parent('div').toggleClass('radio-checked',false);
 	$( '*[class=""]' 						).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
-	if ($(this).parents().find('input[type="radio"]').is(':checked'))
+	if ($(this).parents().find('input[type="radio"]').is(':checked')) // "payment plan" is hidden by default (in CSS), here add class to unhide it if any other attribute is selected
 	{
 		$('.attribute-pa_paying-plan').toggleClass('unhide-payments',true);
 	} else {
