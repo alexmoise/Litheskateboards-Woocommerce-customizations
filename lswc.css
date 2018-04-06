@@ -60,7 +60,6 @@ form.variations_form.cart .single_variation_wrap {
   background-color: #141414;
   border-radius: 5px;
   margin: 8px;
-  padding: 8px;
   width: calc(33% - 14px) !important;
   /* width: calc(50% - 16px) !important; */ /* for 2 columns */
   cursor: pointer;
@@ -76,6 +75,7 @@ form.variations_form.cart .single_variation_wrap {
 .value.td > div > label {
 	cursor: pointer;
 	display: block;
+	padding: 8px;
 }
 
 
