@@ -21,6 +21,16 @@ jQuery( document ).delegate( '#table-variations', 'change', function(event) {
 	} else {
 		$('.attribute-pa_paying-plan').toggleClass('unhide-payments',false);
 	}
-	
 });
-
+// Removing attributes "name" part
+var board_models = ['Street', 'Vert']; // will need to sync this with attributes from Woocommerce
+jQuery(document).ready(function(a) {
+	for (var i = 0; i < board_models.length; i++) {
+		// alert ('hei: ' + board_models[i]); // checking the proper attribute address
+		$('.table.variations .value.td label').each( function(c) {
+			oriText = $(this).html();
+			newText = oriText.replace(board_models[i] + ' ','');
+			$(this).html(newText);
+		}); 
+	}
+}); 
