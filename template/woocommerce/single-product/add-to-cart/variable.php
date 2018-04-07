@@ -46,16 +46,16 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 							if ( ! empty( $options ) ) {
 								if ( taxonomy_exists( $name ) ) {
 									// Get terms if this is a taxonomy - ordered. We need the names too.
-									$terms = wc_get_product_terms( $product->get_id(), $name, array( 'fields' => 'all' ) );
+									$terms = wc_get_product_terms( $product->get_id(), $name, array( 'fields' => 'all' ) ); 
 
-									foreach ( $terms as $term ) {
+									foreach ( $terms as $term ) { 
 										if ( ! in_array( $term->slug, $options ) ) {
 											continue;
 										}
 										print_attribute_radio( $checked_value, $term->slug, $term->name, $sanitized_name );
 									}
 								} else {
-									foreach ( $options as $option ) {
+									foreach ( $options as $option ) { echo '<!-- HEI '; print_r($options); echo '-->'; // split this array based on attribute names, then output containers around ...
 										print_attribute_radio( $checked_value, $option, $option, $sanitized_name );
 									}
 								}
