@@ -77,6 +77,16 @@ form.variations_form.cart .single_variation_wrap {
 	display: block;
 	padding: 8px;
 }
+@media (max-width:1081px){
+	.table.variations .tbody .value.td > div {
+	  width: calc(50% - 16px) !important;
+	}
+}
+@media (max-width:559px){
+	.table.variations .tbody .value.td > div {
+	  width: calc(100% - 16px) !important;
+	}
+}
 
 
 /* product spinner styling */
