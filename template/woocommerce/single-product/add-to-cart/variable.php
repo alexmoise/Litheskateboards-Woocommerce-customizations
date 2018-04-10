@@ -54,15 +54,18 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 										print_attribute_radio( $checked_value, $term->slug, $term->name, $sanitized_name );
 									}
 								} else {
-									$choosen_attribs = array('Street','Vert'); // sync this later with Woocommerce ... or easily define these some other way ...
-									foreach ( $choosen_attribs as $choosen_attrib ) { 
-										$each_attribs = array_filter($options, function($var) use ($choosen_attrib) { return preg_match("/\b$choosen_attrib\b/i", $var); });
+									$chosen_attribs = array('Street','Vert'); // sync this later with Woocommerce ... or easily define these some other way ...
+									foreach ( $chosen_attribs as $chosen_attrib ) { 
+										$each_attribs = array_filter($options, function($var) use ($chosen_attrib) { return preg_match("/\b$chosen_attrib\b/i", $var); });
 										// echo '<!-- ONLY '; print_r($each_attribs); echo '-->'; // checking the chosen attributes arrays ...
-										echo '<div class="each-attrib this-attrib-'.$choosen_attrib.'">'; // adding the div wrapper for each attribute list
+										echo '<div class="each-attrib this-attrib-'.$chosen_attrib.'">'; // adding the div wrapper for each attribute list
+										
+										echo '<div class="label td"><label for="'.$chosen_attrib.'">'.$chosen_attrib.'</label></div><div class="value td">';
+										
 										foreach ( $each_attribs as $each_attrib ) { 
 											print_attribute_radio( $checked_value, $each_attrib, $each_attrib, $sanitized_name );
 										}
-										echo '</div>'; //closing the div wrapper for each attribute list
+										echo '</div></div>'; //closing the div wrapper for each attribute list
 									}
 								}
 							}
