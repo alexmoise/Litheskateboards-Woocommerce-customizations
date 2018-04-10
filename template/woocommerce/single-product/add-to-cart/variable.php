@@ -55,9 +55,19 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 										print_attribute_radio( $checked_value, $term->slug, $term->name, $sanitized_name );
 									}
 								} else {
-									foreach ( $options as $option ) { echo '<!-- HEI '; print_r($options); echo '-->'; // split this array based on attribute names, then output containers around ...
-										print_attribute_radio( $checked_value, $option, $option, $sanitized_name );
+									// echo '<!-- HEI '; print_r($options); echo '-->'; // split this array based on attribute names, then output containers around ...
+									
+									$choosen_attribs = array('Street','Vert'); // sync this later with Woocommerce ... or easily define these some other way ...
+									foreach ( $choosen_attribs as $choosen_attrib ) { 
+										$each_attribs = array_filter($options, function($var) use ($choosen_attrib) { return preg_match("/\b$choosen_attrib\b/i", $var); });
+										echo '<!-- ONLY '; print_r($each_attribs); echo '-->'; // 
+										
+										foreach ( $each_attribs as $each_attrib ) { 
+										 print_attribute_radio( $checked_value, $each_attrib, $each_attrib, $sanitized_name );
+										}
+										
 									}
+
 								}
 							}
 
