@@ -9,8 +9,8 @@
   border: 0;
   background-color: transparent;
 }
-.table.variations .tbody .tr {
-    border: 1px solid #555;
+.table.variations .tbody .tr:last-child {
+    border: 1px solid #12ff1e;
     margin: 10px 0 0 0;
     padding: 5px;
     background-color: #111;
@@ -20,6 +20,10 @@
     margin: 5px;
 	text-align: center;
     font-size: 1.2em;
+}
+.table.variations .tbody .tr .label.td label {
+	color: #12ff1e;
+	font-size: 16px !important;
 }
 
 /* style disabled radio buttons */
@@ -69,7 +73,8 @@ form.variations_form.cart .single_variation_wrap {
     border: 1px solid #888;
     background-color: #333;
 }
-.value.td > div > input[type='radio'] {
+.value.td > div > input[type='radio'], 
+.value.td > .each-attrib > div > input[type='radio'] {
     display: none;
 }
 .value.td > div > label {
@@ -87,6 +92,33 @@ form.variations_form.cart .single_variation_wrap {
 	  width: calc(100% - 16px) !important;
 	}
 }
+/* also make buttons from chosen attributes */
+.table.variations .tbody .tr:not(:last-child) .label.td {
+    display: none;
+}
+.table.variations .tbody .value.td .each-attrib .label.td {
+    width: 100% !important;
+	display: block;
+    padding: 0;
+    margin: 5px 0;
+    border: 0;
+}
+.table.variations .tbody .value.td .each-attrib, 
+.table.variations .tbody .value.td .each-attrib:hover {
+	border: 1px solid #555;
+	margin: 10px 0 0 0;
+	cursor: default;
+	background-color: #111111;
+	width: 100% !important;
+	display: inline-block;
+}
+.table.variations .tbody .value.td .each-attrib {
+  padding: 5px;
+}
+.table.variations .tbody .value.td .each-attrib .value.td {
+	  width: 100%;
+}
+
 
 
 /* product spinner styling */
@@ -107,4 +139,3 @@ form.variations_form.cart .single_variation_wrap {
 .mspc-content .mspc-variation, .mspc-content .mspc-variation.active > .mspc-clearfix .mspc-attribute-title {
     color: #12ff1e;
 }
-
