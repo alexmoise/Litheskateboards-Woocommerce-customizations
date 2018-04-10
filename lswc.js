@@ -23,6 +23,7 @@ jQuery( document ).delegate( '.table.variations input[name="attribute_pa_paying-
 	$(this).closest("form").submit();
 });
 // === Removing attributes "name" part
+/* === not used any more, moved to PHP
 var board_models = ['Street', 'Vert']; // will need to sync this with attributes from Woocommerce
 jQuery(window).on('load', function(a) {
 	for (var i = 0; i < board_models.length; i++) {
@@ -33,4 +34,4 @@ jQuery(window).on('load', function(a) {
 			$(this).html(newText);
 		}); 
 	}
-}); 
+});  */
