@@ -60,14 +60,14 @@ form.variations_form.cart .single_variation_wrap {
 
 /* == MAKE BUTTONS - ALL == */
 .table.variations .tbody .value.td > div {
-  border: 1px solid #555;
-  background-color: #141414;
-  border-radius: 5px;
-  margin: 8px;
-  width: calc(33% - 14px) !important;
-  /* width: calc(50% - 16px) !important; */ /* for 2 columns */
-  cursor: pointer;
-  text-align: center;
+	border: 1px solid #555;
+	background-color: #141414;
+	border-radius: 5px;
+	margin: 8px;
+	/* width: calc(33% - 14px) !important; */ /* for 3 columns */
+	width: calc(50% - 16px) !important;
+	cursor: pointer;
+	text-align: center;
 }
 .table.variations .tbody .value.td > div:hover {
     border: 1px solid #888;
@@ -81,16 +81,6 @@ form.variations_form.cart .single_variation_wrap {
 	cursor: pointer;
 	display: block;
 	padding: 8px;
-}
-@media (max-width:1081px){
-	.table.variations .tbody .value.td > div {
-	  width: calc(50% - 16px) !important;
-	}
-}
-@media (max-width:559px){
-	.table.variations .tbody .value.td > div {
-	  width: calc(100% - 16px) !important;
-	}
 }
 /* also make buttons from chosen attributes */
 .table.variations .tbody .tr:not(:last-child) .label.td {
@@ -109,7 +99,7 @@ form.variations_form.cart .single_variation_wrap {
 	margin: 10px 0 0 0;
 	cursor: default;
 	background-color: #111111;
-	width: 100% !important;
+	width: calc(50% - 5px) !important;
 	display: inline-block;
 }
 .table.variations .tbody .value.td .each-attrib {
@@ -118,7 +108,31 @@ form.variations_form.cart .single_variation_wrap {
 .table.variations .tbody .value.td .each-attrib .value.td {
 	  width: 100%;
 }
-
+.table.variations .tbody .value.td .each-attrib:nth-child(even) {
+  margin-left: 5px;
+}
+.table.variations .tbody .value.td .each-attrib:nth-child(odd) {
+  margin-right: 5px;
+}
+.table.variations .tbody .tr:not(:last-child) > .value.td {
+  display: flex;
+}
+.table.variations .tbody .tr:not(:last-child) > .value.td > .each-attrib {
+  flex: 1;
+}
+@media (min-width: 560px) {
+	.table.variations .tbody .tr:last-child > .value.td {
+		white-space: nowrap;
+	}
+	.table.variations .tbody .tr:last-child .value.td > div {
+		width: calc(33% - 14px) !important;
+	}
+}
+@media (max-width:559px){
+	.table.variations .tbody .value.td > div {
+	  width: calc(100% - 16px) !important;
+	}
+}
 
 
 /* product spinner styling */
