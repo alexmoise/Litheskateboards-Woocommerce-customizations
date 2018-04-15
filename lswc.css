@@ -134,6 +134,18 @@ form.variations_form.cart .single_variation_wrap {
 	}
 }
 
+/* Bottom section styling */
+div#av_section_1 {
+	background-color: #141414;
+	border-top: 0;
+}
+.improvement_notice p {
+	margin: 0;
+}
+.related.products h2 {
+	text-transform: uppercase;
+	letter-spacing: 1px;
+}
 
 /* product spinner styling */
 .template-shop .images a.threesixty-mfp-anchor {
