@@ -25,6 +25,14 @@
 	color: #12ff1e;
 	font-size: 16px !important;
 }
+.table.variations span.attrib-description {
+	white-space: normal;
+	padding: 0 5px !important;
+	color: #888;
+}
+.table.variations .tbody .tr:last-child .value.td > div > label {
+	font-size: 16px !important;
+}
 
 /* style disabled radio buttons */
 .has-been-disabled {
