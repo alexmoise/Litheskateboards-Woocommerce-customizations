@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.15
+ * Version: 0.1.16
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -53,3 +53,15 @@ function molswc_move_product_description() {
 	add_action( 'woocommerce_after_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
 }
 
+// Replace variations buttons function, in order to add the variation description
+if ( ! function_exists( 'print_attribute_radio_lithe' ) ) {
+	function print_attribute_radio_lithe( $checked_value, $value, $label, $name, $attrib_description ) {
+		global $product;
+		$input_name = 'attribute_' . esc_attr( $name ) ;
+		$esc_value = esc_attr( $value );
+		$id = esc_attr( $name . '_v_' . $value . $product->get_id() ); //added product ID at the end of the name to target single products
+		$checked = checked( $checked_value, $value, false );
+		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
+		printf( '<div><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s><label for="%3$s">%5$s</label><span class="attrib-description">%6$s</span></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description );
+	}
+}
