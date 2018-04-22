@@ -51,7 +51,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 										if ( ! in_array( $term->slug, $options ) ) {
 											continue;
 										}
-										print_attribute_radio( $checked_value, $term->slug, $term->name, $sanitized_name );
+										print_attribute_radio_lithe( $checked_value, $term->slug, $term->name, $sanitized_name, $term->description ); 
 									}
 								} else {
 									$chosen_attribs = array('Street','Vert'); // sync this later with Woocommerce ... or easily define these some other way ...
