@@ -7,8 +7,13 @@ jQuery( document ).delegate( '.table.variations', 'change', function(event) {
 	$(this).unbind('click');
 	$( 'input[disabled="disabled"]'			).parent('div').toggleClass('has-been-disabled',true);
 	$( 'input:not([disabled="disabled"])'	).parent('div').toggleClass('has-been-disabled',false);
+	
 	$( 'input[type="radio"]:checked'		).parent('div').toggleClass('radio-checked',true);
+	$( 'input[type="radio"]:checked'		).next().attr('selected', 'selected');
+	
 	$( 'input[type="radio"]:not(:checked)'	).parent('div').toggleClass('radio-checked',false);
+	$( 'input[type="radio"]:not(:checked)'	).next().removeAttr('selected');
+	
 	if ($(this).parents().find('input[type="radio"]').is(':checked')) // "payment plan" is hidden by default (in CSS), here add class to unhide it if any other attribute is selected
 	{
 		$('.attribute-pa_paying-plan').toggleClass('unhide-payments',true);
