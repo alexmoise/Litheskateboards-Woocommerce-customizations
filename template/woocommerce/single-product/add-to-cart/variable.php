@@ -51,7 +51,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 										if ( ! in_array( $term->slug, $options ) ) {
 											continue;
 										}
-										print_attribute_radio_lithe( $checked_value, $term->slug, $term->name, $sanitized_name, $term->description ); 
+										print_attribute_radio_tax( $checked_value, $term->slug, $term->name, $sanitized_name, $term->description ); 
 									}
 								} else {
 									$chosen_attribs = array('Street','Vert'); // sync this later with Woocommerce ... or easily define these some other way ...
@@ -62,7 +62,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 										echo '<div class="value td">'; // adding values / radio -> buttons wrapper
 										foreach ( $each_attribs as $each_attrib ) { 
 											$attrib_label = str_replace($chosen_attrib." ", "", $each_attrib); 
-											print_attribute_radio( $checked_value, $each_attrib, $attrib_label, $sanitized_name );
+											print_attribute_radio_attrib( $checked_value, $each_attrib, $attrib_label, $sanitized_name );
 										}
 										echo '</div>'; //closing the div wrapper for values / radio -> buttons wrapper
 										echo '</div>'; //closing the div wrapper for each attribute list
