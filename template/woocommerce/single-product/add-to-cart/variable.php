@@ -29,7 +29,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 		<div id="table-variations" class="table variations" cellspacing="0">
 			<div class="tbody">
 				<?php foreach ( $attributes as $name => $options ) : ?>
-					<div class="attribute-<?php echo sanitize_title($name); ?> tr">
+					<div class="select attribute-<?php echo sanitize_title($name); ?> tr">
 						<div class="label td"><label for="<?php echo sanitize_title( $name ); ?>"><?php echo wc_attribute_label( $name ); ?></label></div>
 						<?php
 						$sanitized_name = sanitize_title( $name );
