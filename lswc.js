@@ -98,7 +98,7 @@ jQuery( document ).delegate( '.table.variations', 'change', function(event) { $(
 					
 					for (var pkey in wm_pvar.products_prices) { //console.log('pkey: '+pkey ); // ========================================================================================== pkey
 						if (pkey == selAttrID) {
-							var selPrice = wm_pvar.products_prices[pkey]; console.log('##### selPrice: '+selPrice+' #####' ); // =========================================================== selPrice
+							var selPrice = wm_pvar.products_prices[pkey]; console.log('selPrice: '+selPrice+' ##########' ); // =========================================================== selPrice
 						}
 					}
 					
