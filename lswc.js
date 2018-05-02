@@ -24,6 +24,9 @@ jQuery( document ).delegate( '.table.variations', 'change', function(event) {
 		$('.attribute-pa_paying-plan').toggleClass('unhide-payments',false);
 	}
 	$( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
+	
+	appendAttribPrices(); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
+	
 });
 // === Scroll back up on Clear Selection
 jQuery('.reset_variations').click(function(){
@@ -37,7 +40,7 @@ jQuery( document ).delegate( '.table.variations input[name="attribute_pa_paying-
 	$(this).closest("form").submit();
 });
 
-// === Start getting the variation prices
+// === Data and functions definitions for the Prices of Paying Plans:
 if (typeof(wm_pvar) === 'undefined') {
     var wm_pvar = {
         products_by_attribute_ids: [],
@@ -55,59 +58,66 @@ if (typeof(wm_pvar) === 'undefined') {
     };
 }
 
-//jQuery(document).ready(function ($) { "use strict"; console.log('wm_pvar: '+ JSON.stringify(wm_pvar, null, 2) ); /* ======================================================================== wm_pvar */ });
+// Get the current attributes IDs as key pairs (like "16,32"):
+function fcurrSelectedKey() {
+	$('.variations .select .option.selected').each(function () {
+		localSelectedVal = $(this).attr('value');
+		for (var key in wm_pvar.products_attributes_values) { 
+			if (wm_pvar.products_attributes_values[key] === localSelectedVal) {
+				var currSelectedKey = key; 
+				result = currSelectedKey;
+			}
+		}
+	});
+	return result;
+}
 
-jQuery( document ).delegate( '.table.variations', 'change', function(event) { $(this).unbind('click'); console.log( "Variations changed! ====================" ); // ======================= Variations changed :-)
-	
-	function fcurrSelectedKey() {
-		$('.variations .select .option.selected').each(function () {
-			localSelectedVal = $(this).attr('value');
-			for (var key in wm_pvar.products_attributes_values) { //console.log ('INC-localSelectedVal-key: '+key); // ======================================================================= INC-localSelectedVal-key
-				if (wm_pvar.products_attributes_values[key] === localSelectedVal) {
-					var currSelectedKey = key; //console.log ('currSelectedKey inF: '+currSelectedKey ); // ================================================================================== currSelectedKey
-					result = currSelectedKey;
-				}
+// Get the Paying Plan "value" (it's actually the slug), and create an array object together with the corresponding attributes IDs:
+function fcurrPayingplanKey() {
+	var currKey = [];
+	$('.variations .select.attribute-pa_paying-plan .option').each(function () {
+		localVal = $(this).attr('value');
+		for (var key in wm_pvar.products_attributes_values) { 
+			if (wm_pvar.products_attributes_values[key] === localVal) {
+				tempKey = fcurrSelectedKey()+','+key;
+				currKey[tempKey] = localVal; 
+				result = currKey;
 			}
-		});
-		return result;
-	}
-	
-	function fcurrPayingplanKey() {
-		var currKey = [];
-		$('.variations .select.attribute-pa_paying-plan .option').each(function () {
-			localVal = $(this).attr('value');
-			for (var key in wm_pvar.products_attributes_values) { //console.log ('INC-localVal: '+localVal); // ============================================================================== INC-localVal-key
-				if (wm_pvar.products_attributes_values[key] === localVal) {
-					tempKey = fcurrSelectedKey()+','+key;
-					currKey[tempKey] = localVal; //console.log ('currKey inF: '+currKey ); // ================================================================================================ currKey
-					result = currKey;
-				}
-			}
-		});
-		jsnCurrKey = Object.assign({}, result);
-		return jsnCurrKey;
-	}
-	
-	function fselectedPlanAttribIDs() {
-		selectedPlans = fcurrPayingplanKey(); // console.log('selectedPlans: '+ JSON.stringify(selectedPlans, null, 2) ); // =============================================================== selectedPlans
-		for (var selKey in selectedPlans) { console.log('selKey: '+selKey ); // ============================================================================================================ selKey
-			var selPlan = selectedPlans[selKey]; console.log('selPlan: '+selPlan ); // ===================================================================================================== selPlan
-			for (var akey in wm_pvar.products_by_attribute_ids) { //console.log('akey: '+akey ); // ========================================================================================== key
-				if (akey === selKey) {
-					var selAttrID = wm_pvar.products_by_attribute_ids[akey]; console.log('selAttrID: '+selAttrID ); // ===================================================================== selAttrID
-					
-					for (var pkey in wm_pvar.products_prices) { //console.log('pkey: '+pkey ); // ========================================================================================== pkey
-						if (pkey == selAttrID) {
-							var selPrice = wm_pvar.products_prices[pkey]; console.log('selPrice: '+selPrice+' ##########' ); // =========================================================== selPrice
-						}
+		}
+	});
+	jsnCurrKey = Object.assign({}, result);
+	return jsnCurrKey;
+}
+
+// Get the additional Product Attribute that corresponds to a attributes IDs pair and pull the price based on that; then pair the Paying Plan "value" with price, yey!
+function fselectedPlanAttribIDs() {
+	var attribData = [];
+	selectedPlans = fcurrPayingplanKey(); 
+	for (var selKey in selectedPlans) { 
+		var selPlan = selectedPlans[selKey]; 
+		for (var akey in wm_pvar.products_by_attribute_ids) { 
+			if (akey === selKey) {
+				var selAttrID = wm_pvar.products_by_attribute_ids[akey]; 
+				for (var pkey in wm_pvar.products_prices) { 
+					if (pkey == selAttrID) {
+						var selPrice = wm_pvar.products_prices[pkey]; 
+						attribData[selPlan] = selPrice; 
+						result = attribData; 
 					}
-					
-					result = selAttrID; // not good right now, but who cares (at this moment)? :-D
 				}
 			}
 		}
-		return result;
 	}
-	
-	fselectedPlanAttribIDs(); // ======== calling fselectedPlanAttribIDs();
-} );
+	jsnAttribData = Object.assign({}, result);
+	return jsnAttribData;
+}
+
+// Now get the slug & price pairs, look for the slug and add the price in a <span> after the Payment Plan with the slug as value attribute
+function appendAttribPrices() {
+	$('span.attribPrice').remove();
+	attribPrices = fselectedPlanAttribIDs();
+	for (var priceOf in attribPrices) {
+		var priceAmount = attribPrices[priceOf];
+		$('label[value="'+priceOf+'"]').after('<span class="attribPrice">$'+priceAmount+'</span>');
+	}
+}
