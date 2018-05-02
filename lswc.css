@@ -128,6 +128,9 @@ form.variations_form.cart .single_variation_wrap {
 .table.variations .tbody .tr:not(:last-child) > .value.td > .each-attrib {
   flex: 1;
 }
+.table.variations span.attribPrice {
+  display: block;
+}
 @media (min-width: 560px) {
 	.table.variations .tbody .tr:last-child > .value.td {
 		white-space: nowrap;
