@@ -134,6 +134,7 @@ form.variations_form.cart .single_variation_wrap {
 @media (min-width: 560px) {
 	.table.variations .tbody .tr:last-child > .value.td {
 		white-space: nowrap;
+		display: flex;
 	}
 	.table.variations .tbody .tr:last-child .value.td > div {
 		width: calc(33% - 14px) !important;
