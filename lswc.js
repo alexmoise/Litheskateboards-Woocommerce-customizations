@@ -4,40 +4,40 @@ jQuery(window).on('load', function() {
 });
 // === Toggle a class of parent DIV of radio buttons that ARE DISABLED or ARE SELECTED - these are styled further in CSS
 jQuery( document ).delegate( '.table.variations', 'change', function(event) {
-	$(this).unbind('click');
-	$( 'input[disabled="disabled"]'			).parent('div').toggleClass('has-been-disabled',true);
-	$( 'input:not([disabled="disabled"])'	).parent('div').toggleClass('has-been-disabled',false);
+	jQuery(this).unbind('click');
+	jQuery( 'input[disabled="disabled"]'			).parent('div').toggleClass('has-been-disabled',true);
+	jQuery( 'input:not([disabled="disabled"])'	).parent('div').toggleClass('has-been-disabled',false);
 	
-	$( 'input[type="radio"]:checked'		).parent('div').toggleClass('radio-checked',true);
-	$( 'input[type="radio"]:checked'		).next().toggleClass('selected',true);
+	jQuery( 'input[type="radio"]:checked'		).parent('div').toggleClass('radio-checked',true);
+	jQuery( 'input[type="radio"]:checked'		).next().toggleClass('selected',true);
 	
-	$( 'input[type="radio"]:not(:checked)'	).parent('div').toggleClass('radio-checked',false);
-	$( 'input[type="radio"]:not(:checked)'	).next().toggleClass('selected',false);
+	jQuery( 'input[type="radio"]:not(:checked)'	).parent('div').toggleClass('radio-checked',false);
+	jQuery( 'input[type="radio"]:not(:checked)'	).next().toggleClass('selected',false);
 	
-	if ($(this).parents().find('input[type="radio"]').is(':checked')) // "payment plan" is hidden by default (in CSS), here add class to unhide it if any other attribute is selected
+	if (jQuery(this).parents().find('input[type="radio"]').is(':checked')) // "payment plan" is hidden by default (in CSS), here add class to unhide it if any other attribute is selected
 	{
-		$('.attribute-pa_paying-plan').toggleClass('unhide-payments',true);
-		if ($(window).width() < 768) {
-			$('html,body').animate({scrollTop: $(".unhide-payments").offset().top - 20}); // here scroll down to payment options, now that these are un-hidden
+		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',true);
+		if (jQuery(window).width() < 768) {
+			jQuery('html,body').animate({scrollTop: jQuery(".unhide-payments").offset().top - 20}); // here scroll down to payment options, now that these are un-hidden
 		}
 	} else {
-		$('.attribute-pa_paying-plan').toggleClass('unhide-payments',false);
+		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',false);
 	}
-	$( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
+	jQuery( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
 	
 	appendAttribPrices(); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
 	
 });
 // === Scroll back up on Clear Selection
 jQuery('.reset_variations').click(function(){
-	if ($(window).width() < 768) {
-		$('html,body').animate({scrollTop: $(".product_title").offset().top - 20});
+	if (jQuery(window).width() < 768) {
+		jQuery('html,body').animate({scrollTop: jQuery(".product_title").offset().top - 20});
 	}
 });
 // === Submit the form automatically (adding product to cart) when Payment Plan option is chosen
 jQuery( document ).delegate( '.table.variations input[name="attribute_pa_paying-plan"]', 'click', function(event) {
-	$(this).unbind('click');
-	$(this).closest("form").submit();
+	jQuery(this).unbind('click');
+	jQuery(this).closest("form").submit();
 });
 
 // === Data and functions definitions for the Prices of Paying Plans:
@@ -60,8 +60,8 @@ if (typeof(wm_pvar) === 'undefined') {
 
 // Get the current attributes IDs as key pairs (like "16,32"):
 function fcurrSelectedKey() {
-	$('.variations .select .option.selected').each(function () {
-		localSelectedVal = $(this).attr('value');
+	jQuery('.variations .select .option.selected').each(function () {
+		localSelectedVal = jQuery(this).attr('value');
 		for (var key in wm_pvar.products_attributes_values) { 
 			if (wm_pvar.products_attributes_values[key] === localSelectedVal) {
 				var currSelectedKey = key; 
@@ -75,8 +75,8 @@ function fcurrSelectedKey() {
 // Get the Paying Plan "value" (it's actually the slug), and create an array object together with the corresponding attributes IDs:
 function fcurrPayingplanKey() {
 	var currKey = [];
-	$('.variations .select.attribute-pa_paying-plan .option').each(function () {
-		localVal = $(this).attr('value');
+	jQuery('.variations .select.attribute-pa_paying-plan .option').each(function () {
+		localVal = jQuery(this).attr('value');
 		for (var key in wm_pvar.products_attributes_values) { 
 			if (wm_pvar.products_attributes_values[key] === localVal) {
 				tempKey = fcurrSelectedKey()+','+key;
@@ -114,10 +114,10 @@ function fselectedPlanAttribIDs() {
 
 // Now get the slug & price pairs, look for the slug and add the price in a <span> after the Payment Plan with the slug as value attribute
 function appendAttribPrices() {
-	$('span.attribPrice').remove();
+	jQuery('span.attribPrice').remove();
 	attribPrices = fselectedPlanAttribIDs();
 	for (var priceOf in attribPrices) {
 		var priceAmount = attribPrices[priceOf];
-		$('label[value="'+priceOf+'"]').after('<span class="attribPrice">$'+priceAmount+'</span>');
+		jQuery('label[value="'+priceOf+'"]').after('<span class="attribPrice">$'+priceAmount+'</span>');
 	}
 }
