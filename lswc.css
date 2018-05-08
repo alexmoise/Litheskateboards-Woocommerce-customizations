@@ -1,3 +1,39 @@
+/* shop default page - change 2 columns to 1 column */
+.shop_columns_2 .products .product {
+  width: 99%;
+}
+/* xoo Product Popup styling */
+.xoo-qv-container.woocommerce.single-product {
+  background-color: #444444;
+  position:  relative;
+  width: 70vw;
+  margin: 0;
+}
+.xoo-qv-main {
+  background-color: #0a0a0a;
+  height: 110%;
+  position:  relative;
+  padding: 20px;
+}
+/* xoo Product Popup styling - on MOBILES */
+@media(max-width:767px) {
+  .xoo-qv-container.woocommerce.single-product {
+    position:  absolute;
+    top: 5%;
+    bottom:  5%;
+    left: 5%;
+    right:  5%;
+    width: 90%;
+    max-height: 90%;
+  }
+  .xoo-qv-prev, .xoo-qv-nxt {
+    display:  none;
+  }
+  .xoo-qv-main {
+    height:  100%;
+  }
+}
+
 /* product options "table" COLUMNS */
 .table.variations .value.td div {
   display: inline-block;
