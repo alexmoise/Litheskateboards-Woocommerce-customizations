@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.22
+ * Version: 0.1.23
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -48,8 +48,8 @@ function molswc_replace_woocommerce_templates( $template, $template_name, $templ
 	);
 	if ( ! $template && file_exists( $plugin_path . $template_name ) ) { $template = $plugin_path . $template_name; }
 	if ( ! $template ) { $template = $_template; }
-	// echo '<br>Overr path: '.$plugin_path . $template_name.'<br>';
-	// echo '<br>_Template path: '.$_template.'<br>';
+	// echo '<br>Overr path: '.$plugin_path . $template_name.' ';
+	// echo '<br>_Template: '.$_template.'<br>';
 	return $template;
 }
 
@@ -84,4 +84,13 @@ add_action('init', 'molswc_move_product_description');
 function molswc_move_product_description() {
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
 	add_action( 'woocommerce_after_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
+}
+
+// Inserting the shortcode
+add_shortcode( 'product_popup', 'product_popup_shortcode' );
+function product_popup_shortcode(){
+	echo 'PRODUCT!!';
+	echo '<br>Template: '.plugin_dir_path( __FILE__ ).'<br>';
+	// include plugin_dir_path( __FILE__ ) . 'template/woocommerce/single-product/add-to-cart/variable.php';
+
 }
