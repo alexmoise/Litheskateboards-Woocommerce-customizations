@@ -19,6 +19,7 @@ jQuery( document ).delegate( '.table.variations', 'change', function(event) {
 		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',true);
 		if (jQuery(window).width() < 768) {
 			jQuery('html,body').animate({scrollTop: jQuery(".unhide-payments").offset().top - 20}); // here scroll down to payment options, now that these are un-hidden
+			jQuery('.xoo-qv-main').animate({scrollTop: jQuery(".unhide-payments").offset().top - 20}); // same as bove, but for XOO POPUP
 		}
 	} else {
 		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',false);
@@ -32,6 +33,12 @@ jQuery( document ).delegate( '.table.variations', 'change', function(event) {
 jQuery('.reset_variations').click(function(){
 	if (jQuery(window).width() < 768) {
 		jQuery('html,body').animate({scrollTop: jQuery(".product_title").offset().top - 20});
+	}
+});
+// === Scroll back up on Clear Selection on XOO POPUP
+jQuery('.xoo-qv-panel .reset_variations').click(function(){
+	if (jQuery(window).width() < 768) {
+		jQuery('.xoo-qv-main').animate({scrollTop: jQuery(".product_title").offset().top - 20});
 	}
 });
 // === Submit the form automatically (adding product to cart) when Payment Plan option is chosen
