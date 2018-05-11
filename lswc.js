@@ -2,10 +2,11 @@
 jQuery(window).on('load', function() {
 	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
 });
-// === Toggle a class of parent DIV of radio buttons that ARE DISABLED or ARE SELECTED - these are styled further in CSS
-jQuery( document ).delegate( '.table.variations', 'change', function(event) {
-	jQuery(this).unbind('click');
-	jQuery( 'input[disabled="disabled"]'			).parent('div').toggleClass('has-been-disabled',true);
+// === .table.variations functions -> GENERAL
+jQuery( document ).delegate( '.table.variations', 'change', function() {
+	//jQuery(this).unbind('click');
+	// Toggle classes of parent DIVs of radio buttons that ARE DISABLED or ARE SELECTED
+	jQuery( 'input[disabled="disabled"]'		).parent('div').toggleClass('has-been-disabled',true);
 	jQuery( 'input:not([disabled="disabled"])'	).parent('div').toggleClass('has-been-disabled',false);
 	
 	jQuery( 'input[type="radio"]:checked'		).parent('div').toggleClass('radio-checked',true);
@@ -14,36 +15,42 @@ jQuery( document ).delegate( '.table.variations', 'change', function(event) {
 	jQuery( 'input[type="radio"]:not(:checked)'	).parent('div').toggleClass('radio-checked',false);
 	jQuery( 'input[type="radio"]:not(:checked)'	).next().toggleClass('selected',false);
 	
-	if (jQuery(this).parents().find('input[type="radio"]').is(':checked')) // "payment plan" is hidden by default (in CSS), here add class to unhide it if any other attribute is selected
+	if (jQuery(this).parents().find('input[type="radio"]').is(':checked')) // to hide or not hide payments if any other attribute is selected
 	{
-		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',true);
-		if (jQuery(window).width() < 768) {
-			jQuery('html,body').animate({scrollTop: jQuery(".unhide-payments").offset().top - 20}); // here scroll down to payment options, now that these are un-hidden
-			jQuery('.xoo-qv-main').animate({scrollTop: jQuery(".unhide-payments").offset().top - 20}); // same as bove, but for XOO POPUP
-		}
+		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',true); // hide it with a hiding class
 	} else {
-		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',false);
+		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',false); // reveal it by removing hiding class
 	}
+	
 	jQuery( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
 	
 	appendAttribPrices(); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
 	
 });
-// === Scroll back up on Clear Selection
-jQuery('.reset_variations').click(function(){
-	if (jQuery(window).width() < 768) {
-		jQuery('html,body').animate({scrollTop: jQuery(".product_title").offset().top - 20});
-	}
+// === .table.variations scrolling functions -> NON-POPUP, PRODUCT PAGE ONLY
+jQuery( document ).delegate( 'body #main .container .product .table.variations', 'change', function() {
+	//jQuery(this).unbind('click');
+	if (jQuery(this).parents().find('input[type="radio"]').is(':checked'))
+	{
+		if (jQuery(window).width() < 768) { jQuery('html,body').animate({scrollTop: jQuery(".unhide-payments").offset().top - 20}); } // also scroll down to payment options, now that these are un-hidden
+	} 
 });
-// === Scroll back up on Clear Selection on XOO POPUP
-jQuery('.xoo-qv-panel .reset_variations').click(function(){
-	if (jQuery(window).width() < 768) {
-		jQuery('.xoo-qv-main').animate({scrollTop: jQuery(".product_title").offset().top - 20});
-	}
+jQuery('body #main .container .product .reset_variations').click(function(){
+	if (jQuery(window).width() < 768) { jQuery('html,body').animate({scrollTop: jQuery(".product_title").offset().top - 20}); } // scroll back to product title when clicking on Reset Variations
 });
+
+// === .table.variations scrolling functions -> POPUP ONLY
+jQuery(document).on('click', '.xoo-qv-main .reset_variations', function(){ 
+	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '0px'}, 300); } // scroll back to product title when clicking on Reset Variations
+});
+jQuery(document).on('click', '.xoo-qv-main .table.variations .attrib', function(){ 
+	var elem = jQuery('.xoo-qv-main');
+	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: elem.height()}, 300); } // scroll down to payment options when clicking on any Variations
+});
+
 // === Submit the form automatically (adding product to cart) when Payment Plan option is chosen
 jQuery( document ).delegate( '.table.variations input[name="attribute_pa_paying-plan"]', 'click', function(event) {
-	jQuery(this).unbind('click');
+	//jQuery(this).unbind('click');
 	jQuery(this).closest("form").submit();
 });
 
@@ -120,7 +127,7 @@ function fselectedPlanAttribIDs() {
 }
 
 // Now get the slug & price pairs, look for the slug and add the price in a <span> after the Payment Plan with the slug as value attribute
-function appendAttribPrices() {
+function appendAttribPrices() { 
 	jQuery('span.attribPrice').remove();
 	attribPrices = fselectedPlanAttribIDs();
 	for (var priceOf in attribPrices) {
