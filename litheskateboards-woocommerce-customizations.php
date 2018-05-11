@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.23
+ * Version: 0.1.24
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -84,6 +84,18 @@ add_action('init', 'molswc_move_product_description');
 function molswc_move_product_description() {
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
 	add_action( 'woocommerce_after_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
+	// also remove XOO Product Popup actions:
+	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_rating', 10 );
+	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_excerpt', 20 );
+	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_meta', 30 );
+}
+
+// Remove "Select options" button from products
+add_action( 'woocommerce_after_shop_loop_item', 'remove_add_to_cart_buttons', 1 );
+function remove_add_to_cart_buttons() {
+	if( is_product_category() || is_shop()) { 
+		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
+	}
 }
 
 // Inserting the shortcode
