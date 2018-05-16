@@ -1,10 +1,16 @@
-// === Toggle a class of parent DIV of disabled elements at first window.load anyway
+// === Add "has-been-disabled" class to initially disabled elements -> XOO PRODUCT POPUP ONLY
+jQuery(document).on('animationend', '.xoo-qv-inner-modal', function($) {
+	// console.log('Popup is ready!');
+	ajaxAttribPrices(); // initialize the prices for the product loaded in popup (see functions and variables defined below)
+	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
+});
+// === Add "has-been-disabled" class to initially disabled elements -> NON-POPUP, PRODUCT PAGE ONLY
 jQuery(window).on('load', function() {
 	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
 });
 // === .table.variations functions -> GENERAL
 jQuery( document ).delegate( '.table.variations', 'change', function() {
-	//jQuery(this).unbind('click');
+	// jQuery(this).unbind('click');
 	// Toggle classes of parent DIVs of radio buttons that ARE DISABLED or ARE SELECTED
 	jQuery( 'input[disabled="disabled"]'		).parent('div').toggleClass('has-been-disabled',true);
 	jQuery( 'input:not([disabled="disabled"])'	).parent('div').toggleClass('has-been-disabled',false);
@@ -25,11 +31,10 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	jQuery( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
 	
 	appendAttribPrices(); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
-	
 });
+
 // === .table.variations scrolling functions -> NON-POPUP, PRODUCT PAGE ONLY
 jQuery( document ).delegate( 'body #main .container .product .table.variations', 'change', function() {
-	//jQuery(this).unbind('click');
 	if (jQuery(this).parents().find('input[type="radio"]').is(':checked'))
 	{
 		if (jQuery(window).width() < 768) { jQuery('html,body').animate({scrollTop: jQuery(".unhide-payments").offset().top - 20}); } // also scroll down to payment options, now that these are un-hidden
@@ -39,7 +44,7 @@ jQuery('body #main .container .product .reset_variations').click(function(){
 	if (jQuery(window).width() < 768) { jQuery('html,body').animate({scrollTop: jQuery(".product_title").offset().top - 20}); } // scroll back to product title when clicking on Reset Variations
 });
 
-// === .table.variations scrolling functions -> POPUP ONLY
+// === .table.variations scrolling functions -> XOO PRODUCT POPUP ONLY
 jQuery(document).on('click', '.xoo-qv-main .reset_variations', function(){ 
 	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '0px'}, 300); } // scroll back to product title when clicking on Reset Variations
 });
@@ -50,7 +55,6 @@ jQuery(document).on('click', '.xoo-qv-main .table.variations .attrib', function(
 
 // === Submit the form automatically (adding product to cart) when Payment Plan option is chosen
 jQuery( document ).delegate( '.table.variations input[name="attribute_pa_paying-plan"]', 'click', function(event) {
-	//jQuery(this).unbind('click');
 	jQuery(this).closest("form").submit();
 });
 
@@ -73,7 +77,7 @@ if (typeof(wm_pvar) === 'undefined') {
 }
 
 // Get the current attributes IDs as key pairs (like "16,32"):
-function fcurrSelectedKey() {
+function fcurrSelectedKey() { 
 	jQuery('.variations .select .option.selected').each(function () {
 		localSelectedVal = jQuery(this).attr('value');
 		for (var key in wm_pvar.products_attributes_values) { 
@@ -90,7 +94,7 @@ function fcurrSelectedKey() {
 function fcurrPayingplanKey() {
 	var currKey = [];
 	jQuery('.variations .select.attribute-pa_paying-plan .option').each(function () {
-		localVal = jQuery(this).attr('value');
+		localVal = jQuery(this).attr('value'); 
 		for (var key in wm_pvar.products_attributes_values) { 
 			if (wm_pvar.products_attributes_values[key] === localVal) {
 				tempKey = fcurrSelectedKey()+','+key;
@@ -134,4 +138,48 @@ function appendAttribPrices() {
 		var priceAmount = attribPrices[priceOf];
 		jQuery('label[value="'+priceOf+'"]').after('<span class="attribPrice">$'+priceAmount+'</span>');
 	}
+}
+
+// === Functions to initialize prices for the product loaded in XOO popup
+// Get data values with an ajax call
+function ajaxAttribPrices() {
+	var $cart = jQuery(".xoo-qv-main form.variations_form");
+	if (typeof $cart === 'undefined' || $cart.length <= 0) { return; }
+	var product_id = $cart.attr('data-product_id'); 
+	// console.log('Prod ID: '+product_id);
+	var data = {
+		'action': 'wmp_variation_price_array',
+		'product_id': product_id
+	};
+	// console.log('DATA: '+ JSON.stringify(data, null, 2) );
+	jQuery.ajax({
+		url: wm_pvar.ajax_url,
+		type: "POST",
+		data: data})
+	.always(function (data) {
+		data = data || [];
+		wm_pvar.lowest_price = data['lowest_price'] || wm_pvar.lowest_price;
+		wm_pvar.products_attributes = data['products_attributes'] || wm_pvar.products_attributes;
+		wm_pvar.products_attributes_values = data['products_attributes_values'] || wm_pvar.products_attributes_values;
+		wm_pvar.products_by_attribute_ids = data['products_by_attribute_ids'] || wm_pvar.products_by_attribute_ids;
+		wm_pvar.products_prices = data['products_prices'] || wm_pvar.products_prices;
+		wm_pvar.product_id = jQuery("form.variations_form").attr('data-product_id');
+		initAttribVariables();
+	});
+}
+// Initialize data values we got with the ajaxAttribPrices() function above
+function initAttribVariables() {
+        wm_pvar.hide_price_when_zero = (wm_pvar_settings.hide_price_when_zero === true || wm_pvar_settings.hide_price_when_zero === "true");
+        wm_pvar.show_from_price = (wm_pvar_settings.show_from_price === true || wm_pvar_settings.show_from_price === "true");
+        wm_pvar.display_style = parseInt(wm_pvar_settings.display_style || 0);
+        wm_pvar.lowest_price = parseFloat(wm_pvar_settings.lowest_price || 0);
+        wm_pvar.product_id = parseInt(wm_pvar_settings.product_id || 0);
+        wm_pvar.num_decimals = parseInt(wm_pvar_settings.num_decimals || 2);
+        wm_pvar.decimal_sep = wm_pvar_settings.decimal_sep || ",";
+        wm_pvar.thousands_sep = wm_pvar_settings.thousands_sep || "";
+        wm_pvar.format_string = wm_pvar_settings.format_string || "{1} ({3}{0} {2})";
+        wm_pvar.format_string_from = wm_pvar_settings.format_string_from || "{1} (ab {0} {2})";
+        wm_pvar.currency = wm_pvar_settings.currency || "$";
+        wm_pvar.additional_cost_indicator = wm_pvar_settings.additional_cost_indicator || '+';
+        wm_pvar.ajax_url = wm_pvar_settings.ajax_url || '/wp-admin/admin-ajax.php';
 }
