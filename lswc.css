@@ -25,15 +25,16 @@
 
 /* xoo Product Popup styling */
 .xoo-qv-container.woocommerce.single-product {
-  background-color: #444444;
-  position:  relative;
-  width: 70vw;
-  margin: 0;
+  padding: 0;
+  height: max-content;
+  border: 9px solid #444;
+  background-color: #0a0a0a;
 }
 .xoo-qv-main {
   background-color: #0a0a0a;
   position: relative;
-  padding: 16px;
+  padding: 10px 20px;
+  height:  auto;
 }
 .xoo-qv-container a.reset_variations {
   color: #12ff1e;
@@ -63,19 +64,22 @@
 /* xoo Product Popup styling - on MOBILES */
 @media(max-width:767px) {
   .xoo-qv-container.woocommerce.single-product {
-    position:  absolute;
-    top: 5%;
-    bottom:  5%;
-    left: 5%;
-    right:  5%;
-    width: 90%;
-    max-height: 90%;
+	position: fixed;
+	top: 3px;
+	left: 3px;
+	width: 95%;
+	overflow: auto;
+	right: 3px;
+	bottom: 3px;
+	min-height: 95vh;
   }
   .xoo-qv-prev, .xoo-qv-nxt {
     display:  none;
   }
   .xoo-qv-main {
-    height:  100%;
+	max-height: calc(100vh - 25px);
+	overflow-y: auto;
+	padding: 10px 10px;
   }
 }
 
