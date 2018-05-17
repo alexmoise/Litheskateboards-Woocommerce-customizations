@@ -50,7 +50,7 @@ jQuery(document).on('click', '.xoo-qv-main .reset_variations', function(){
 });
 jQuery(document).on('click', '.xoo-qv-main .table.variations .attrib', function(){ 
 	var elem = jQuery('.xoo-qv-main');
-	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: elem.height()}, 300); } // scroll down to payment options when clicking on any Variations
+	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: jQuery(".xoo-qv-plink").offset().top}, 300); } // scroll down to payment options when clicking on any Variations
 });
 
 // === Submit the form automatically (adding product to cart) when Payment Plan option is chosen
