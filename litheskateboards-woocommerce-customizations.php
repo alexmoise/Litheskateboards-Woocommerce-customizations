@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.26
+ * Version: 0.1.27
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -48,8 +48,6 @@ function molswc_replace_woocommerce_templates( $template, $template_name, $templ
 	);
 	if ( ! $template && file_exists( $plugin_path . $template_name ) ) { $template = $plugin_path . $template_name; }
 	if ( ! $template ) { $template = $_template; }
-	// echo '<br>Overr path: '.$plugin_path . $template_name.' ';
-	// echo '<br>_Template: '.$_template.'<br>';
 	return $template;
 }
 
@@ -62,7 +60,7 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 		$id = esc_attr( $name . '_v_' . $value . $product->get_id() ); //added product ID at the end of the name to target single products
 		$checked = checked( $checked_value, $value, false );
 		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
-		printf( '<div class="attrib"><!-- %1$s %2$s %3$s %4$s %5$s --><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="attrib option" value="%2$s" for="%3$s" data-text-fullname="%2$s" data-text-b="%5$s">%5$s</label></div>', $input_name, $esc_value, $id, $checked, $filtered_label );
+		printf( '<div class="attrib"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="attrib option" value="%2$s" for="%3$s" data-text-fullname="%2$s" data-text-b="%5$s">%5$s</label></div>', $input_name, $esc_value, $id, $checked, $filtered_label );
 	}
 }
 
@@ -75,7 +73,7 @@ if ( ! function_exists( 'print_attribute_radio_tax' ) ) {
 		$id = esc_attr( $name . '_v_' . $value . $product->get_id() ); //added product ID at the end of the name to target single products
 		$checked = checked( $checked_value, $value, false );
 		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
-		printf( '<div class="tax"><!-- %1$s %2$s %3$s %4$s %5$s %6$s --><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="tax option" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</label><span class="attrib-description">%6$s</span></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description );
+		printf( '<div class="tax"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="tax option" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</label><span class="attrib-description">%6$s</span></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description );
 	}
 }
 
@@ -88,6 +86,10 @@ function molswc_move_product_description() {
 	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_rating', 10 );
 	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_excerpt', 20 );
 	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_meta', 30 );
+	// also remove the regular image from popup ...
+	remove_action('xoo-qv-images','xoo_qv_product_image',20);
+	// and replace it with Product Smart Spinner:
+	add_action( 'xoo-qv-images', array('SmartProductPlugin', 'wooCommerceImageAction'), 19 );
 }
 
 // Remove "Select options" button from products
@@ -96,13 +98,4 @@ function remove_add_to_cart_buttons() {
 	if( is_product_category() || is_shop()) { 
 		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
 	}
-}
-
-// Inserting the shortcode
-add_shortcode( 'product_popup', 'product_popup_shortcode' );
-function product_popup_shortcode(){
-	echo 'PRODUCT!!';
-	echo '<br>Template: '.plugin_dir_path( __FILE__ ).'<br>';
-	// include plugin_dir_path( __FILE__ ) . 'template/woocommerce/single-product/add-to-cart/variable.php';
-
 }
