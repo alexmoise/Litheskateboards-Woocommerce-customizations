@@ -46,11 +46,11 @@ jQuery('body #main .container .product .reset_variations').click(function(){
 
 // === .table.variations scrolling functions -> XOO PRODUCT POPUP ONLY
 jQuery(document).on('click', '.xoo-qv-main .reset_variations', function(){ 
-	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '0px'}, 300); } // scroll back to product title when clicking on Reset Variations
+	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '540px'}, 300); } // scroll back to product title when clicking on Reset Variations
 });
 jQuery(document).on('click', '.xoo-qv-main .table.variations .attrib', function(){ 
 	var elem = jQuery('.xoo-qv-main');
-	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: jQuery(".xoo-qv-plink").offset().top}, 300); } // scroll down to payment options when clicking on any Variations
+	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '2000px'}, 300); } // scroll down to payment options when clicking on any Variations
 });
 
 // === Submit the form automatically (adding product to cart) when Payment Plan option is chosen
@@ -59,6 +59,7 @@ jQuery( document ).delegate( '.table.variations input[name="attribute_pa_paying-
 });
 
 // === Data and functions definitions for the Prices of Paying Plans:
+// Initial VAR definition
 if (typeof(wm_pvar) === 'undefined') {
     var wm_pvar = {
         products_by_attribute_ids: [],
