@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.27
+ * Version: 0.1.28
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -25,7 +25,7 @@ function molswc_adding_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'molswc_adding_scripts', 9999999 ); 
 
-// get rid of original JS from WC Variations Price Hints ... (for good, we won't replace it anymore as all functions are now in lswc.js
+// get rid of original JS from WC Variations Price Hints ... (for good, we won't replace it anymore as all functions are now in lswc.js)
 function molswc_remove_wcvarhints_js() {
     wp_dequeue_script('wm_variation_price_hints_script');
     wp_deregister_script('wm_variation_price_hints_script');
@@ -90,6 +90,26 @@ function molswc_move_product_description() {
 	remove_action('xoo-qv-images','xoo_qv_product_image',20);
 	// and replace it with Product Smart Spinner:
 	add_action( 'xoo-qv-images', array('SmartProductPlugin', 'wooCommerceImageAction'), 19 );
+}
+
+// Adding Mobile Scroll Hint Icon
+add_action( 'xoo-qv-images', molswc_mobile_scroll_hint, 999 );
+function molswc_mobile_scroll_hint () {
+	if ( wp_is_mobile() ) {
+		echo '
+			<div class="scroll-hint center">
+			 <div class="mouse">
+			  <div class="wheel">
+			  </div>
+			 </div>
+			 <div>
+			  <span class="unu"></span>
+			  <span class="doi"></span>
+			  <span class="trei"></span>
+			 </div>
+			</div>
+		';
+	}
 }
 
 // Remove "Select options" button from products
