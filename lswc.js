@@ -49,7 +49,6 @@ jQuery(document).on('click', '.xoo-qv-main .reset_variations', function(){
 	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '540px'}, 300); } // scroll back to product title when clicking on Reset Variations
 });
 jQuery(document).on('click', '.xoo-qv-main .table.variations .attrib', function(){ 
-	var elem = jQuery('.xoo-qv-main');
 	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '2000px'}, 300); } // scroll down to payment options when clicking on any Variations
 });
 
