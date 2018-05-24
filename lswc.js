@@ -1,9 +1,15 @@
-// === Add "has-been-disabled" class to initially disabled elements -> XOO PRODUCT POPUP ONLY
+// === Add "has-been-disabled" class, calculate variations prices, fade out the scroll hint icon, etc. -> XOO PRODUCT POPUP ONLY
 jQuery(document).on('animationend', '.xoo-qv-inner-modal', function($) {
 	// console.log('Popup is ready!');
+	molswcDisableScroll(); // prevent body scrolling under the popup
 	ajaxAttribPrices(); // initialize the prices for the product loaded in popup (see functions and variables defined below)
 	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
+	setTimeout(function() { jQuery('.scroll-hint').fadeOut('slow'); }, 5000);  // removing scroll hint icon after a while ...
 });
+
+// === Lift body scrolling prevention when closing the popup 
+jQuery(document).on('click', '.xoo-qv-close', function(){ molswcEnableScroll(); });
+
 // === Add "has-been-disabled" class to initially disabled elements -> NON-POPUP, PRODUCT PAGE ONLY
 jQuery(window).on('load', function() {
 	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
@@ -56,6 +62,27 @@ jQuery(document).on('click', '.xoo-qv-main .table.variations .attrib', function(
 jQuery( document ).delegate( '.table.variations input[name="attribute_pa_paying-plan"]', 'click', function(event) {
 	jQuery(this).closest("form").submit();
 });
+
+// === Disable scroll ===
+function molswcDisableScroll() {
+	var scrollPosition = [
+	  self.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
+	  self.pageYOffset || document.documentElement.scrollTop  || document.body.scrollTop
+	];
+	var html = jQuery('html'); // it would make more sense to apply this to body, but IE7 won't have that
+	html.data('scroll-position', scrollPosition);
+	html.data('previous-overflow', html.css('overflow'));
+	html.css('overflow', 'hidden');
+	window.scrollTo(scrollPosition[0], scrollPosition[1]);
+}
+
+// === Enable scroll ===
+function molswcEnableScroll() {
+	var html = jQuery('html');
+	var scrollPosition = html.data('scroll-position');
+	html.css('overflow', html.data('previous-overflow'));
+	window.scrollTo(scrollPosition[0], scrollPosition[1])
+}
 
 // === Data and functions definitions for the Prices of Paying Plans:
 // Initial VAR definition
