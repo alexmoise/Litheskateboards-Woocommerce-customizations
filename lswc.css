@@ -24,6 +24,9 @@
 }
 
 /* xoo Product Popup styling */
+.xoo-qv-panel.xoo-qv-panel-active {
+  z-index: 999999;
+}
 .xoo-qv-container.woocommerce.single-product {
   padding: 0;
   height: max-content;
