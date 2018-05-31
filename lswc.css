@@ -1,6 +1,6 @@
 /* shop default page - change 2 columns to 1 column */
 .shop_columns_2 .products .product {
-  width: 99%;
+  width: 100%;
 }
 .template-shop .page-title {
   display: block;
@@ -8,19 +8,44 @@
 }
 .template-shop .inner_product_header {
   min-height: fit-content !important;
+  padding: 0 !important;
+  border-top: 0 !important;
 }
 .template-shop .inner_product .avia_cart_buttons {
   display: none;
 }
 .template-shop a.xoo-qv-button {
-  /* border: 2px solid yellow; */
   white-space:  nowrap;
-  min-width:  fit-content;
-  min-height:  fit-content;
-  padding: 50% 50%;
+  color: transparent;
+  /* min-width:  fit-content; */
+  /* min-height:  fit-content; */
+  /* padding: 50% 50%; */
+  /* border: 2px solid yellow; */
 }
 .template-shop .inner_product {
   position:  relative;
+  border: 0;
+}
+.inner_product_header .avia-arrow {
+  display: none;
+}
+.product a.brighter-board .thumbnail_container img {
+  filter: brightness(125%);
+}
+ul.products li.product {
+  margin: -25px 0 0 0;
+}
+@media only screen and (max-width: 767px) {
+	ul.products li.product {
+		margin: 0 0 -10px 0 !important;
+		width: 100% !important;
+	}
+}
+li.product .inner_product {
+  background: transparent;
+}
+li.product .inner_product_header {
+    min-height: 0px !important;
 }
 
 /* xoo Product Popup styling */
