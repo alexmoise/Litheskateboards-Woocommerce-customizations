@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.29
+ * Version: 0.1.30
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -92,6 +92,16 @@ function molswc_move_product_description() {
 	add_action( 'xoo-qv-images', array('SmartProductPlugin', 'wooCommerceImageAction'), 19 );
 }
 
+// Adjust (mostly remove) product details in product archive
+add_action('init', 'molswc_change_product_in_archives');
+function molswc_change_product_in_archives() {
+	// remove_action( 'woocommerce_before_shop_loop_item_title', 'avia_shop_overview_extra_header_div', 20 ); // this removes an extra large chunk of code and breaks the shop page completely
+	remove_action( 'woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10 );
+	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
+	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_show_product_loop_sale_flash', 10 );
+	remove_action( 'woocommerce_after_shop_loop_item', 'avia_add_cart_button', 16 );
+}
+
 // Adding Mobile Scroll Hint Icon
 add_action( 'xoo-qv-images', molswc_mobile_scroll_hint, 999 );
 function molswc_mobile_scroll_hint () {
@@ -109,13 +119,5 @@ function molswc_mobile_scroll_hint () {
 			 </div>
 			</div>
 		';
-	}
-}
-
-// Remove "Select options" button from products
-add_action( 'woocommerce_after_shop_loop_item', 'remove_add_to_cart_buttons', 1 );
-function remove_add_to_cart_buttons() {
-	if( is_product_category() || is_shop()) { 
-		remove_action( 'woocommerce_after_shop_loop_item', 'woocommerce_template_loop_add_to_cart' );
 	}
 }
