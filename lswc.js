@@ -1,45 +1,51 @@
-// === Add "has-been-disabled" class, calculate variations prices, fade out the scroll hint icon, etc. -> XOO PRODUCT POPUP ONLY
-jQuery(document).on('animationend', '.xoo-qv-inner-modal', function($) {
-	// console.log('Popup is ready!');
-	molswcDisableScroll(); // prevent body scrolling under the popup
+// === I. Product display functions -> XOO POPUP ONLY: ===
+// Initialize the special event needed for detecting XOO Popup removal
+(function($){ $.event.special.destroyed = { remove: function(o) { if (o.handler) { o.handler() } } } })(jQuery)
+// Stuff to execute when XOO Popup open animation STARTS
+jQuery( document ).on('animationstart', '.xoo-qv-inner-modal', function($) {
 	ajaxAttribPrices(); // initialize the prices for the product loaded in popup (see functions and variables defined below)
+});
+// Stuff to execute when XOO Popup open animation ENDS
+jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
 	setTimeout(function() { jQuery('.scroll-hint').fadeOut('slow'); }, 5000);  // removing scroll hint icon after a while ...
+	molswcDisableScroll(); // prevent body scrolling under the popup
+	jQuery('.xoo-qv-main').bind('destroyed', function() { molswcEnableScroll(); }) // do stuff when popup closes, based on special event registered above ;-)
+});
+// .table.variations scrolling functions
+jQuery(document).on('click', '.reset_variations', function(){ 
+	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '540px'}, 300); } // scroll back to product title when clicking on Reset Variations
+});
+jQuery(document).on('click', '.table.variations .attrib', function(){ 
+	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '2000px'}, 300); } // scroll down to payment options when clicking on any Variations
 });
 
-// === Lift body scrolling prevention when closing the popup 
-jQuery(document).on('click', '.xoo-qv-close', function(){ molswcEnableScroll(); });
-
-// === Add "has-been-disabled" class to initially disabled elements -> NON-POPUP, PRODUCT PAGE ONLY
-jQuery(window).on('load', function() {
-	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
-});
-// === .table.variations functions -> GENERAL
+// === II. Product display functions -> BOTH POPUP AND SINGLE PRODUCT PAGE:
+// .table.variations functions -> GENERAL
 jQuery( document ).delegate( '.table.variations', 'change', function() {
-	// jQuery(this).unbind('click');
 	// Toggle classes of parent DIVs of radio buttons that ARE DISABLED or ARE SELECTED
 	jQuery( 'input[disabled="disabled"]'		).parent('div').toggleClass('has-been-disabled',true);
 	jQuery( 'input:not([disabled="disabled"])'	).parent('div').toggleClass('has-been-disabled',false);
-	
 	jQuery( 'input[type="radio"]:checked'		).parent('div').toggleClass('radio-checked',true);
 	jQuery( 'input[type="radio"]:checked'		).next().toggleClass('selected',true);
-	
 	jQuery( 'input[type="radio"]:not(:checked)'	).parent('div').toggleClass('radio-checked',false);
 	jQuery( 'input[type="radio"]:not(:checked)'	).next().toggleClass('selected',false);
-	
 	if (jQuery(this).parents().find('input[type="radio"]').is(':checked')) // to hide or not hide payments if any other attribute is selected
 	{
 		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',true); // hide it with a hiding class
 	} else {
 		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',false); // reveal it by removing hiding class
 	}
-	
 	jQuery( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
-	
 	appendAttribPrices(); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
 });
 
-// === .table.variations scrolling functions -> NON-POPUP, PRODUCT PAGE ONLY
+// === III. Product display functions -> SINGLE PRODUCT PAGE ONLY: ===
+// Add "has-been-disabled" class to initially disabled elements
+jQuery(window).on('load', function() {
+	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
+});
+// .table.variations scrolling functions
 jQuery( document ).delegate( 'body #main .container .product .table.variations', 'change', function() {
 	if (jQuery(this).parents().find('input[type="radio"]').is(':checked'))
 	{
@@ -50,20 +56,21 @@ jQuery('body #main .container .product .reset_variations').click(function(){
 	if (jQuery(window).width() < 768) { jQuery('html,body').animate({scrollTop: jQuery(".product_title").offset().top - 20}); } // scroll back to product title when clicking on Reset Variations
 });
 
-// === .table.variations scrolling functions -> XOO PRODUCT POPUP ONLY
-jQuery(document).on('click', '.xoo-qv-main .reset_variations', function(){ 
-	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '540px'}, 300); } // scroll back to product title when clicking on Reset Variations
+// === Adjust boards thumbs brightness based on mouse position ===
+jQuery(document).on('mouseenter', '.xoo-qv-button', function($) {
+	jQuery(this).prev().toggleClass('brighter-board',true);
 });
-jQuery(document).on('click', '.xoo-qv-main .table.variations .attrib', function(){ 
-	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '2000px'}, 300); } // scroll down to payment options when clicking on any Variations
+jQuery(document).on('mouseleave', '.xoo-qv-button', function($) {
+	jQuery(this).prev().toggleClass('brighter-board',false);
 });
 
-// === Submit the form automatically (adding product to cart) when Payment Plan option is chosen
+// === Submit the form automatically (adding product to cart) when Payment Plan option is chosen ===
 jQuery( document ).delegate( '.table.variations input[name="attribute_pa_paying-plan"]', 'click', function(event) {
 	jQuery(this).closest("form").submit();
 });
 
-// === Disable scroll ===
+// === Under The XOO Popup scroll handling: ===
+// Disable window scroll under popup 
 function molswcDisableScroll() {
 	var scrollPosition = [
 	  self.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
@@ -76,7 +83,7 @@ function molswcDisableScroll() {
 	window.scrollTo(scrollPosition[0], scrollPosition[1]);
 }
 
-// === Enable scroll ===
+// Enable window scroll under popup
 function molswcEnableScroll() {
 	var html = jQuery('html');
 	var scrollPosition = html.data('scroll-position');
@@ -84,7 +91,7 @@ function molswcEnableScroll() {
 	window.scrollTo(scrollPosition[0], scrollPosition[1])
 }
 
-// === Data and functions definitions for the Prices of Paying Plans:
+// === Data and functions definitions for the Prices of Paying Plans: ===
 // Initial VAR definition
 if (typeof(wm_pvar) === 'undefined') {
     var wm_pvar = {
@@ -102,7 +109,6 @@ if (typeof(wm_pvar) === 'undefined') {
         product_id: 0
     };
 }
-
 // Get the current attributes IDs as key pairs (like "16,32"):
 function fcurrSelectedKey() { 
 	jQuery('.variations .select .option.selected').each(function () {
@@ -116,7 +122,6 @@ function fcurrSelectedKey() {
 	});
 	return result;
 }
-
 // Get the Paying Plan "value" (it's actually the slug), and create an array object together with the corresponding attributes IDs:
 function fcurrPayingplanKey() {
 	var currKey = [];
@@ -133,7 +138,6 @@ function fcurrPayingplanKey() {
 	jsnCurrKey = Object.assign({}, result);
 	return jsnCurrKey;
 }
-
 // Get the additional Product Attribute that corresponds to a attributes IDs pair and pull the price based on that; then pair the Paying Plan "value" with price, yey!
 function fselectedPlanAttribIDs() {
 	var attribData = [];
@@ -156,7 +160,6 @@ function fselectedPlanAttribIDs() {
 	jsnAttribData = Object.assign({}, result);
 	return jsnAttribData;
 }
-
 // Now get the slug & price pairs, look for the slug and add the price in a <span> after the Payment Plan with the slug as value attribute
 function appendAttribPrices() { 
 	jQuery('span.attribPrice').remove();
