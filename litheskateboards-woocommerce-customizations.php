@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.30
+ * Version: 0.1.31
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -51,6 +51,18 @@ function molswc_replace_woocommerce_templates( $template, $template_name, $templ
 	return $template;
 }
 
+// Override WooCommerce Template Parts, now the "content-product.php" file, where we'll add data_attrib to <li> element later...
+add_filter( 'wc_get_template_part', 'molswc_override_woocommerce_template_part', 10, 3 );
+function molswc_override_woocommerce_template_part( $template, $slug, $name ) {
+    $template_directory = untrailingslashit( plugin_dir_path( __FILE__ ) ) . '/template/woocommerce/';
+    if ( $name ) {
+        $path = $template_directory . "{$slug}-{$name}.php";
+    } else {
+        $path = $template_directory . "{$slug}.php";
+    }
+    return file_exists( $path ) ? $path : $template;
+}
+
 // Replace ATTRIBUTE TYPE variations buttons function of WC Variations Radio Buttons plugin, in order to add the *class needed to hook the variation price hints* JS
 if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 	function print_attribute_radio_attrib( $checked_value, $value, $label, $name ) {
@@ -95,11 +107,12 @@ function molswc_move_product_description() {
 // Adjust (mostly remove) product details in product archive
 add_action('init', 'molswc_change_product_in_archives');
 function molswc_change_product_in_archives() {
-	// remove_action( 'woocommerce_before_shop_loop_item_title', 'avia_shop_overview_extra_header_div', 20 ); // this removes an extra large chunk of code and breaks the shop page completely
 	remove_action( 'woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10 );
 	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
 	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_show_product_loop_sale_flash', 10 );
 	remove_action( 'woocommerce_after_shop_loop_item', 'avia_add_cart_button', 16 );
+	// remove ordering and products per page
+	remove_action( 'woocommerce_before_shop_loop', 'avia_woocommerce_frontend_search_params', 20 );
 }
 
 // Adding Mobile Scroll Hint Icon
@@ -107,17 +120,19 @@ add_action( 'xoo-qv-images', molswc_mobile_scroll_hint, 999 );
 function molswc_mobile_scroll_hint () {
 	if ( wp_is_mobile() ) {
 		echo '
-			<div class="scroll-hint center">
-			 <div class="mouse">
-			  <div class="wheel">
-			  </div>
-			 </div>
-			 <div>
-			  <span class="unu"></span>
-			  <span class="doi"></span>
-			  <span class="trei"></span>
-			 </div>
-			</div>
+			<div class="scroll-hint center"><div class="mouse"><div class="wheel"></div></div>
+			<div><span class="unu"></span><span class="doi"></span><span class="trei"></span></div></div>
 		';
+	}
+}
+
+// The product filter - pulling the attributes for adding them to product LI element
+add_action( 'molswc_product_li_additions', molswc_add_product_attribs ); // "molswc_product_li_additions" is defined with a do_action in content-product.php in this plugin
+function molswc_add_product_attribs() {
+	global $product;
+	$lswc_board_attribs = $product->get_variation_attributes();
+	if (array_key_exists('Model and Size', $lswc_board_attribs)) {
+		$lswc_board_custom_attribs_list = implode(",", $lswc_board_attribs['Model and Size']);
+		echo ' data_custom_attribs_list="'.$lswc_board_custom_attribs_list.'"';
 	}
 }
