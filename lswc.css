@@ -1,4 +1,4 @@
-/* shop default page - change 2 columns to 1 column */
+/* shop default page */
 .shop_columns_2 .products .product {
   width: 100%;
 }
@@ -46,6 +46,28 @@ li.product .inner_product {
 }
 li.product .inner_product_header {
     min-height: 0px !important;
+}
+@media (min-width: 561px) {
+  form.product-filters select {
+	width: calc(50% - 2px) !important;
+	display: inline-block !important;
+  }
+}
+@media (max-width: 560px) {
+  form.product-filters select {
+	width: 100% !important;
+  }
+}
+form.product-filters select {
+  color: white !important;
+  margin: 5px 0 !important;
+  border-radius: 4px !important;
+}
+a#reset-product-filters {
+  margin: 10px 0;
+  float: right;
+  color: #12ff1e;
+  text-decoration: none;
 }
 
 /* xoo Product Popup styling */
