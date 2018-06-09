@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.31
+ * Version: 0.1.32
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -16,7 +16,7 @@ function molswc_adding_styles() {
 	wp_register_style('lswc-styles', plugins_url('lswc.css', __FILE__));
 	wp_enqueue_style('lswc-styles');
 }
-add_action( 'wp_enqueue_scripts', 'molswc_adding_styles', 9999999 ); // yeah, "avia-merged-styles" has 999999 :-P
+add_action( 'wp_enqueue_scripts', 'molswc_adding_styles', 99999999 ); // yeah, "avia-merged-styles" has 999999 :-P
 
 // Adding own JS
 function molswc_adding_scripts() {
@@ -127,12 +127,49 @@ function molswc_mobile_scroll_hint () {
 }
 
 // The product filter - pulling the attributes for adding them to product LI element
-add_action( 'molswc_product_li_additions', molswc_add_product_attribs ); // "molswc_product_li_additions" is defined with a do_action in content-product.php in this plugin
-function molswc_add_product_attribs() {
-	global $product;
-	$lswc_board_attribs = $product->get_variation_attributes();
-	if (array_key_exists('Model and Size', $lswc_board_attribs)) {
-		$lswc_board_custom_attribs_list = implode(",", $lswc_board_attribs['Model and Size']);
-		echo ' data_custom_attribs_list="'.$lswc_board_custom_attribs_list.'"';
+// add_action( 'woocommerce_before_shop_loop_item', molswc_test_variations_data ); // "woocommerce_before_shop_loop_item" is just before each item (good for debug)
+add_action( 'molswc_product_li_additions', molswc_test_variations_data ); // "molswc_product_li_additions" is defined with a do_action in content-product.php in this plugin
+function molswc_test_variations_data() {
+	global $product; 
+	$variations1=$product->get_children();
+	foreach ($variations1 as $value) {
+		$single_variation=new WC_Product_Variation($value);
+		$var_is_purc = $single_variation->is_purchasable();
+		$var_model_and_size = array_values($single_variation->get_variation_attributes())[0];
+		if ( $var_is_purc == 1 ) { $data_custom_attribs_list_all[] = $var_model_and_size; }
 	}
+	$data_custom_attribs_list = ' data-custom-attribs-list="'.implode(",", array_unique($data_custom_attribs_list_all)).'"';
+	echo $data_custom_attribs_list;
+}
+
+// Adding product filter drop down lists
+add_action( 'woocommerce_before_shop_loop', 'molswc_product_filters', 30 );
+function molswc_product_filters() {
+	$chosen_attribs = array('Street','Vert'); // sync this later with Woocommerce ... or easily define these some other way ...
+	
+	echo '<!-- THIS 6: '; print_r($data_custom_attribs_list); echo ' -->';
+	echo '
+		<form id="product-filters" class="product-filters">
+			<select name="Models">
+			  <option value="" selected disabled hidden>Choose model</option>
+			  <option value="Vert">Vert</option>
+			  <option value="Street">Street</option>
+			</select>
+			
+			<select name="Widths">
+			  <option value="" selected disabled hidden>Choose width</option>
+			  <option value="7.75">7.75</option>
+			  <option value="7.88">7.88</option>
+			  <option value="8.00">8.00</option>
+			  <option value="8.13">8.13</option>
+			  <option value="8.25">8.25</option>
+			  <option value="8.38">8.38</option>
+			  <option disabled="disabled" value="8.50">8.50</option>
+			  <option value="8.75">8.75</option>
+			  <option value="8.88">8.88</option>
+			  <option value="9.00">9.00</option>
+			</select>
+			<a id="reset-product-filters" href="#/">Clear</a>
+		</form>
+	';
 }
