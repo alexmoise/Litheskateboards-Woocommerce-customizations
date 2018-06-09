@@ -213,3 +213,54 @@ function initAttribVariables() {
         wm_pvar.additional_cost_indicator = wm_pvar_settings.additional_cost_indicator || '+';
         wm_pvar.ajax_url = wm_pvar_settings.ajax_url || '/wp-admin/admin-ajax.php';
 }
+
+// === Boards filtering functions
+// Take out not available boards
+jQuery(document).delegate( '.product-filters', 'change', function() {
+	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
+	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
+	// if ( filtermodel ) { console.log(' Model: '+filtermodel); }
+	// if ( filterwidth ) { console.log(' Width: '+filterwidth); }
+	if ( filtermodel && filterwidth ) { 
+		var filtercomplete = filtermodel + ' ' + filterwidth;
+		// console.log(' COMPLETE: '+filtercomplete);
+		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filtercomplete+'"]').fadeIn(); 
+		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filtercomplete+'"]').fadeOut(); 
+	}
+
+	showallattributes = getAllAttributes();
+	
+	var hasPartialMatch = showallattributes.some(function(v){ return v.indexOf(filtermodel+' '+filterwidth)>=0 }) // check array elements by partial strings
+	console.log(' What? '+filtermodel+' '+filterwidth);
+	console.log(' Possible? '+hasPartialMatch);
+	
+});
+
+// Reset filters and bring in all boards again
+jQuery(document).on('click', '#reset-product-filters', function() {  
+	jQuery:document.getElementById('product-filters').reset();
+	jQuery ('ul.products li').fadeIn();
+});
+
+// TEST getting all unique attributes AT START
+jQuery(document).ready( function() { 
+	showallattributes = getAllAttributes(); 
+	console.log('allatt 201: '+showallattributes);
+});
+
+// FUNCTION to get all unique attributes 
+function getAllAttributes() { 
+	var allattributes = [];	
+	var liattributesfulllist = [];
+	jQuery.each(jQuery('li[data-custom-attribs-list]'), function() { 
+		var liattributes = (jQuery(this).attr('data-custom-attribs-list'));
+		var liattributesarray = liattributes.split(',');
+		for (var liakey in liattributesarray) {
+			var liattributesfulllist = liattributesarray[liakey];
+			if (jQuery.inArray( liattributesfulllist, allattributes ) == -1) {
+				allattributes.push(liattributesfulllist);
+			}
+		}
+	});
+	return allattributes;
+}
