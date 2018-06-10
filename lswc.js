@@ -82,7 +82,6 @@ function molswcDisableScroll() {
 	html.css('overflow', 'hidden');
 	window.scrollTo(scrollPosition[0], scrollPosition[1]);
 }
-
 // Enable window scroll under popup
 function molswcEnableScroll() {
 	var html = jQuery('html');
@@ -215,6 +214,12 @@ function initAttribVariables() {
 }
 
 // === Boards filtering functions
+// Reset filters and bring in all boards again
+jQuery(document).on('click', '#reset-product-filters', function() {
+	jQuery('.product-filters select option').removeAttr('disabled'); 
+	jQuery:document.getElementById('product-filters').reset();
+	jQuery ('ul.products li').fadeIn();
+});
 // Take out not available boards
 jQuery(document).delegate( '.product-filters', 'change', function() {
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
@@ -227,28 +232,47 @@ jQuery(document).delegate( '.product-filters', 'change', function() {
 		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filtercomplete+'"]').fadeIn(); 
 		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filtercomplete+'"]').fadeOut(); 
 	}
-
-	showallattributes = getAllAttributes();
-	
-	var hasPartialMatch = showallattributes.some(function(v){ return v.indexOf(filtermodel+' '+filterwidth)>=0 }) // check array elements by partial strings
-	console.log(' What? '+filtermodel+' '+filterwidth);
-	console.log(' Possible? '+hasPartialMatch);
-	
+	// console.log('Combination: ' + filtermodel + ' ' + filterwidth + ' Boards have it: ' + checkIfModelWidthExists( filtermodel, filterwidth, getAllAttributes() ));
 });
-
-// Reset filters and bring in all boards again
-jQuery(document).on('click', '#reset-product-filters', function() {  
-	jQuery:document.getElementById('product-filters').reset();
-	jQuery ('ul.products li').fadeIn();
+// Disable WIDTHS that are not possible in boards filters drop downs
+jQuery(document).delegate( 'select[name="Models"]', 'change', function() {
+	// console.log('Models changed!');
+	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
+	jQuery( 'select[name="Widths"] option' ).each( function( index, element ){
+		var checkingwidth = jQuery( this ).val();
+		var optionPossible = checkIfModelWidthExists( filtermodel, checkingwidth, getAllAttributes() );
+		// console.log( 'Checking: '+filtermodel+' '+checkingwidth+' '+optionPossible );
+		if(optionPossible == false) {
+			jQuery( this ).attr('disabled', 'disabled');
+		}
+		if(optionPossible == true) {
+			jQuery( this ).removeAttr('disabled');
+		}
+	});
 });
-
-// TEST getting all unique attributes AT START
-jQuery(document).ready( function() { 
-	showallattributes = getAllAttributes(); 
-	console.log('allatt 201: '+showallattributes);
+// Disable MODELS that are not possible in boards filters drop downs
+jQuery(document).delegate( 'select[name="Widths"]', 'change', function() {
+	// console.log('Widths changed!');
+	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
+	jQuery( 'select[name="Models"] option' ).each( function( index, element ){
+		var checkingmodel = jQuery( this ).val();
+		var optionPossible = checkIfModelWidthExists( checkingmodel, filterwidth, getAllAttributes() );
+		// console.log( 'Checking: '+checkingmodel+' '+filterwidth+' '+optionPossible );
+		if(optionPossible == false) {
+			jQuery( this ).attr('disabled', 'disabled');
+		}
+		if(optionPossible == true) {
+			jQuery( this ).removeAttr('disabled');
+		}
+	});
 });
-
-// FUNCTION to get all unique attributes 
+// FUNCTION to check if model-width combination is possible
+function checkIfModelWidthExists (modeltocheck, widthtocheck, allcombinations) {
+	// console.log(' InFunc: '+modeltocheck+' | '+widthtocheck+' | '+allcombinations);		
+	var hasPartialMatch = allcombinations.some(function(v){ return v.indexOf(modeltocheck+' '+widthtocheck)>=0 }) // check array elements by partial strings
+	return hasPartialMatch;
+}
+// FUNCTION to get all unique board attributes 
 function getAllAttributes() { 
 	var allattributes = [];	
 	var liattributesfulllist = [];
