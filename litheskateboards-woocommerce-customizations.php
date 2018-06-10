@@ -3,8 +3,8 @@
  * Plugin Name: Litheskateboards Woocommerce customizations
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
- * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.32
+ * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup and on WooCommerce Variation Price Hints by Wisslogic for price calculations. For details/troubleshooting please contact me at https://moise.pro/contact/
+ * Version: 0.1.33
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -145,9 +145,6 @@ function molswc_test_variations_data() {
 // Adding product filter drop down lists
 add_action( 'woocommerce_before_shop_loop', 'molswc_product_filters', 30 );
 function molswc_product_filters() {
-	$chosen_attribs = array('Street','Vert'); // sync this later with Woocommerce ... or easily define these some other way ...
-	
-	echo '<!-- THIS 6: '; print_r($data_custom_attribs_list); echo ' -->';
 	echo '
 		<form id="product-filters" class="product-filters">
 			<select name="Models">
@@ -155,7 +152,6 @@ function molswc_product_filters() {
 			  <option value="Vert">Vert</option>
 			  <option value="Street">Street</option>
 			</select>
-			
 			<select name="Widths">
 			  <option value="" selected disabled hidden>Choose width</option>
 			  <option value="7.75">7.75</option>
@@ -164,7 +160,7 @@ function molswc_product_filters() {
 			  <option value="8.13">8.13</option>
 			  <option value="8.25">8.25</option>
 			  <option value="8.38">8.38</option>
-			  <option disabled="disabled" value="8.50">8.50</option>
+			  <option value="8.50">8.50</option>
 			  <option value="8.75">8.75</option>
 			  <option value="8.88">8.88</option>
 			  <option value="9.00">9.00</option>
