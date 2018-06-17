@@ -101,6 +101,23 @@ a#reset-product-filters {
 .xoo-qv-container .value.td label.tax {
   color: white;
 }
+.xoo-qv-container .value.td div.attrib {
+	opacity: 0.1;
+}
+.xoo-qv-container .attribute-model-and-size.tr:after {
+  content: ' ';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 99999;
+}
+.xoo-qv-container .attribute-model-and-size.tr.after-removed:after {
+  z-index: 1;
+  content: none;
+}
+
 .xoo-qv-container .value.td label.attrib.selected {
   color: #12ff1e;
 }
