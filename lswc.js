@@ -11,6 +11,10 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 	setTimeout(function() { jQuery('.scroll-hint').fadeOut('slow'); }, 5000);  // removing scroll hint icon after a while ...
 	molswcDisableScroll(); // prevent body scrolling under the popup
 	jQuery('.xoo-qv-main').bind('destroyed', function() { molswcEnableScroll(); }) // do stuff when popup closes, based on special event registered above ;-)
+	jQuery(".each-attrib .value.td").children('.attrib:not(.has-been-disabled)').each(function(i) {
+		jQuery(this).delay((Math.floor((Math.random()*1000)+1)) ).fadeTo( Math.floor((Math.random()*500)+1) ,1).delay( 100 );
+	});
+	setTimeout(function() { jQuery('.xoo-qv-container .attribute-model-and-size.tr').addClass('after-removed'); }, 1000);
 });
 // .table.variations scrolling functions
 jQuery(document).on('click', '.reset_variations', function(){ 
