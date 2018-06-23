@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup and on WooCommerce Variation Price Hints by Wisslogic for price calculations. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.34
+ * Version: 0.1.35
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -128,44 +128,92 @@ function molswc_mobile_scroll_hint () {
 
 // The product filter - pulling the attributes for adding them to product LI element
 // add_action( 'woocommerce_before_shop_loop_item', molswc_test_variations_data ); // "woocommerce_before_shop_loop_item" is just before each item (good for debug)
-add_action( 'molswc_product_li_additions', molswc_test_variations_data ); // "molswc_product_li_additions" is defined with a do_action in content-product.php in this plugin
 function molswc_test_variations_data() {
 	global $product; 
 	$variations1=$product->get_children();
 	foreach ($variations1 as $value) {
 		$single_variation=new WC_Product_Variation($value);
 		$var_is_purc = $single_variation->is_purchasable();
-		$var_model_and_size = array_values($single_variation->get_variation_attributes())[0];
-		if ( $var_is_purc == 1 ) { $data_custom_attribs_list_all[] = $var_model_and_size; }
+		if ( $var_is_purc == 1 ) { 
+			$var_model_and_size = array_values($single_variation->get_variation_attributes())[0];
+			$data_custom_attribs_list_all[] = $var_model_and_size; 
+		}
 	}
-	$data_custom_attribs_list = ' data-custom-attribs-list="'.implode(",", array_unique($data_custom_attribs_list_all)).'"';
-	echo $data_custom_attribs_list;
+	$data_custom_attribs_list = array_unique($data_custom_attribs_list_all);
+	// echo $data_custom_attribs_list;
+	return $data_custom_attribs_list;
 }
-
 // Adding product filter drop down lists
 add_action( 'woocommerce_before_shop_loop', 'molswc_product_filters', 30 );
 function molswc_product_filters() {
+	// querying all the boards in the "Decks" category:
+	$boards_IDs = new WP_Query( array(
+	'post_type' => 'product',
+	'post_status' => 'publish',
+	'fields' => 'ids', 
+		'tax_query' => array(
+			array(
+				'taxonomy' => 'product_cat',
+				'field' => 'term_id',
+				'terms' => '7', // '7' is the "Decks" category
+				'operator' => 'IN',
+			)
+		)
+	) );
+	$all_boards = $boards_IDs->posts;
+	// pulling the variations of each board:
+	foreach ($all_boards as $single_board) {
+		//echo '<!-- One board: '; print_r($single_board); echo ' -->';
+		$product = wc_get_product($single_board);
+		$board_variations = $product->get_children();
+		foreach ($board_variations as $board_variation) {
+			$single_variation=new WC_Product_Variation($board_variation);
+			$var_model_and_size = array_values($single_variation->get_variation_attributes())[0];
+			$all_model_and_sizes[] = $var_model_and_size; 
+			//echo '<!-- VMS 3: '; print_r($var_model_and_size); echo ' -->';
+		}
+		$unique_models_and_sizes[] = array_unique($all_model_and_sizes);
+		//echo '<!-- Each uniques: '; print_r($unique_models_and_sizes); echo ' -->';
+	}
+	$complete_unique_list_models_and_sizes = array_unique($unique_models_and_sizes);
+	$final_models_and_sizes_list = molswc_flat_array($complete_unique_list_models_and_sizes);
+	//echo '<!-- Uniques complete 5: '; print_r($final_models_and_sizes_list); echo ' -->';
+	$chosen_attribs = array('Street','Vert'); // sync this later with Woocommerce ... or easily define these some other way ...
+	foreach ( $chosen_attribs as $chosen_attrib ) { 
+		$only_widths[] = str_replace($chosen_attrib." ", "", $final_models_and_sizes_list);
+	}
+	$flat_only_widths = molswc_flat_array($only_widths);
+	foreach ( $chosen_attribs as $chosen_attrib ) { 
+		foreach ($flat_only_widths as $key => $width) {
+			if (strpos($width,$chosen_attrib) !== false) {
+				unset($flat_only_widths[$key]);
+			}
+		}
+	}
+	$unique_only_widths = array_unique($flat_only_widths);
+	sort($unique_only_widths);
+	//echo '<!-- Each width sorted: '; print_r($unique_only_widths); echo ' -->';
 	echo '
 		<form id="product-filters" class="product-filters">
 			<select name="Models">
-			  <option value="" selected disabled hidden>Choose model</option>
-			  <option value="Vert">Vert</option>
-			  <option value="Street">Street</option>
-			</select>
+			  <option value="" selected disabled hidden>Choose model</option>';
+	foreach ( $chosen_attribs as $chosen_attrib ) { 
+		echo '<option value="'.$chosen_attrib.'">'.$chosen_attrib.'</option>';
+	}
+	echo '</select>
 			<select name="Widths">
-			  <option value="" selected disabled hidden>Choose width</option>
-			  <option value="7.75">7.75</option>
-			  <option value="7.88">7.88</option>
-			  <option value="8.00">8.00</option>
-			  <option value="8.13">8.13</option>
-			  <option value="8.25">8.25</option>
-			  <option value="8.38">8.38</option>
-			  <option value="8.50">8.50</option>
-			  <option value="8.75">8.75</option>
-			  <option value="8.88">8.88</option>
-			  <option value="9.00">9.00</option>
-			</select>
+			  <option value="" selected disabled hidden>Choose width</option>';
+	foreach ( $unique_only_widths as $width ) { 
+		echo '<option value="'.$width.'">'.$width.'</option>';
+	}
+	echo '</select>
 			<a id="reset-product-filters" href="#/">Clear</a>
 		</form>
 	';
+}
+// flatten that array ...
+function molswc_flat_array(array $array) {
+    $return = array();
+    array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
+    return $return;
 }
