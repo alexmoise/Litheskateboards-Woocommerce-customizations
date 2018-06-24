@@ -139,16 +139,16 @@ a#reset-product-filters {
 @media(max-width:767px) {
   .xoo-qv-container.woocommerce.single-product {
 	position: fixed;
-	top: 3px;
+	top: 10px;
 	left: 3px;
 	width: 95%;
 	overflow: auto;
 	right: 3px;
 	bottom: 3px;
-	min-height: 95vh;
+	/* min-height: 95vh; */
   }
   .xoo-qv-container .xoo-qv-main {
-	max-height: calc(100vh - 25px);
+	max-height: calc(100vh - 50px);
 	overflow-y: auto;
 	padding: 10px 10px;
   }
@@ -358,10 +358,15 @@ div#av_section_1 {
     color: #12ff1e;
 }
 .product .single-product-main-image.alpha {
-  width: fit-content;
+  /* width: fit-content; */
 }
 
 /* Mobile Scroll Hint Icon */
+@media (min-width:768px){
+  .scroll-hint {
+    display:none;
+  }
+}
 .scroll-hint.center
 {
   position: absolute;
