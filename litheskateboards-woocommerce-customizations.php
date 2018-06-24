@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup and on WooCommerce Variation Price Hints by Wisslogic for price calculations. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.35
+ * Version: 0.1.36
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -25,12 +25,26 @@ function molswc_adding_scripts() {
 }
 add_action( 'wp_enqueue_scripts', 'molswc_adding_scripts', 9999999 ); 
 
+// Adding mobile app capability meta
+add_action( 'wp_head', 'molswc_webapp_meta' ); 
+function molswc_webapp_meta() {
+    echo '<meta name="mobile-web-app-capable" content="yes">';
+}
+
 // get rid of original JS from WC Variations Price Hints ... (for good, we won't replace it anymore as all functions are now in lswc.js)
 function molswc_remove_wcvarhints_js() {
     wp_dequeue_script('wm_variation_price_hints_script');
     wp_deregister_script('wm_variation_price_hints_script');
 }
 add_action('wp_enqueue_scripts','molswc_remove_wcvarhints_js');
+
+// Go straight to Checkout when a Payment Method button has been pressed
+add_filter('woocommerce_add_to_cart_redirect', 'molswc_go_to_checkout');
+function molswc_go_to_checkout() {
+	global $woocommerce;
+	$checkout_url = wc_get_checkout_url();
+	return $checkout_url;
+}
 
 // Override WooCommerce Template used in WC Variations Radio Buttons
 add_filter( 'woocommerce_locate_template', 'molswc_replace_woocommerce_templates', 20, 3 );
