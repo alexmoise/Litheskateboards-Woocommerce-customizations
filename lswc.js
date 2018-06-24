@@ -15,6 +15,13 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 		jQuery(this).delay((Math.floor((Math.random()*1000)+1)) ).fadeTo( Math.floor((Math.random()*500)+1) ,1).delay( 100 );
 	});
 	setTimeout(function() { jQuery('.xoo-qv-container .attribute-model-and-size.tr').addClass('after-removed'); }, 1000);
+	jQuery('.xoo-qv-container div.tax').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
+		jQuery(this).find('input[type="radio"]').prop('checked', true);
+		jQuery(".table.variations div.tax").off();
+		jQuery(".table.variations div.tax *").off();
+		jQuery(".table.variations div.tax").fadeTo("fast",0.2);
+		jQuery(this).closest("form").submit();
+	});
 });
 // .table.variations scrolling functions
 jQuery(document).on('click', '.reset_variations', function(){ 
@@ -48,7 +55,9 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 // Add "has-been-disabled" class to initially disabled elements
 jQuery(window).on('load', function() {
 	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
+	// jQuery('html, body').animate({scrollTop: jQuery('#wrap_all').offset().top + 1}, 25); // scroll down a bit to hide the address bar, with no effect though...
 });
+
 // .table.variations scrolling functions
 jQuery( document ).delegate( 'body #main .container .product .table.variations', 'change', function() {
 	if (jQuery(this).parents().find('input[type="radio"]').is(':checked'))
@@ -69,7 +78,11 @@ jQuery(document).on('mouseleave', '.xoo-qv-button', function($) {
 });
 
 // === Submit the form automatically (adding product to cart) when Payment Plan option is chosen ===
-jQuery( document ).delegate( '.table.variations input[name="attribute_pa_paying-plan"]', 'click', function(event) {
+jQuery('body.single-product .table.variations div.tax').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
+	jQuery(this).find('input[type="radio"]').prop('checked', true);
+	jQuery(".table.variations div.tax").off();
+	jQuery(".table.variations div.tax *").off();
+	jQuery(".table.variations div.tax").fadeTo("fast",0.2);
 	jQuery(this).closest("form").submit();
 });
 
