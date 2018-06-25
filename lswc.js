@@ -16,11 +16,14 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 	});
 	setTimeout(function() { jQuery('.xoo-qv-container .attribute-model-and-size.tr').addClass('after-removed'); }, 1000);
 	jQuery('.xoo-qv-container div.tax').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
-		jQuery(this).find('input[type="radio"]').prop('checked', true);
-		jQuery(".table.variations div.tax").off();
-		jQuery(".table.variations div.tax *").off();
-		jQuery(".table.variations div.tax").fadeTo("fast",0.2);
-		jQuery(this).closest("form").submit();
+		if (!jQuery(this).hasClass( "has-been-disabled" ))
+		{
+			jQuery(this).find('input[type="radio"]').prop('checked', true);
+			jQuery(".table.variations div.tax").off();
+			jQuery(".table.variations div.tax *").off();
+			jQuery(".table.variations div.tax").fadeTo("fast",0.2);
+			jQuery(this).closest("form").submit();
+		}
 	});
 });
 // .table.variations scrolling functions
@@ -79,11 +82,14 @@ jQuery(document).on('mouseleave', '.xoo-qv-button', function($) {
 
 // === Submit the form automatically (adding product to cart) when Payment Plan option is chosen ===
 jQuery('body.single-product .table.variations div.tax').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
-	jQuery(this).find('input[type="radio"]').prop('checked', true);
-	jQuery(".table.variations div.tax").off();
-	jQuery(".table.variations div.tax *").off();
-	jQuery(".table.variations div.tax").fadeTo("fast",0.2);
-	jQuery(this).closest("form").submit();
+	if (!jQuery(this).hasClass( "has-been-disabled" ))
+	{
+		jQuery(this).find('input[type="radio"]').prop('checked', true);
+		jQuery(".table.variations div.tax").off();
+		jQuery(".table.variations div.tax *").off();
+		jQuery(".table.variations div.tax").fadeTo("fast",0.2);
+		jQuery(this).closest("form").submit();
+	}
 });
 
 // === Under The XOO Popup scroll handling: ===
