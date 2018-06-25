@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup and on WooCommerce Variation Price Hints by Wisslogic for price calculations. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.36
+ * Version: 0.1.37
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -93,13 +93,27 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 // Replace TAXONOMY TYPE variations buttons function of WC Variations Radio Buttons plugin, in order to add the *variation description*
 if ( ! function_exists( 'print_attribute_radio_tax' ) ) {
 	function print_attribute_radio_tax( $checked_value, $value, $label, $name, $attrib_description ) {
+/*		
+		$curr_user_id = get_current_user_id();
+		if ( $curr_user_id != 0 ) {
+			$um_value = get_user_meta( $curr_user_id, 'user_subscription_able', true );
+			if ( ! empty( $um_value ) && $um_value == yes ) {
+				$non_subscription_user = ''; 
+			} else {
+				$non_subscription_user = 'disabled="disabled"'; 
+			}
+		} else {
+			$non_subscription_user = 'disabled="disabled"'; 
+		}
+		echo '<!-- NonSubsUsr: '; print_r($non_subscription_user); echo ' -->';
+*/
 		global $product;
 		$input_name = 'attribute_' . esc_attr( $name ) ;
 		$esc_value = esc_attr( $value );
 		$id = esc_attr( $name . '_v_' . $value . $product->get_id() ); //added product ID at the end of the name to target single products
 		$checked = checked( $checked_value, $value, false );
 		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
-		printf( '<div class="tax"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="tax option" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</label><span class="attrib-description">%6$s</span></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description );
+ 		printf( '<div class="tax"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="tax option" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</label><span class="attrib-description">%6$s</span></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description ); 
 	}
 }
 
@@ -116,6 +130,8 @@ function molswc_move_product_description() {
 	remove_action('xoo-qv-images','xoo_qv_product_image',20);
 	// and replace it with Product Smart Spinner:
 	add_action( 'xoo-qv-images', array('SmartProductPlugin', 'wooCommerceImageAction'), 19 );
+	// remove related products in single product page:
+	remove_action('woocommerce_after_single_product_summary','avia_woocommerce_output_related_products',20);
 }
 
 // Adjust (mostly remove) product details in product archive
@@ -211,23 +227,61 @@ function molswc_product_filters() {
 		<form id="product-filters" class="product-filters">
 			<select name="Models">
 			  <option value="" selected disabled hidden>Choose model</option>';
-	foreach ( $chosen_attribs as $chosen_attrib ) { 
-		echo '<option value="'.$chosen_attrib.'">'.$chosen_attrib.'</option>';
-	}
-	echo '</select>
+			  foreach ( $chosen_attribs as $chosen_attrib ) { 
+				echo '<option value="'.$chosen_attrib.'">'.$chosen_attrib.'</option>';
+			  }
+	echo '  </select>
 			<select name="Widths">
 			  <option value="" selected disabled hidden>Choose width</option>';
-	foreach ( $unique_only_widths as $width ) { 
-		echo '<option value="'.$width.'">'.$width.'</option>';
-	}
-	echo '</select>
+			  foreach ( $unique_only_widths as $width ) { 
+				echo '<option value="'.$width.'">'.$width.'</option>';
+			  }
+	echo '  </select>
 			<a id="reset-product-filters" href="#/">Clear</a>
 		</form>
 	';
 }
-// flatten that array ...
+// flatten that array ... (used a couple of times in the function above)
 function molswc_flat_array(array $array) {
     $return = array();
     array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
     return $return;
+}
+
+// User subscription-able
+// Adding the option:
+add_action( 'show_user_profile', 'molswc_user_subscription_able' );
+add_action( 'edit_user_profile', 'molswc_user_subscription_able' );
+function molswc_user_subscription_able( $user ) { 
+    if ( !current_user_can( 'manage_woocommerce', $user ) ) { 
+		return false; 
+	} else {
+		$user_subscription_able = get_the_author_meta( 'user_subscription_able', $user->ID );
+		if ($user_subscription_able == yes) {$user_subscription_able_checked = 'checked="checked"';} else { $user_subscription_able_checked = ''; }
+		// echo '<!-- UsrSubsAble: '; print_r($user_subscription_able); echo ' -->';
+		echo '<h3>User subscription-able</h3>
+		<table class="form-table">
+			<tr>
+				<th><label for="user_subscription_able">Can this user purchase subscriptions?</label></th>
+				<td>';
+					echo '
+					<label for="user_subscription_able">
+						<input name="user_subscription_able" type="checkbox" id="user_subscription_able" value="yes" '.$user_subscription_able_checked.'>';
+						_e("Check to allow subscriptions for this user."); echo '
+					</label>
+					'; echo '
+				</td>
+			</tr>
+		</table>';
+	}
+}
+// Edit the option:
+add_action( 'personal_options_update', 'molswc_user_subscription_able_edit' );
+add_action( 'edit_user_profile_update', 'molswc_user_subscription_able_edit' );
+function molswc_user_subscription_able_edit( $user_id ) {
+    if ( !current_user_can( 'manage_woocommerce', $user_id ) ) { 
+		return false; 
+	} else {
+		update_user_meta( $user_id, 'user_subscription_able', $_POST['user_subscription_able'] );
+    }
 }
