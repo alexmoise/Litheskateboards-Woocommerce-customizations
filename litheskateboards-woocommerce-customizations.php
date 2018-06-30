@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup and on WooCommerce Variation Price Hints by Wisslogic for price calculations. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.37
+ * Version: 0.1.38
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -31,7 +31,7 @@ function molswc_webapp_meta() {
     echo '<meta name="mobile-web-app-capable" content="yes">';
 }
 
-// get rid of original JS from WC Variations Price Hints ... (for good, we won't replace it anymore as all functions are now in lswc.js)
+// Get rid of original JS from WC Variations Price Hints ... (for good, we won't replace it anymore as all functions are now in lswc.js)
 function molswc_remove_wcvarhints_js() {
     wp_dequeue_script('wm_variation_price_hints_script');
     wp_deregister_script('wm_variation_price_hints_script');
@@ -93,27 +93,13 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 // Replace TAXONOMY TYPE variations buttons function of WC Variations Radio Buttons plugin, in order to add the *variation description*
 if ( ! function_exists( 'print_attribute_radio_tax' ) ) {
 	function print_attribute_radio_tax( $checked_value, $value, $label, $name, $attrib_description ) {
-/*		
-		$curr_user_id = get_current_user_id();
-		if ( $curr_user_id != 0 ) {
-			$um_value = get_user_meta( $curr_user_id, 'user_subscription_able', true );
-			if ( ! empty( $um_value ) && $um_value == yes ) {
-				$non_subscription_user = ''; 
-			} else {
-				$non_subscription_user = 'disabled="disabled"'; 
-			}
-		} else {
-			$non_subscription_user = 'disabled="disabled"'; 
-		}
-		echo '<!-- NonSubsUsr: '; print_r($non_subscription_user); echo ' -->';
-*/
 		global $product;
 		$input_name = 'attribute_' . esc_attr( $name ) ;
 		$esc_value = esc_attr( $value );
 		$id = esc_attr( $name . '_v_' . $value . $product->get_id() ); //added product ID at the end of the name to target single products
 		$checked = checked( $checked_value, $value, false );
 		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
- 		printf( '<div class="tax"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="tax option" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</label><span class="attrib-description">%6$s</span></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description ); 
+		printf( '<div class="tax"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="tax option" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</label><span class="attrib-description">%6$s</span></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description );
 	}
 }
 
@@ -156,7 +142,7 @@ function molswc_mobile_scroll_hint () {
 	}
 }
 
-// The product filter - pulling the attributes for adding them to product LI element
+// The product filter - pulling the attributes for adding them to product LI element. Used in "content-product.php" file in this plugin
 // add_action( 'woocommerce_before_shop_loop_item', molswc_test_variations_data ); // "woocommerce_before_shop_loop_item" is just before each item (good for debug)
 function molswc_test_variations_data() {
 	global $product; 
@@ -170,7 +156,6 @@ function molswc_test_variations_data() {
 		}
 	}
 	$data_custom_attribs_list = array_unique($data_custom_attribs_list_all);
-	// echo $data_custom_attribs_list;
 	return $data_custom_attribs_list;
 }
 // Adding product filter drop down lists
@@ -193,21 +178,17 @@ function molswc_product_filters() {
 	$all_boards = $boards_IDs->posts;
 	// pulling the variations of each board:
 	foreach ($all_boards as $single_board) {
-		//echo '<!-- One board: '; print_r($single_board); echo ' -->';
 		$product = wc_get_product($single_board);
 		$board_variations = $product->get_children();
 		foreach ($board_variations as $board_variation) {
 			$single_variation=new WC_Product_Variation($board_variation);
 			$var_model_and_size = array_values($single_variation->get_variation_attributes())[0];
 			$all_model_and_sizes[] = $var_model_and_size; 
-			//echo '<!-- VMS 3: '; print_r($var_model_and_size); echo ' -->';
 		}
 		$unique_models_and_sizes[] = array_unique($all_model_and_sizes);
-		//echo '<!-- Each uniques: '; print_r($unique_models_and_sizes); echo ' -->';
 	}
 	$complete_unique_list_models_and_sizes = array_unique($unique_models_and_sizes);
 	$final_models_and_sizes_list = molswc_flat_array($complete_unique_list_models_and_sizes);
-	//echo '<!-- Uniques complete 5: '; print_r($final_models_and_sizes_list); echo ' -->';
 	$chosen_attribs = array('Street','Vert'); // sync this later with Woocommerce ... or easily define these some other way ...
 	foreach ( $chosen_attribs as $chosen_attrib ) { 
 		$only_widths[] = str_replace($chosen_attrib." ", "", $final_models_and_sizes_list);
@@ -222,7 +203,6 @@ function molswc_product_filters() {
 	}
 	$unique_only_widths = array_unique($flat_only_widths);
 	sort($unique_only_widths);
-	//echo '<!-- Each width sorted: '; print_r($unique_only_widths); echo ' -->';
 	echo '
 		<form id="product-filters" class="product-filters">
 			<select name="Models">
@@ -241,7 +221,7 @@ function molswc_product_filters() {
 		</form>
 	';
 }
-// flatten that array ... (used a couple of times in the function above)
+// Flatten that array ... (used a couple of times in the function above)
 function molswc_flat_array(array $array) {
     $return = array();
     array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
@@ -249,7 +229,7 @@ function molswc_flat_array(array $array) {
 }
 
 // User subscription-able
-// Adding the option:
+// Adding the option in the user admin screen:
 add_action( 'show_user_profile', 'molswc_user_subscription_able' );
 add_action( 'edit_user_profile', 'molswc_user_subscription_able' );
 function molswc_user_subscription_able( $user ) { 
@@ -258,7 +238,6 @@ function molswc_user_subscription_able( $user ) {
 	} else {
 		$user_subscription_able = get_the_author_meta( 'user_subscription_able', $user->ID );
 		if ($user_subscription_able == yes) {$user_subscription_able_checked = 'checked="checked"';} else { $user_subscription_able_checked = ''; }
-		// echo '<!-- UsrSubsAble: '; print_r($user_subscription_able); echo ' -->';
 		echo '<h3>User subscription-able</h3>
 		<table class="form-table">
 			<tr>
@@ -275,7 +254,7 @@ function molswc_user_subscription_able( $user ) {
 		</table>';
 	}
 }
-// Edit the option:
+// Edit the option in the user admin screen:
 add_action( 'personal_options_update', 'molswc_user_subscription_able_edit' );
 add_action( 'edit_user_profile_update', 'molswc_user_subscription_able_edit' );
 function molswc_user_subscription_able_edit( $user_id ) {
@@ -284,4 +263,31 @@ function molswc_user_subscription_able_edit( $user_id ) {
 	} else {
 		update_user_meta( $user_id, 'user_subscription_able', $_POST['user_subscription_able'] );
     }
+}
+// Check SUBSCRIPTION-ABLE user condition (used in the function below)
+function molswc_check_user_subscription_able() {
+	$curr_user_id = get_current_user_id();
+	if ( $curr_user_id != 0 ) {
+		$um_value = get_user_meta( $curr_user_id, 'user_subscription_able', true );
+		if ( ! empty( $um_value ) && $um_value == yes ) {
+			$subscription_user = 'yes'; 
+		} else {
+			$subscription_user = 'no'; 
+		}
+	} else {
+		$subscription_user = 'no'; 
+	}
+	return $subscription_user;
+}
+// Deactivate subscription type variations based on user SUBSCRIPTION-ABLE condition
+add_filter( 'woocommerce_variation_is_active', 'molswc_disable_variations_user_based', 10, 2 );
+function molswc_disable_variations_user_based( $active, $variation ) {
+	$subs_user = molswc_check_user_subscription_able();
+	$variation_id = $variation->variation_id;
+	if ( Subscriptio_Subscription_Product::is_subscription($variation_id) && $subs_user == 'no' ) {
+		return false;
+    } else {
+		return true;
+    }
+
 }
