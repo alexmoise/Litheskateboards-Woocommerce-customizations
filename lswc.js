@@ -29,6 +29,7 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 // .table.variations scrolling functions
 jQuery(document).on('click', '.reset_variations', function(){ 
 	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '540px'}, 300); } // scroll back to product title when clicking on Reset Variations
+	resetHasBeenPressed = 1;
 });
 jQuery(document).on('click', '.table.variations .attrib', function(){ 
 	if (jQuery(window).width() < 768) { jQuery('.xoo-qv-main').animate({scrollTop: '2000px'}, 300); } // scroll down to payment options when clicking on any Variations
@@ -52,6 +53,7 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	}
 	jQuery( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
 	appendAttribPrices(); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
+	molswcPaymentsButtonsReFit();
 });
 
 // === III. Product display functions -> SINGLE PRODUCT PAGE ONLY: ===
@@ -310,4 +312,27 @@ function getAllAttributes() {
 		}
 	});
 	return allattributes;
+}
+
+// === Payment Plans buttons re-fit into their container (used in popup AND in single board page)
+// One refit function for all the cases:
+function molswcPaymentsButtonsReFit() {
+	if ( typeof resetHasBeenPressed !== 'undefined' && resetHasBeenPressed == 1 ) {
+		jQuery('.table.variations .tbody .value.td div.tax').attr('style', 'display:none;')
+		resetHasBeenPressed = 0; 
+		console.log('resetHasBeenPressed: '+resetHasBeenPressed);
+	}
+	// fade out has-been-disabled
+	jQuery('.table.variations .tbody .value.td div.tax.has-been-disabled').fadeOut(250);
+	jQuery('.table.variations .tbody .value.td div.tax.has-been-disabled span.attrib-description').fadeOut(250);
+	// count the not disabled ones:
+	paymentsCnt = jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').length;
+	setTimeout(function() { // then wait 250 and set the widths:
+		jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').attr('style', 'width: calc((100% / '+paymentsCnt+') - 14px) !important;');
+		// (how about on screen widths < 560px ??) 
+		setTimeout(function() { // then wait another 250 and fade in what's not disabled:
+			jQuery('#table-variations div.tax:not(.has-been-disabled)').fadeIn(250);
+			jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled) span.attrib-description').fadeIn(250);
+		}, 250);
+	}, 250);
 }
