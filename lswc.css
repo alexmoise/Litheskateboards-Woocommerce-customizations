@@ -311,6 +311,10 @@ form.variations_form.cart .single_variation_wrap {
   display: block;
   color: #12ff1e;
 }
+.table.variations .tbody .value.td div.tax  {
+    transition: all 0.25s;
+    -webkit-transition: all 0.25s;
+}
 @media (min-width: 560px) {
 	.table.variations .tbody .tr:last-child > .value.td {
 		white-space: nowrap;
