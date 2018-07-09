@@ -54,7 +54,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 										print_attribute_radio_tax( $checked_value, $term->slug, $term->name, $sanitized_name, $term->description ); 
 									}
 								} else {
-									$chosen_attribs = array('Street','Vert'); // sync this later with Woocommerce ... or easily define these some other way ...
+									$chosen_attribs = molswc_designated_options(); // defined in main PHP file of the plugin
 									foreach ( $chosen_attribs as $chosen_attrib ) { 
 										$each_attribs = array_filter($options, function($var) use ($chosen_attrib) { return preg_match("/\b$chosen_attrib\b/i", $var); });
 										echo '<div class="each-attrib chosen-attrib-'.$chosen_attrib.'">'; // open the div wrapper for each attribute list
