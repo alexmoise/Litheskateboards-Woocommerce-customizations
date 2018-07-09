@@ -1,6 +1,8 @@
 // === I. Product display functions -> XOO POPUP ONLY: ===
 // Initialize the special event needed for detecting XOO Popup removal
 (function($){ $.event.special.destroyed = { remove: function(o) { if (o.handler) { o.handler() } } } })(jQuery)
+// Define blank boards filters variable intentionally out of any scope, so we could use it in more functions later
+jQuery(document).ready(function() { var filtercomplete; });
 // Stuff to execute when XOO Popup open animation STARTS
 jQuery( document ).on('animationstart', '.xoo-qv-inner-modal', function($) {
 	ajaxAttribPrices(); // initialize the prices for the product loaded in popup (see functions and variables defined below)
@@ -8,9 +10,10 @@ jQuery( document ).on('animationstart', '.xoo-qv-inner-modal', function($) {
 // Stuff to execute when XOO Popup open animation ENDS
 jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
+	jQuery('.xoo-qv-container .table.variations .tbody .value.td div.tax').attr('style', 'display:none;'); // pre-hide payment plans
 	setTimeout(function() { jQuery('.scroll-hint').fadeOut('slow'); }, 5000);  // removing scroll hint icon after a while ...
 	molswcDisableScroll(); // prevent body scrolling under the popup
-	jQuery('.xoo-qv-main').bind('destroyed', function() { molswcEnableScroll(); }) // do stuff when popup closes, based on special event registered above ;-)
+	jQuery('.xoo-qv-main').bind('destroyed', function() { molswcEnableScroll(); filtercomplete = ''; }) // do stuff when popup closes, based on special event registered above ;-)
 	jQuery(".each-attrib .value.td").children('.attrib:not(.has-been-disabled)').each(function(i) {
 		jQuery(this).delay((Math.floor((Math.random()*1000)+1)) ).fadeTo( Math.floor((Math.random()*500)+1) ,1).delay( 100 );
 	});
@@ -25,6 +28,9 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 			jQuery(this).closest("form").submit();
 		}
 	});
+	if ( typeof filtercomplete !== 'undefined' ) {
+		setTimeout(function() { jQuery("label[value='"+filtercomplete+"']").trigger( "click" ); }, 1000); // automatically trigger the button corresponding to the filters selected before
+	}
 });
 // .table.variations scrolling functions
 jQuery(document).on('click', '.reset_variations', function(){ 
@@ -57,6 +63,10 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 });
 
 // === III. Product display functions -> SINGLE PRODUCT PAGE ONLY: ===
+// Pre-hide payment plans in single product page
+jQuery(document).ready(function() {
+	jQuery('.single-product .table.variations .tbody .value.td div.tax').attr('style', 'display:none;');
+});
 // Add "has-been-disabled" class to initially disabled elements
 jQuery(window).on('load', function() {
 	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
@@ -252,8 +262,8 @@ jQuery(document).delegate( '.product-filters', 'change', function() {
 	// if ( filtermodel ) { console.log(' Model: '+filtermodel); }
 	// if ( filterwidth ) { console.log(' Width: '+filterwidth); }
 	if ( filtermodel && filterwidth ) { 
-		var filtercomplete = filtermodel + ' ' + filterwidth;
-		// console.log(' COMPLETE: '+filtercomplete);
+		filtercomplete = filtermodel + ' ' + filterwidth;
+		// console.log('101 COMPLETE: '+filtercomplete);
 		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filtercomplete+'"]').fadeIn(); 
 		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filtercomplete+'"]').fadeOut(); 
 	}
