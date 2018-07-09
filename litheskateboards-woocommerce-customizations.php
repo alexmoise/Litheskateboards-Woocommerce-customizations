@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option show up only after selecting all previous ones, 3. jump directly to cart (checkout?) after selecting the last option. No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup and on WooCommerce Variation Price Hints by Wisslogic for price calculations. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.39
+ * Version: 0.1.40
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -29,6 +29,12 @@ add_action( 'wp_enqueue_scripts', 'molswc_adding_scripts', 9999999 );
 add_action( 'wp_head', 'molswc_webapp_meta' ); 
 function molswc_webapp_meta() {
     echo '<meta name="mobile-web-app-capable" content="yes">';
+}
+
+// Define the options to separate lists
+function molswc_designated_options() {
+	$designated_options = array('Street','Vert');
+	return $designated_options;
 }
 
 // Get rid of original JS from WC Variations Price Hints ... (for good, we won't replace it anymore as all functions are now in lswc.js)
@@ -189,7 +195,7 @@ function molswc_product_filters() {
 	}
 	$complete_unique_list_models_and_sizes = array_unique($unique_models_and_sizes);
 	$final_models_and_sizes_list = molswc_flat_array($complete_unique_list_models_and_sizes);
-	$chosen_attribs = array('Street','Vert'); // sync this later with Woocommerce ... or easily define these some other way ...
+	$chosen_attribs = molswc_designated_options(); // sync this later with Woocommerce ... or easily define these some other way ...
 	foreach ( $chosen_attribs as $chosen_attrib ) { 
 		$only_widths[] = str_replace($chosen_attrib." ", "", $final_models_and_sizes_list);
 	}
