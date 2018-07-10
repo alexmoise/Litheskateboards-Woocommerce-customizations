@@ -14,7 +14,7 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 	setTimeout(function() { jQuery('.scroll-hint').fadeOut('slow'); }, 5000);  // removing scroll hint icon after a while ...
 	molswcDisableScroll(); // prevent body scrolling under the popup
 	jQuery('.xoo-qv-main').bind('destroyed', function() { molswcEnableScroll(); filtercomplete = ''; }) // do stuff when popup closes, based on special event registered above ;-)
-	jQuery(".each-attrib .value.td").children('.attrib:not(.has-been-disabled)').each(function(i) {
+	jQuery(".each-attrib .value-buttons.td").children('.attrib:not(.has-been-disabled)').each(function(i) {
 		jQuery(this).delay((Math.floor((Math.random()*1000)+1)) ).fadeTo( Math.floor((Math.random()*500)+1) ,1).delay( 100 );
 	});
 	setTimeout(function() { jQuery('.xoo-qv-container .attribute-model-and-size.tr').addClass('after-removed'); }, 1000);
@@ -327,6 +327,7 @@ function getAllAttributes() {
 // === Payment Plans buttons re-fit into their container (used in popup AND in single board page)
 // One refit function for all the cases:
 function molswcPaymentsButtonsReFit() {
+	var paymentsCnt;
 	if ( typeof resetHasBeenPressed !== 'undefined' && resetHasBeenPressed == 1 ) {
 		jQuery('.table.variations .tbody .value.td div.tax').attr('style', 'display:none;')
 		resetHasBeenPressed = 0; 
@@ -335,8 +336,13 @@ function molswcPaymentsButtonsReFit() {
 	// fade out has-been-disabled
 	jQuery('.table.variations .tbody .value.td div.tax.has-been-disabled').fadeOut(250);
 	jQuery('.table.variations .tbody .value.td div.tax.has-been-disabled span.attrib-description').fadeOut(250);
-	// count the not disabled ones:
-	paymentsCnt = jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').length;
+	// count the not disabled ones and set variable depending on wcreen width:
+	// var windwindth = jQuery(window).width(); console.log('WindWidth= '+windwindth);
+	if (jQuery(window).width() < 560) {
+		paymentsCnt = '1';
+	} else {
+		paymentsCnt = jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').length;
+	}
 	setTimeout(function() { // then wait 250 and set the widths:
 		jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').attr('style', 'width: calc((100% / '+paymentsCnt+') - 14px) !important;');
 		// (how about on screen widths < 560px ??) 
