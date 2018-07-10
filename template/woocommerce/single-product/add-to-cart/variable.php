@@ -59,7 +59,7 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 										$each_attribs = array_filter($options, function($var) use ($chosen_attrib) { return preg_match("/\b$chosen_attrib\b/i", $var); });
 										echo '<div class="each-attrib chosen-attrib-'.$chosen_attrib.'">'; // open the div wrapper for each attribute list
 										echo '<div class="label td"><label for="'.$chosen_attrib.'">'.$chosen_attrib.'</label></div>'; // adding attribute list label / title
-										echo '<div class="value td">'; // adding values / radio -> buttons wrapper
+										echo '<div class="value-buttons td">'; // adding values / radio -> buttons wrapper
 										foreach ( $each_attribs as $each_attrib ) { 
 											$attrib_label = str_replace($chosen_attrib." ", "", $each_attrib); 
 											print_attribute_radio_attrib( $checked_value, $each_attrib, $attrib_label, $sanitized_name );
