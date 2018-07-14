@@ -9,7 +9,7 @@ jQuery( document ).on('animationstart', '.xoo-qv-inner-modal', function($) {
 });
 // Stuff to execute when XOO Popup open animation ENDS
 jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
-	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
+	jQuery( '.xoo-qv-inner-modal input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
 	jQuery('.xoo-qv-container .table.variations .tbody .value.td div.tax').attr('style', 'display:none;'); // pre-hide payment plans
 	setTimeout(function() { jQuery('.scroll-hint').fadeOut('slow'); }, 5000);  // removing scroll hint icon after a while ...
 	molswcDisableScroll(); // prevent body scrolling under the popup
@@ -45,12 +45,12 @@ jQuery(document).on('click', '.table.variations .attrib', function(){
 // .table.variations functions -> GENERAL
 jQuery( document ).delegate( '.table.variations', 'change', function() {
 	// Toggle classes of parent DIVs of radio buttons that ARE DISABLED or ARE SELECTED
-	jQuery( 'input[disabled="disabled"]'		).parent('div').toggleClass('has-been-disabled',true);
-	jQuery( 'input:not([disabled="disabled"])'	).parent('div').toggleClass('has-been-disabled',false);
-	jQuery( 'input[type="radio"]:checked'		).parent('div').toggleClass('radio-checked',true);
-	jQuery( 'input[type="radio"]:checked'		).next().toggleClass('selected',true);
-	jQuery( 'input[type="radio"]:not(:checked)'	).parent('div').toggleClass('radio-checked',false);
-	jQuery( 'input[type="radio"]:not(:checked)'	).next().toggleClass('selected',false);
+	jQuery( '.table.variations input[disabled="disabled"]'			).parent('div').toggleClass('has-been-disabled',true);
+	jQuery( '.table.variations input:not([disabled="disabled"])'	).parent('div').toggleClass('has-been-disabled',false);
+	jQuery( '.table.variations input[type="radio"]:checked'			).parent('div').toggleClass('radio-checked',true);
+	jQuery( '.table.variations input[type="radio"]:checked'			).next().toggleClass('selected',true);
+	jQuery( '.table.variations input[type="radio"]:not(:checked)'	).parent('div').toggleClass('radio-checked',false);
+	jQuery( '.table.variations input[type="radio"]:not(:checked)'	).next().toggleClass('selected',false);
 	if (jQuery(this).parents().find('input[type="radio"]').is(':checked')) // to hide or not hide payments if any other attribute is selected
 	{
 		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',true); // hide it with a hiding class
@@ -59,7 +59,7 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	}
 	jQuery( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
 	appendAttribPrices(); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
-	molswcPaymentsButtonsReFit();
+	molswcPaymentsButtonsReFit(); // Call the re-fit function to count the buttons and set their width according with their number
 });
 
 // === III. Product display functions -> SINGLE PRODUCT PAGE ONLY: ===
@@ -69,7 +69,7 @@ jQuery(document).ready(function() {
 });
 // Add "has-been-disabled" class to initially disabled elements
 jQuery(window).on('load', function() {
-	jQuery( 'input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
+	jQuery( '.table.variations input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
 	// jQuery('html, body').animate({scrollTop: jQuery('#wrap_all').offset().top + 1}, 25); // scroll down a bit to hide the address bar, with no effect though...
 });
 
@@ -344,8 +344,7 @@ function molswcPaymentsButtonsReFit() {
 		paymentsCnt = jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').length;
 	}
 	setTimeout(function() { // then wait 250 and set the widths:
-		jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').attr('style', 'width: calc((100% / '+paymentsCnt+') - 14px) !important;');
-		// (how about on screen widths < 560px ??) 
+		jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').attr('style', 'width: calc((100% / '+paymentsCnt+') - 14px) !important;'); 
 		setTimeout(function() { // then wait another 250 and fade in what's not disabled:
 			jQuery('#table-variations div.tax:not(.has-been-disabled)').fadeIn(250);
 			jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled) span.attrib-description').fadeIn(250);
