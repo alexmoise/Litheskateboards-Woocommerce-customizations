@@ -316,7 +316,8 @@ form.variations_form.cart .single_variation_wrap {
   display: block;
   color: #12ff1e;
 }
-.table.variations .tbody .value.td div.tax  {
+.table.variations .tbody .value.td div.tax, 
+.table.variations .tbody .value.td div.attrib  {
     transition: all 0.25s;
     -webkit-transition: all 0.25s;
 }
@@ -489,4 +490,16 @@ width: 14px;
   0%   { opacity: 0; }
   50%  { opacity: .5; }
   100% { opacity: 1; }
+}
+
+/* Wholesale form styling */
+#wwof_product_search_btn, 
+#wwof_product_displayall_btn{
+  float: none;
+}
+#wwof_product_listing_filter input[type="button"] {
+  margin: 4px 4px 4px 0;
+}
+#wwof_product_listing_filter {
+  margin-bottom: 0;
 }
