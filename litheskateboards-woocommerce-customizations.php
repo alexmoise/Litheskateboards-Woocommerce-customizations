@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.42
+ * Version: 0.1.43
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -138,7 +138,7 @@ function molswc_change_product_in_archives() {
 }
 
 // Adding Mobile Scroll Hint Icon
-add_action( 'xoo-qv-images', molswc_mobile_scroll_hint, 999 );
+add_action( 'xoo-qv-images', 'molswc_mobile_scroll_hint', 999 );
 function molswc_mobile_scroll_hint () {
 	if ( wp_is_mobile() ) {
 		echo '
@@ -275,7 +275,7 @@ function molswc_check_user_subscription_able() {
 	$curr_user_id = get_current_user_id();
 	if ( $curr_user_id != 0 ) {
 		$um_value = get_user_meta( $curr_user_id, 'user_subscription_able', true );
-		if ( ! empty( $um_value ) && $um_value == yes ) {
+		if ( ! empty( $um_value ) && $um_value == 'yes' ) {
 			$subscription_user = 'yes'; 
 		} else {
 			$subscription_user = 'no'; 
@@ -296,4 +296,65 @@ function molswc_disable_variations_user_based( $active, $variation ) {
 		return true;
     }
 
+}
+
+// Do stuff at placing new order
+add_action( 'woocommerce_thankyou', array('Wc_class', 'molswc_stock_adjutments'));
+class Wc_class {
+	public static function molswc_stock_adjutments($order_id) {
+		$molswc_file = "/homepages/7/d434880338/htdocs/litheskateboards/staging/wp-content/testdata.txt";
+		file_put_contents($molswc_file, "** 05 ThankYou triggered ... \n", FILE_APPEND | LOCK_EX);
+		file_put_contents($molswc_file, "   order_id = ".$order_id."\n", FILE_APPEND | LOCK_EX);
+		
+		$order = wc_get_order( $order_id );
+		
+		// Output the whole order in MOLSWC_FILE:
+		// $printed_order = print_r($order,true); file_put_contents($molswc_file, "printed_order = ".$printed_order."\n", FILE_APPEND | LOCK_EX);
+		
+		// Iterating though each order items
+		foreach ( $order->get_items() as $item_id => $item_values ) {
+			
+			// The item ID
+			$item_id = $item_values->get_id();
+			file_put_contents($molswc_file, "  ** item_id = ".$item_id."\n", FILE_APPEND | LOCK_EX);
+
+			// Item quantity
+			$item_qty = $item_values['qty'];
+			file_put_contents($molswc_file, "     item_qty = ".$item_qty."\n", FILE_APPEND | LOCK_EX);
+
+			// getting the product ID (Simple and variable products)
+			$product_id = $item_values['variation_id'];
+			if( $product_id == 0 || empty($product_id) ) $product_id = $item_values['product_id'];
+			file_put_contents($molswc_file, "     product_id = ".$product_id."\n", FILE_APPEND | LOCK_EX);
+
+			// Get an instance of the product object
+			$product = wc_get_product( $product_id );
+			// file_put_contents($molswc_file, "     product = ".$product."\n", FILE_APPEND | LOCK_EX);
+
+			// Get the stock quantity of the product
+			$product_stock = $product->get_stock_quantity();
+			file_put_contents($molswc_file, "     product_stock = ".$product_stock."\n", FILE_APPEND | LOCK_EX);
+			
+			// Get the ID of the parent product
+			$parent_id = $product->get_parent_id();
+			file_put_contents($molswc_file, "     parent_id = ".$parent_id."\n", FILE_APPEND | LOCK_EX);
+			
+			// Get the attributes of the current variation
+			$var_attribs = wc_get_formatted_variation( $product->get_variation_attributes(), true );
+			file_put_contents($molswc_file, "     var_attribs = ".$var_attribs."\n", FILE_APPEND | LOCK_EX);
+			
+			
+			
+			/* 
+			Now convert "$var_attribs" to an array and extract only "model-and-size":"Vert 8.75" pair,
+			Then grab the children of that parent ID and filter those which has the same "model-and-size" attribute,
+			Then, foreach of these do as below:
+			*/
+			
+			// Increase the stock quantity
+			// wc_update_product_stock( $product, $item_qty, 'increase' );
+			
+		}
+		
+	}
 }
