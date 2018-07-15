@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.1.43
+ * Version: 0.1.44
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -303,7 +303,7 @@ add_action( 'woocommerce_thankyou', array('Wc_class', 'molswc_stock_adjutments')
 class Wc_class {
 	public static function molswc_stock_adjutments($order_id) {
 		$molswc_file = "/homepages/7/d434880338/htdocs/litheskateboards/staging/wp-content/testdata.txt";
-		file_put_contents($molswc_file, "** 05 ThankYou triggered ... \n", FILE_APPEND | LOCK_EX);
+		file_put_contents($molswc_file, "** 06 ThankYou triggered ... \n", FILE_APPEND | LOCK_EX);
 		file_put_contents($molswc_file, "   order_id = ".$order_id."\n", FILE_APPEND | LOCK_EX);
 		
 		$order = wc_get_order( $order_id );
@@ -341,20 +341,55 @@ class Wc_class {
 			
 			// Get the attributes of the current variation
 			$var_attribs = wc_get_formatted_variation( $product->get_variation_attributes(), true );
-			file_put_contents($molswc_file, "     var_attribs = ".$var_attribs."\n", FILE_APPEND | LOCK_EX);
+			// file_put_contents($molswc_file, "     var_attribs = ".$var_attribs."\n", FILE_APPEND | LOCK_EX);
+			
+			// Get the current variation "model-and-size" attribute			
+			parse_str(strtr($var_attribs, ":,", "=&"), $attribs_array);
+			$attrib_model_and_size = $attribs_array['model-and-size'];
+			file_put_contents($molswc_file, "     attrib_model_and_size = ".$attrib_model_and_size."\n", FILE_APPEND | LOCK_EX);
+			// $readable_attribs_array = print_r($attribs_array, true);
+			// file_put_contents($molswc_file, "     readable_attribs_array = ".$readable_attribs_array."\n", FILE_APPEND | LOCK_EX);
+			
+			// **** OK SO FAR **** //
+			
+			// Now get the peer variations, those that are chlidren of the same product and nave same "model-and-size" attribute
+			$peer_variations=$product->get_children();
+			foreach ($peer_variations as $p_variation) {
+				$single_peer_variation=new WC_Product_Variation($p_variation);
+				
+
+				$peer_var_model_and_size = array_values($single_peer_variation->get_variation_attributes())[0];
+				
+				file_put_contents($molswc_file, "     peer_var_model_and_size = ".$peer_var_model_and_size."\n", FILE_APPEND | LOCK_EX);
+
+			}
 			
 			
 			
 			/* 
-			Now convert "$var_attribs" to an array and extract only "model-and-size":"Vert 8.75" pair,
+			Now convert "$var_attribs" to an array and extract only "model-and-size":"Vert 8.75" pair, = DONE! (what about the space at the beginning?)
 			Then grab the children of that parent ID and filter those which has the same "model-and-size" attribute,
 			Then, foreach of these do as below:
 			*/
 			
-			// Increase the stock quantity
+			// Update the stock quantity
 			// wc_update_product_stock( $product, $item_qty, 'increase' );
 			
 		}
 		
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
