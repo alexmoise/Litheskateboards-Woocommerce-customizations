@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.2.0
+ * Version: 0.2.1
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -301,58 +301,19 @@ function molswc_disable_variations_user_based( $active, $variation ) {
 add_action( 'woocommerce_reduce_order_stock', array('Wc_class', 'molswc_stock_adjutments'));
 class Wc_class {
 	public static function molswc_stock_adjutments($order) {
-		$molswc_file = "/homepages/7/d434880338/htdocs/litheskateboards/staging/wp-content/testdata.txt";
-		file_put_contents($molswc_file, "\n** 801 woocommerce_reduce_order_stock triggered! \n", FILE_APPEND | LOCK_EX);
-		// file_put_contents($molswc_file, "  order = ".$order."\n", FILE_APPEND | LOCK_EX); // that's the full order!
-		
-		// Iterating though each order items
-		foreach ( $order->get_items() as $item_id => $item_values ) {
-			
-			// The item ID
-			$item_id = $item_values->get_id();
-			file_put_contents($molswc_file, "  ** item_id = ".$item_id."\n", FILE_APPEND | LOCK_EX);
-
-			// Item quantity
-			$item_qty = $item_values['qty'];
-			file_put_contents($molswc_file, "     item_qty = ".$item_qty."\n", FILE_APPEND | LOCK_EX);
-
-			// getting the product variation ID (Simple and variable products)
-			$current_var_id = $item_values['variation_id'];
-			// if( $current_var_id == 0 || empty($current_var_id) ) $current_var_id = $item_values['product_id'];
-			file_put_contents($molswc_file, "     current_var_id = ".$current_var_id."\n", FILE_APPEND | LOCK_EX);
-
-			// Get an instance of the product variation object
-			$current_var = wc_get_product( $current_var_id );
-			// file_put_contents($molswc_file, "     product = ".$product."\n", FILE_APPEND | LOCK_EX); // that's the full product!
-
-			// Get the stock quantity of the current_var
-			$current_var_stock = $current_var->get_stock_quantity();
-			file_put_contents($molswc_file, "     current_var_stock = ".$current_var_stock."\n", FILE_APPEND | LOCK_EX);
-			
-			// Get the attributes of the current variation
-			$current_var_attribs = wc_get_formatted_variation( $current_var->get_variation_attributes(), true );
-			// file_put_contents($molswc_file, "     current_var_attribs = ".$current_var_attribs."\n", FILE_APPEND | LOCK_EX);
-			// Get the current variation "model-and-size" attribute			
-			parse_str(strtr($current_var_attribs, ":,", "=&"), $attribs_array);
-			$current_var_model_and_size = $attribs_array['model-and-size'];
-			file_put_contents($molswc_file, "     current_var_model_and_size = ".$current_var_model_and_size."\n", FILE_APPEND | LOCK_EX);
-			// $readable_attribs_array = print_r($attribs_array, true);
-			// file_put_contents($molswc_file, "     readable_attribs_array = ".$readable_attribs_array."\n", FILE_APPEND | LOCK_EX);
-			
-			// Get the ID of the parent product
-			$parent_id = $current_var->get_parent_id();
-			file_put_contents($molswc_file, "     parent_id = ".$parent_id."\n", FILE_APPEND | LOCK_EX);
-			
-			// Get an instance of parent product
-			$parent_product = wc_get_product( $parent_id );
-			//file_put_contents($molswc_file, "     parent_product = ".$parent_product."\n", FILE_APPEND | LOCK_EX);
-			
-			// Now get the peer variations, those that are chlidren of the same product and having same "model-and-size" attribute
-			$peer_variations = $parent_product->get_available_variations();
-			// $readable_peer_variations = print_r($peer_variations, true);
-			// file_put_contents($molswc_file, "     readable_peer_variations = ".$readable_peer_variations."\n", FILE_APPEND | LOCK_EX);
-			
-			// Now let's iterate though each *possible* peer variation:
+		foreach ( $order->get_items() as $item_id => $item_values ) { // Iterating though each order items
+			$item_id = $item_values->get_id(); // The item ID
+			$item_qty = $item_values['qty']; // Item quantity
+			$current_var_id = $item_values['variation_id']; // current variation ID 
+			$current_var = wc_get_product( $current_var_id ); // Get an instance of the current variation object
+			$current_var_stock = $current_var->get_stock_quantity(); // Get the stock quantity of the current_var
+			$current_var_attribs = wc_get_formatted_variation( $current_var->get_variation_attributes(), true ); // Get the attributes of the current variation
+			parse_str(strtr($current_var_attribs, ":,", "=&"), $attribs_array); // parse the attributes object ...
+			$current_var_model_and_size = $attribs_array['model-and-size']; // ...and get only the "model-and-size"
+			$parent_id = $current_var->get_parent_id(); // Get the ID of the parent product
+			$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product
+			$peer_variations = $parent_product->get_available_variations(); // Now get all the *possible* peer variations, those that are chlidren of the same product 
+			// Let's iterate though each *possible* peer variation:
 			foreach ($peer_variations as $peer_variation) {
 				$peer_variation_id      = $peer_variation['variation_id']; // this is peer variation ID
 				$peer_variation_product = wc_get_product( $peer_variation_id ); // this is peer variation product instance
@@ -360,11 +321,6 @@ class Wc_class {
 				parse_str(strtr($peer_variation_attribs, ":,", "=&"), $peer_var_attribs_array); // this is peer variation attributes *array*
 				$peer_var_attrib_model_and_size = $peer_var_attribs_array['model-and-size']; // this is peer variation 'model-and-size' attribute
 				if ($current_var_model_and_size == $peer_var_attrib_model_and_size) { // check if this *IS* a peer variation (has same Model-and-Size)
-					// if ($current_var_id !== $peer_variation_id) { 
-						// Here the *current_variation* is excluded ... (what for?)
-					// }
-					// $peer_variation_stock = $peer_variation_product->get_stock_quantity(); // get peer variation stock level (again, what for?)
-					
 					// Start creating the $peer_vars_working_array to store the IDs of variations that wold be synced later
 					if ( !isset($peer_vars_working_array[$peer_variation_id]) ) { // if this peer variations is not in working array ...
 						$peer_vars_working_array[$peer_variation_id] = $current_var_stock; // ...add it with ID as index and current stock as value
@@ -376,9 +332,6 @@ class Wc_class {
 				}
 			}
 		}
-		// $readable_peer_vars_working_array = print_r($peer_vars_working_array, true);
-		// file_put_contents($molswc_file, "  ** peer_vars_working_array = ".$readable_peer_vars_working_array."\n", FILE_APPEND | LOCK_EX);
-		
 		// Start iterating through the working array containing to-be-synced variations, stored with ID as key and new stock as value
 		foreach ( $peer_vars_working_array as $peer_var_id => $peer_var_stock ) {
 			wc_update_product_stock( $peer_var_id, $peer_var_stock, 'set' ); // finally update stock level of peer variation
