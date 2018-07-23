@@ -22,9 +22,9 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 		if (!jQuery(this).hasClass( "has-been-disabled" ))
 		{
 			jQuery(this).find('input[type="radio"]').prop('checked', true);
-			jQuery(".table.variations div.tax").off();
-			jQuery(".table.variations div.tax *").off();
-			jQuery(".table.variations div.tax").fadeTo("fast",0.2);
+			jQuery(".table.variations div.tax:not(.has-been-disabled)").off();
+			jQuery(".table.variations div.tax:not(.has-been-disabled) *").off();
+			jQuery(".table.variations div.tax:not(.has-been-disabled)").fadeTo("fast",0.2);
 			jQuery(this).closest("form").submit();
 		}
 	});
@@ -58,7 +58,7 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',false); // reveal it by removing hiding class
 	}
 	jQuery( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
-	appendAttribPrices(); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
+	setTimeout(function() { appendAttribPrices(); }, 500); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
 	molswcPaymentsButtonsReFit(); // Call the re-fit function to count the buttons and set their width according with their number
 });
 
@@ -97,9 +97,9 @@ jQuery('body.single-product .table.variations div.tax').click(function (e) { // 
 	if (!jQuery(this).hasClass( "has-been-disabled" ))
 	{
 		jQuery(this).find('input[type="radio"]').prop('checked', true);
-		jQuery(".table.variations div.tax").off();
-		jQuery(".table.variations div.tax *").off();
-		jQuery(".table.variations div.tax").fadeTo("fast",0.2);
+		jQuery(".table.variations div.tax:not(.has-been-disabled)").off();
+		jQuery(".table.variations div.tax:not(.has-been-disabled) *").off();
+		jQuery(".table.variations div.tax:not(.has-been-disabled)").fadeTo("fast",0.2);
 		jQuery(this).closest("form").submit();
 	}
 });
