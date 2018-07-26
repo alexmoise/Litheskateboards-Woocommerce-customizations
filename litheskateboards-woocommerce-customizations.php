@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.2.2
+ * Version: 0.2.3
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -156,12 +156,13 @@ function molswc_test_variations_data() {
 	foreach ($variations1 as $value) {
 		$single_variation=new WC_Product_Variation($value);
 		$var_is_purc = $single_variation->is_purchasable();
-		if ( $var_is_purc == 1 ) { 
+		$var_has_stock = $single_variation->get_stock_quantity(); 
+		if ( $var_is_purc == 1 && $var_has_stock > 0) { 
 			$var_model_and_size = array_values($single_variation->get_variation_attributes())[0];
 			$data_custom_attribs_list_all[] = $var_model_and_size; 
 		}
 	}
-	$data_custom_attribs_list = array_unique($data_custom_attribs_list_all);
+	if($data_custom_attribs_list_all) { $data_custom_attribs_list = array_unique($data_custom_attribs_list_all); }
 	return $data_custom_attribs_list;
 }
 // Adding product filter drop down lists
