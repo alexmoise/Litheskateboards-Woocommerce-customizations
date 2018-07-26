@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.2.3
+ * Version: 0.2.4
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -329,14 +329,12 @@ class Wc_class {
 						$new_peer_var_stock_value = $peer_vars_working_array[$peer_variation_id] - $item_qty; // ...subtract current variation quantity from the value stored in the working array ...
 						$peer_vars_working_array[$peer_variation_id] = $new_peer_var_stock_value; // ...and store the new value in the working array
 					}
-					file_put_contents($molswc_file, "     peer_variation_id = ".$peer_variation_id."\n", FILE_APPEND | LOCK_EX);
 				}
 			}
 		}
 		// Start iterating through the working array containing to-be-synced variations, stored with ID as key and new stock as value
 		foreach ( $peer_vars_working_array as $peer_var_id => $peer_var_stock ) {
 			wc_update_product_stock( $peer_var_id, $peer_var_stock, 'set' ); // finally update stock level of peer variation
-			file_put_contents($molswc_file, "     peer_var_id = ".$peer_var_id." | peer_var_stock (new) = ".$peer_var_stock."\n", FILE_APPEND | LOCK_EX);
 		}
 	}
 }
