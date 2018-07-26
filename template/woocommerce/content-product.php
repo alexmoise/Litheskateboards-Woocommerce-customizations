@@ -27,7 +27,7 @@ if ( empty( $product ) || ! $product->is_visible() ) {
 	return;
 }
 ?>
-<li <?php post_class(); $data_all_variations = molswc_test_variations_data(); echo ' data-custom-attribs-list="'.implode(",", $data_all_variations).'"'; echo ' data-board-name="'.$product->get_title().'"'; // adding the attributes and name to product LI element ?>>
+<li <?php post_class(); $data_all_variations = molswc_test_variations_data(); if ( $data_all_variations ) { echo ' data-custom-attribs-list="'.implode(",", $data_all_variations).'"'; } echo ' data-board-name="'.$product->get_title().'"'; // adding the attributes and name to product LI element ?>>
 	<?php
 	/**
 	 * woocommerce_before_shop_loop_item hook.
