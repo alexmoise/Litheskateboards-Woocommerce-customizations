@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.2.4
+ * Version: 0.2.5
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -33,7 +33,7 @@ function molswc_webapp_meta() {
 
 // Define the options to separate lists
 function molswc_designated_options() {
-	$designated_options = array('Vert','Street');
+	$designated_options = array('Street', 'Vert');
 	return $designated_options;
 }
 
@@ -109,32 +109,28 @@ if ( ! function_exists( 'print_attribute_radio_tax' ) ) {
 	}
 }
 
-// Move short description at the end of product page (at woocommerce_after_single_product_summary )
-add_action('init', 'molswc_move_product_description');
-function molswc_move_product_description() {
-	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
-	add_action( 'woocommerce_after_single_product_summary', 'woocommerce_template_single_excerpt', 20 );
-	// also remove XOO Product Popup actions:
-	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_rating', 10 );
-	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_excerpt', 20 );
-	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_meta', 30 );
-	// also remove the regular image from popup ...
-	remove_action('xoo-qv-images','xoo_qv_product_image',20);
-	// and replace it with Product Smart Spinner:
-	add_action( 'xoo-qv-images', array('SmartProductPlugin', 'wooCommerceImageAction'), 19 );
-	// remove related products in single product page:
-	remove_action('woocommerce_after_single_product_summary','avia_woocommerce_output_related_products',20);
-}
-
-// Adjust (mostly remove) product details in product archive
-add_action('init', 'molswc_change_product_in_archives');
-function molswc_change_product_in_archives() {
+// Various Woocommerce layout adjustments here:
+add_action('init', 'molswc_layout_adjustments');
+function molswc_layout_adjustments() {
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 ); // remove short description from original place ...
+	add_action( 'woocommerce_after_single_product_summary', 'woocommerce_template_single_excerpt', 20 ); // ... and add it again at the end of product page (at woocommerce_after_single_product_summary )
+	// remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_title', 5 ); // remove the title from its original location ...
+	// add_action( 'woocommerce_before_main_content', 'woocommerce_template_single_title', 10 ); // ... and add it back on top of the page. *** NO HOOK ON POPUP THOUGH, SO WE CAN'T MOVE IT THERE ***
+	remove_action( 'xoo-qv-images','xoo_qv_product_image',20); // also remove the regular image from popup ...
+	add_action( 'xoo-qv-images', array('SmartProductPlugin', 'wooCommerceImageAction'), 19 ); // ... and replace it with Product Smart Spinner:
+	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_rating', 10 ); // remove XOO Product Popup actions: rating
+	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_excerpt', 20 ); // remove XOO Product Popup actions: excerpt
+	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_meta', 30 ); // remove XOO Product Popup actions: meta
+	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_price', 15 ); // remove XOO Product Popup actions: price range
+	remove_action( 'woocommerce_after_single_product_summary','avia_woocommerce_output_related_products',20); // remove related products in single product page:
 	remove_action( 'woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10 );
 	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
 	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_show_product_loop_sale_flash', 10 );
 	remove_action( 'woocommerce_after_shop_loop_item', 'avia_add_cart_button', 16 );
-	// remove ordering and products per page
-	remove_action( 'woocommerce_before_shop_loop', 'avia_woocommerce_frontend_search_params', 20 );
+	remove_action( 'woocommerce_before_shop_loop', 'avia_woocommerce_frontend_search_params', 20 ); // remove ordering and products per page
+	remove_action( 'woocommerce_before_single_product_summary', 'woocommerce_show_product_sale_flash', 10 ); // get rid of sale flash
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 ); // no more SKU and Cats on product page
+	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 ); // remove price range after title in single product *but not in popup*
 }
 
 // Adding Mobile Scroll Hint Icon
