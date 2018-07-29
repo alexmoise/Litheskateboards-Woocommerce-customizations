@@ -59,7 +59,7 @@ li.product .inner_product_header {
   }
 }
 form.product-filters select {
-  color: white !important;
+  color: #cbcbcb !important;
   margin: 5px 0 !important;
   border-radius: 4px !important;
 }
@@ -71,21 +71,28 @@ a#reset-product-filters {
 }
 
 /* xoo Product Popup styling */
+.xoo-qv-container.woocommerce.single-product .xoo-qv-images { width: 45%; }
+.xoo-qv-container.woocommerce.single-product .xoo-qv-summary { width: 55%; }
 .xoo-qv-panel.xoo-qv-panel-active {
   z-index: 999999;
 }
 .xoo-qv-container.woocommerce.single-product {
-  padding: 0;
-  height: max-content;
-  border: 9px solid #444;
-  background-color: #0a0a0a;
-  max-height: fit-content;
+	padding: 0;
+	top: initial;
+	bottom: initial;
+	-webkit-transform: translateY(5%);
+	transform: translateY(5%);
+	max-height: 100vh;
+	border-radius: 8px !important;
+	border: 1px solid #cbcbcb;
 }
 .xoo-qv-container .xoo-qv-main {
-  background-color: #0a0a0a;
+  background-color: #212121;
   position: relative;
   padding: 10px 20px;
   height:  auto;
+  max-height: 90vh;
+  border-radius: 8px !important;
 }
 .xoo-qv-container a.reset_variations {
   color: #12ff1e;
@@ -176,8 +183,8 @@ a#reset-product-filters {
 
 /* product options "table" COLUMNS */
 .table.variations .value.td div {
-  display: inline-block;
-  width: 33.33%;
+  /* display: inline-block; */
+  /* width: 33.33%; */
 }
 /* product options "table" styling */
 #top .variations_form {
@@ -186,10 +193,10 @@ a#reset-product-filters {
   background-color: transparent;
 }
 .table.variations .tbody .tr:last-child {
-    border: 1px solid #12ff1e;
+    border: 0;
     margin: 10px 0 0 0;
     padding: 5px;
-    background-color: #111;
+    /* background-color: #111; */
 	border-radius: 4px;
 }
 .table.variations .tbody .tr .label.td {
@@ -249,18 +256,18 @@ form.variations_form.cart .single_variation_wrap {
 .table.variations .tbody .value.td > div, 
 .table.variations .tbody .value-buttons.td > div {
 	border: 1px solid #555;
-	background-color: #141414;
+	/* background-color: #141414; */
 	border-radius: 5px;
 	margin: 8px;
 	/* width: calc(33% - 14px) !important; */ /* for 3 columns */
-	width: calc(50% - 16px) !important;
+	/* width: calc(50% - 16px) !important; */
 	cursor: pointer;
 	text-align: center;
 }
 .table.variations .tbody .value.td > div:hover, 
 .table.variations .tbody .value-buttons.td.td > div:hover {
     border: 1px solid #888;
-    background-color: #333;
+    /* background-color: #333; */
 }
 .value.td > div > input[type='radio'], 
 .value-buttons.td > div > input[type='radio'], 
@@ -286,10 +293,10 @@ form.variations_form.cart .single_variation_wrap {
 }
 .table.variations .tbody .value.td .each-attrib, 
 .table.variations .tbody .value.td .each-attrib:hover {
-	border: 1px solid #555;
+	border: 0;
 	margin: 10px 0 0 0;
 	cursor: default;
-	background-color: #111111;
+	/* background-color: #111111; */
 	width: calc(50% - 5px) !important;
 	display: inline-block;
 }
@@ -324,10 +331,10 @@ form.variations_form.cart .single_variation_wrap {
 @media (min-width: 560px) {
 	.table.variations .tbody .tr:last-child > .value.td {
 		white-space: nowrap;
-		display: flex;
+		/* display: flex; */
 	}
 	.table.variations .tbody .tr:last-child .value.td > div {
-		width: calc(33% - 14px) !important;
+		width: calc(100% - 14px) !important;
 	}
 }
 @media (max-width:559px){
@@ -352,12 +359,19 @@ div#av_section_1 {
 
 /* product spinner styling */
 .template-shop .images a.threesixty-mfp-anchor {
-  position: absolute !important;
-  border: 0;
-  background-color: transparent;
+  /* position: absolute !important; */
+  /* border: 0; */
+  /* background-color: transparent; */
+  display: none;
 }
 .threesixty-images > li > img {
-    border-color: orange;
+    border: 0 !important;
+}
+.woocommerce-product-gallery .threesixty-image {
+    width: 100% !important;
+}
+.single-product div.product .woocommerce-product-gallery img {
+    border: 0;
 }
 .mspc-content .mspc-variation, .mspc-content .mspc-variation.active > .mspc-clearfix {
     border: 1px solid #12ff1e;
@@ -368,9 +382,7 @@ div#av_section_1 {
 .mspc-content .mspc-variation, .mspc-content .mspc-variation.active > .mspc-clearfix .mspc-attribute-title {
     color: #12ff1e;
 }
-.product .single-product-main-image.alpha {
-  /* width: fit-content; */
-}
+
 
 /* Mobile Scroll Hint Icon */
 @media (min-width:768px){
