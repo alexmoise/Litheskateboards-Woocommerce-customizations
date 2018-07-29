@@ -344,7 +344,7 @@ function molswcPaymentsButtonsReFit() {
 		paymentsCnt = jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').length;
 	}
 	setTimeout(function() { // then wait 250 and set the widths:
-		jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').attr('style', 'width: calc((100% / '+paymentsCnt+') - 14px) !important;'); 
+		// jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').attr('style', 'width: calc((100% / '+paymentsCnt+') - 14px) !important;'); 
 		setTimeout(function() { // then wait another 250 and fade in what's not disabled:
 			jQuery('#table-variations div.tax:not(.has-been-disabled)').fadeIn(250);
 			jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled) span.attrib-description').fadeIn(250);
