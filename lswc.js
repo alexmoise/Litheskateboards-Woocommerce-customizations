@@ -9,6 +9,8 @@ jQuery( document ).on('animationstart', '.xoo-qv-inner-modal', function($) {
 });
 // Stuff to execute when XOO Popup open animation ENDS
 jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
+	jQuery("div.xoo-qv-summary > h1.product_title.entry-title").detach().prependTo("div.xoo-qv-main > div.product.type-product"); // move the title in DOM
+	// jQuery("div.xoo-qv-plink").detach().appendTo("div.xoo-qv-main"); // also move Read More button
 	jQuery( '.xoo-qv-inner-modal input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
 	jQuery('.xoo-qv-container .table.variations .tbody .value.td div.tax').attr('style', 'display:none;'); // pre-hide payment plans
 	setTimeout(function() { jQuery('.scroll-hint').fadeOut('slow'); }, 5000);  // removing scroll hint icon after a while ...
@@ -330,8 +332,7 @@ function molswcPaymentsButtonsReFit() {
 	var paymentsCnt;
 	if ( typeof resetHasBeenPressed !== 'undefined' && resetHasBeenPressed == 1 ) {
 		jQuery('.table.variations .tbody .value.td div.tax').attr('style', 'display:none;')
-		resetHasBeenPressed = 0; 
-		console.log('resetHasBeenPressed: '+resetHasBeenPressed);
+		resetHasBeenPressed = 0;
 	}
 	// fade out has-been-disabled
 	jQuery('.table.variations .tbody .value.td div.tax.has-been-disabled').fadeOut(250);
