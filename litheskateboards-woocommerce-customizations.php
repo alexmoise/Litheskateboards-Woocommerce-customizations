@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.2.5
+ * Version: 0.2.6
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -109,13 +109,11 @@ if ( ! function_exists( 'print_attribute_radio_tax' ) ) {
 	}
 }
 
-// Various Woocommerce layout adjustments here:
+// Various Woocommerce layout adjustments below:
 add_action('init', 'molswc_layout_adjustments');
 function molswc_layout_adjustments() {
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 ); // remove short description from original place ...
 	add_action( 'woocommerce_after_single_product_summary', 'woocommerce_template_single_excerpt', 20 ); // ... and add it again at the end of product page (at woocommerce_after_single_product_summary )
-	// remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_title', 5 ); // remove the title from its original location ...
-	// add_action( 'woocommerce_before_main_content', 'woocommerce_template_single_title', 10 ); // ... and add it back on top of the page. *** NO HOOK ON POPUP THOUGH, SO WE CAN'T MOVE IT THERE ***
 	remove_action( 'xoo-qv-images','xoo_qv_product_image',20); // also remove the regular image from popup ...
 	add_action( 'xoo-qv-images', array('SmartProductPlugin', 'wooCommerceImageAction'), 19 ); // ... and replace it with Product Smart Spinner:
 	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_rating', 10 ); // remove XOO Product Popup actions: rating
@@ -131,6 +129,14 @@ function molswc_layout_adjustments() {
 	remove_action( 'woocommerce_before_single_product_summary', 'woocommerce_show_product_sale_flash', 10 ); // get rid of sale flash
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 ); // no more SKU and Cats on product page
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 ); // remove price range after title in single product *but not in popup*
+
+}
+add_action('wp', 'molswc_advanced_layout_adjustments');
+function molswc_advanced_layout_adjustments() {
+	if (is_product()) { // only in product page, otherwise breaks the boards list archive,
+		remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_title', 5 ); // remove the title from its original location ...
+		add_action( 'woocommerce_before_main_content', 'woocommerce_template_single_title', 10 ); // ... and add it back on top of the page. *** NO HOOK ON POPUP THOUGH, SO WE CAN'T MOVE IT THERE ***
+	}
 }
 
 // Adding Mobile Scroll Hint Icon
