@@ -80,9 +80,10 @@ a#reset-product-filters {
     text-align: center;
     width: 90%;
 	margin: 10px 5% 30px 5%;
+	font-size: 28px;
 }
-.xoo-qv-container.woocommerce.single-product .xoo-qv-images { width: 45%; }
-.xoo-qv-container.woocommerce.single-product .xoo-qv-summary { width: 55%; }
+.xoo-qv-container.woocommerce.single-product .xoo-qv-images { width: 44%; }
+.xoo-qv-container.woocommerce.single-product .xoo-qv-summary { width: 46%; margin: 0 5%; }
 .xoo-qv-panel.xoo-qv-panel-active {
   z-index: 999999;
 }
@@ -106,7 +107,7 @@ a#reset-product-filters {
   border-radius: 8px !important;
 }
 .xoo-qv-container a.reset_variations {
-    color: #12ff1e;
+    color: #cbcbcb;
     font-size: 14px;
     /* position: relative; */
     bottom: initial;
@@ -120,10 +121,12 @@ a#reset-product-filters {
 }
 .xoo-qv-container .value.td label.attrib, 
 .xoo-qv-container .value.td label.tax {
-  color: white;
+    color: #cbcbcb;
+    font-size: 14px !important;
+    padding: 1px;
 }
 .xoo-qv-container .value.td div.attrib {
-	opacity: 0.1;
+	/* opacity: 0.1; */
 }
 .xoo-qv-container .attribute-model-and-size.tr:after {
   content: ' ';
@@ -140,7 +143,7 @@ a#reset-product-filters {
 }
 
 .xoo-qv-container .value.td label.attrib.selected {
-  color: #12ff1e;
+  color: #42d62c;
 }
 .xoo-qv-container span.onsale {
   display: none;
@@ -156,13 +159,14 @@ a#reset-product-filters {
     /* position: absolute; */
     bottom: 20px;
     right: 20px;
-    padding: 4px 18px;
+	padding: 0px 40px;
     float: right;
     display: block;
-    margin-top: 20px;
+    margin-top: 40px;
 }
 .xoo-qv-container .xoo-qv-main .xoo-qv-plink a {
     text-decoration: none;
+	font-size: 14px;
 }
 .xoo-qv-container .xoo-qv-images .threesixty-image .threesixty-mfp-anchor {
   display: none;
@@ -237,16 +241,18 @@ a#reset-product-filters {
     font-size: 1.2em;
 }
 .table.variations .tbody .tr .label.td label {
-	color: #12ff1e;
+	color: #42d62c;
 	font-size: 16px !important;
 }
 .table.variations span.attrib-description {
 	white-space: normal;
 	padding: 0 5px !important;
-	color: #888;
+	color: #cbcbcb;
+	font-size: 14px;
 }
 .table.variations .tbody .tr:last-child .value.td > div > label {
 	font-size: 16px !important;
+	color: #42d62c;
 }
 .table.variations .tbody .tr:last-child .value.td > div {
 	padding: 0 4px;
@@ -262,9 +268,8 @@ a#reset-product-filters {
 }
 /* style checked radio buttons */
 #table-variations .radio-checked {
-	background-color: #444 !important;
-	border: 1px solid #12ff1e;
-	color: #12ff1e;
+	border: 1px solid #42d62c;
+	color: #42d62c;
 }
 /* product tabs removal */
 ul.tabs.wc-tabs {
@@ -294,21 +299,22 @@ body.single-product .container .product_title.entry-title {
 
 
 /* == MAKE BUTTONS - ALL == */
-.table.variations .tbody .value.td > div, 
-.table.variations .tbody .value-buttons.td > div {
-	border: 1px solid #555;
-	/* background-color: #141414; */
+.table.variations .tbody .value.td > div.tax, 
+.table.variations .tbody .value-buttons.td > div.attrib {
+	border: 1px solid #cbcbcb;
 	border-radius: 5px;
 	margin: 8px;
-	/* width: calc(33% - 14px) !important; */ /* for 3 columns */
-	/* width: calc(50% - 16px) !important; */
 	cursor: pointer;
 	text-align: center;
 }
-.table.variations .tbody .value.td > div:hover, 
-.table.variations .tbody .value-buttons.td.td > div:hover {
-    border: 1px solid #888;
-    /* background-color: #333; */
+.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled {
+	border: 1px solid transparent; /* disabled buttons without border */
+} 
+.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled > label.attrib.option {
+	color: #606060; /* disabled buttons greyed out */
+} 
+.table.variations .tbody .value-buttons.td.td > div:not(.has-been-disabled):hover {
+    border: 1px solid white;
 }
 .value.td > div > input[type='radio'], 
 .value-buttons.td > div > input[type='radio'], 
@@ -320,6 +326,9 @@ body.single-product .container .product_title.entry-title {
 	cursor: pointer;
 	display: block;
 	padding: 2px;
+}
+.value-buttons.td > div.attrib.has-been-disabled > label { 
+	cursor: not-allowed; 
 }
 /* also make buttons from chosen attributes */
 .table.variations .tbody .tr:not(:last-child) .label.td {
@@ -369,7 +378,9 @@ body.single-product .container .product_title.entry-title {
 }
 .table.variations span.attribPrice {
   display: block;
-  color: #12ff1e;
+  color: #cbcbcb;
+  font-size: 16px;
+  font-weight: bold;
 }
 .table.variations .tbody .value.td div.tax, 
 .table.variations .tbody .value.td div.attrib  {
@@ -381,7 +392,7 @@ body.single-product .container .product_title.entry-title {
 		white-space: nowrap;
 		/* display: flex; */
 	}
-	.table.variations .tbody .tr:last-child .value.td > div {
+	.table.variations .tbody .tr .value.td > div.tax {
 		width: calc(100% - 14px) !important;
 	}
 }
