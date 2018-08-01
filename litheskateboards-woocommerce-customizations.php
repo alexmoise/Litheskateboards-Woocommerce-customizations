@@ -151,8 +151,8 @@ function molswc_mobile_scroll_hint () {
 }
 
 // The product filter - pulling the attributes for adding them to product LI element. Used in "content-product.php" file in this plugin
-// add_action( 'woocommerce_before_shop_loop_item', molswc_test_variations_data ); // "woocommerce_before_shop_loop_item" is just before each item (good for debug)
-function molswc_test_variations_data() {
+// add_action( 'woocommerce_before_shop_loop_item', molswc_instock_variations ); // "woocommerce_before_shop_loop_item" is just before each item (good for debug)
+function molswc_instock_variations() {
 	global $product; 
 	$variations1=$product->get_children();
 	foreach ($variations1 as $value) {
@@ -215,13 +215,13 @@ function molswc_product_filters() {
 	echo '
 		<form id="product-filters" class="product-filters">
 			<select name="Models">
-			  <option value="" selected disabled hidden>Choose model</option>';
+			  <option value="" selected disabled hidden>All Models</option>';
 			  foreach ( $chosen_attribs as $chosen_attrib ) { 
 				echo '<option value="'.$chosen_attrib.'">'.$chosen_attrib.'</option>';
 			  }
 	echo '  </select>
 			<select name="Widths">
-			  <option value="" selected disabled hidden>Choose width</option>';
+			  <option value="" selected disabled hidden>All Widths</option>';
 			  foreach ( $unique_only_widths as $width ) { 
 				echo '<option value="'.$width.'">'.$width.'</option>';
 			  }

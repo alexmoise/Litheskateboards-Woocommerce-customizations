@@ -263,9 +263,19 @@ jQuery(document).delegate( '.product-filters', 'change', function() {
 	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
 	// if ( filtermodel ) { console.log(' Model: '+filtermodel); }
 	// if ( filterwidth ) { console.log(' Width: '+filterwidth); }
+	if ( filtermodel ) { 
+		// console.log('filtermodel only: '+filtermodel);
+		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filtermodel+'"]').fadeIn(); 
+		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filtermodel+'"]').fadeOut(); 
+	}
+	if ( filterwidth ) { 
+		// console.log('filterwidth only: '+filterwidth);
+		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filterwidth+'"]').fadeIn(); 
+		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filterwidth+'"]').fadeOut(); 
+	}
 	if ( filtermodel && filterwidth ) { 
 		filtercomplete = filtermodel + ' ' + filterwidth;
-		// console.log('101 COMPLETE: '+filtercomplete);
+		// console.log('filtercomplete: '+filtercomplete);
 		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filtercomplete+'"]').fadeIn(); 
 		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filtercomplete+'"]').fadeOut(); 
 	}
