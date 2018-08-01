@@ -177,7 +177,7 @@ a#reset-product-filters {
 /* xoo Product Popup styling - on MOBILES */
 @media(max-width:767px) {
   .xoo-qv-container.woocommerce.single-product .xoo-qv-images { width: 100%; }
-  .xoo-qv-container.woocommerce.single-product .xoo-qv-summary { width: 100%; }
+  .xoo-qv-container.woocommerce.single-product .xoo-qv-summary { width: 100%; margin: 0;}
   .xoo-qv-container.woocommerce.single-product {
 	position: fixed;
 	top: 3vh;
