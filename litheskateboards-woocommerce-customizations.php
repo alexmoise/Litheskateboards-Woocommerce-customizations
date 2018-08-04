@@ -217,13 +217,13 @@ function molswc_product_filters() {
 			<select name="Models">
 			  <option value="" selected disabled hidden>All Models</option>';
 			  foreach ( $chosen_attribs as $chosen_attrib ) { 
-				echo '<option value="'.$chosen_attrib.'">'.$chosen_attrib.'</option>';
+				echo '<option value="'.$chosen_attrib.'" disabled="disabled">'.$chosen_attrib.'</option>';
 			  }
 	echo '  </select>
 			<select name="Widths">
 			  <option value="" selected disabled hidden>All Widths</option>';
 			  foreach ( $unique_only_widths as $width ) { 
-				echo '<option value="'.$width.'">'.$width.'</option>';
+				echo '<option value="'.$width.'" disabled="disabled">'.$width.'</option>';
 			  }
 	echo '  </select>
 			<a id="reset-product-filters" href="#/">Clear</a>

@@ -285,7 +285,7 @@ jQuery(document).delegate( '.product-filters', 'change', function() {
 jQuery(document).delegate( 'select[name="Models"]', 'change', function() {
 	// console.log('Models changed!');
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
-	jQuery( 'select[name="Widths"] option' ).each( function( index, element ){
+	jQuery( 'select[name="Widths"] > option' ).each( function( index, element ){
 		var checkingwidth = jQuery( this ).val();
 		var optionPossible = checkIfModelWidthExists( filtermodel, checkingwidth, getAllAttributes() );
 		// console.log( 'Checking: '+filtermodel+' '+checkingwidth+' '+optionPossible );
@@ -301,7 +301,7 @@ jQuery(document).delegate( 'select[name="Models"]', 'change', function() {
 jQuery(document).delegate( 'select[name="Widths"]', 'change', function() {
 	// console.log('Widths changed!');
 	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
-	jQuery( 'select[name="Models"] option' ).each( function( index, element ){
+	jQuery( 'select[name="Models"] > option' ).each( function( index, element ){
 		var checkingmodel = jQuery( this ).val();
 		var optionPossible = checkIfModelWidthExists( checkingmodel, filterwidth, getAllAttributes() );
 		// console.log( 'Checking: '+checkingmodel+' '+filterwidth+' '+optionPossible );
@@ -313,6 +313,37 @@ jQuery(document).delegate( 'select[name="Widths"]', 'change', function() {
 		}
 	});
 });
+// First *enable* only available Models and Widths (they come out initially "disabled"):
+jQuery(document).ready(function() {
+	enableOnlyAvailableModelsAndWidths();
+});
+// FUNCTION to loop through all Models and Widths and enable only available ones
+function enableOnlyAvailableModelsAndWidths () {
+	// Loop through all Widths and disable those not existing in *any* data-custom-attribs-list
+	jQuery(".product-filters select[name='Widths'] > option:not([hidden])").each(function() {
+		var widthtocheck = this.value;
+		jQuery(".product-filters select[name='Models'] > option:not([hidden])").each(function() {
+			var modeltocheck = this.value;
+			var optionPossible = checkIfModelWidthExists( modeltocheck, widthtocheck, getAllAttributes() );
+			// console.log( 'Checking Widths: '+widthtocheck+' '+modeltocheck+' '+optionPossible );
+			if(optionPossible == true) {
+				jQuery( this ).removeAttr('disabled');
+			}
+		});
+	});
+	// Loop through all Models and disable those not existing in *any* data-custom-attribs-list
+	jQuery(".product-filters select[name='Models'] > option:not([hidden])").each(function() {
+		var modeltocheck = this.value;
+		jQuery(".product-filters select[name='Widths'] > option:not([hidden])").each(function() {
+			var widthtocheck = this.value;
+			var optionPossible = checkIfModelWidthExists( modeltocheck, widthtocheck, getAllAttributes() );
+			// console.log( 'Checking Models: '+modeltocheck+' '+widthtocheck+' '+optionPossible );
+			if(optionPossible == true) {
+				jQuery( this ).removeAttr('disabled');
+			}
+		});
+	});
+}
 // FUNCTION to check if model-width combination is possible
 function checkIfModelWidthExists (modeltocheck, widthtocheck, allcombinations) {
 	// console.log(' InFunc: '+modeltocheck+' | '+widthtocheck+' | '+allcombinations);		
