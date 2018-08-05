@@ -92,7 +92,14 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 		$id = esc_attr( $name . '_v_' . $value . $product->get_id() ); //added product ID at the end of the name to target single products
 		$checked = checked( $checked_value, $value, false );
 		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
-		printf( '<div class="attrib"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="attrib option" value="%2$s" for="%3$s" data-text-fullname="%2$s" data-text-b="%5$s">%5$s</label></div>', $input_name, $esc_value, $id, $checked, $filtered_label );
+		
+		
+		$parent_product_id = $product->get_id();
+		$peer_vars = molswc_get_peer_variations($parent_product_id, $name, $value);
+		$readable_peer_vars = $parent_product_id.'|'.$name.'|'.$value;
+		
+		
+		printf( '<div class="attrib"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="attrib option" value="%2$s" for="%3$s" data-text-fullname="%2$s" data-text-b="%5$s">%5$s</label></div><!-- Peers: %6$s -->', $input_name, $esc_value, $id, $checked, $filtered_label, $readable_peer_vars );
 	}
 }
 
@@ -314,7 +321,7 @@ class Wc_class {
 			parse_str(strtr($current_var_attribs, ":,", "=&"), $attribs_array); // parse the attributes object ...
 			$current_var_model_and_size = $attribs_array['model-and-size']; // ...and get only the "model-and-size"
 			$parent_id = $current_var->get_parent_id(); // Get the ID of the parent product
-			$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product
+			$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product (******** function started with this! ********)
 			$peer_variations = $parent_product->get_available_variations(); // Now get all the *possible* peer variations, those that are chlidren of the same product 
 			// Let's iterate though each *possible* peer variation:
 			foreach ($peer_variations as $peer_variation) {
@@ -340,3 +347,25 @@ class Wc_class {
 		}
 	}
 }
+
+// Loop through all children of a parent product by ID and return an array with all variations having same "...attr_value" into "...attr_name".
+function molswc_get_peer_variations($parent_id, $based_on_attr_name, $based_on_attr_value) {
+	$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product
+	$peer_variations = $parent_product->get_available_variations(); // Now get all the *possible* peer variations, those that are chlidren of the same product
+	foreach ($peer_variations as $peer_variation) {
+				$peer_variation_id      = $peer_variation['variation_id']; // this is peer variation ID
+				$peer_variation_product = wc_get_product( $peer_variation_id ); // this is peer variation product instance
+				$peer_variation_attribs = wc_get_formatted_variation( $peer_variation_product->get_variation_attributes(), true ); // these are peer variation attributes
+				echo '<!-- '; print_r($peer_variation_attribs); echo ' -->'; // so far so good ...
+				parse_str(strtr($peer_variation_attribs, ":,", "=&"), $peer_var_attribs_array); // this is peer variation attributes *array*
+				$peer_var_attrib_name = $peer_var_attribs_array[$based_on_attr_name]; // this is peer variation attribute name, based on these we'll judge *peers*
+				if ($based_on_attr_value == $peer_var_attrib_name) { // check if this *IS* a peer variation (has same "...attr_value" into "...attr_name")
+					$current_peer_vars_array[] = $peer_variation_id; // ...add it to $current_peer_vars_array
+				}
+	}
+	return $current_peer_vars_array;
+}
+
+
+
+
