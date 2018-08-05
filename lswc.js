@@ -251,13 +251,18 @@ function initAttribVariables() {
 }
 
 // === Boards filtering functions
+// First *enable* only available Models and Widths (they come out initially "disabled"):
+jQuery(document).ready(function() {
+	enableOnlyAvailableModelsAndWidths();
+});
 // Reset filters and bring in all boards again
 jQuery(document).on('click', '#reset-product-filters', function() {
-	jQuery('.product-filters select option').removeAttr('disabled'); 
-	jQuery:document.getElementById('product-filters').reset();
-	jQuery ('ul.products li').fadeIn();
+	jQuery('.product-filters select option').attr('disabled', 'disabled'); // disable all drop down options ...
+	enableOnlyAvailableModelsAndWidths(); // ...then enable back only those that are available!
+	jQuery:document.getElementById('product-filters').reset(); // also reset the 'product-filters'
+	jQuery ('ul.products li').fadeIn(); // ...and fade in all boards again!
 });
-// Take out not available boards
+// Take out not available boards at each Model/Width chose
 jQuery(document).delegate( '.product-filters', 'change', function() {
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
 	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
@@ -312,10 +317,6 @@ jQuery(document).delegate( 'select[name="Widths"]', 'change', function() {
 			jQuery( this ).removeAttr('disabled');
 		}
 	});
-});
-// First *enable* only available Models and Widths (they come out initially "disabled"):
-jQuery(document).ready(function() {
-	enableOnlyAvailableModelsAndWidths();
 });
 // FUNCTION to loop through all Models and Widths and enable only available ones
 function enableOnlyAvailableModelsAndWidths () {
