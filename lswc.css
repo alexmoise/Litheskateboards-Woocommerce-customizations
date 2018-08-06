@@ -307,6 +307,14 @@ body.single-product .container .product_title.entry-title {
 	cursor: pointer;
 	text-align: center;
 }
+.table.variations .tbody .value.td div.attrib.var_stock_backorder {
+    color: #606060;
+    border-color: #606060;
+}
+.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover {
+    color: #949494;
+    border-color: #949494;
+}
 .table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled {
 	border: 1px solid transparent; /* disabled buttons without border */
 } 

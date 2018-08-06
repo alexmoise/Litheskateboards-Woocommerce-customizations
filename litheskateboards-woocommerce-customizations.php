@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.2.7
+ * Version: 0.2.8
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -92,14 +92,28 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 		$id = esc_attr( $name . '_v_' . $value . $product->get_id() ); //added product ID at the end of the name to target single products
 		$checked = checked( $checked_value, $value, false );
 		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
-		
-		
-		$parent_product_id = $product->get_id();
-		$peer_vars = molswc_get_peer_variations($parent_product_id, $name, $value);
-		$readable_peer_vars = $parent_product_id.'|'.$name.'|'.$value;
-		
-		
-		printf( '<div class="attrib"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="attrib option" value="%2$s" for="%3$s" data-text-fullname="%2$s" data-text-b="%5$s">%5$s</label></div><!-- Peers: %6$s -->', $input_name, $esc_value, $id, $checked, $filtered_label, $readable_peer_vars );
+		$parent_product_id = $product->get_id(); // getting the parent product
+		$peer_vars = molswc_get_peer_variations($parent_product_id, $name, $value); // getting the peer variations (see the function for details)
+		if ($peer_vars) {
+			foreach ($peer_vars as $peer_var) {
+				$peer_var_stock[$peer_var] = molswc_get_variation_stock($peer_var); // get the stock for each peer variation
+			}
+			$lowest_peer_var_stock = min($peer_var_stock); // get the lowest stock from all variations, just in case (it should be synced anyway)
+		} else {
+			$lowest_peer_var_stock = 'n/a'; // get something in case of no stock at all
+		}
+		// Now define the class that will be applied
+		if ( is_numeric($lowest_peer_var_stock) ) {
+			if ( $lowest_peer_var_stock <= 0 ) {
+				$stock_class = 'var_stock_backorder';
+			} elseif ( $lowest_peer_var_stock > 0 ) {
+				$stock_class = 'var_stock_instock';
+			} 
+		} else {
+			$stock_class = 'var_stock_not_available';
+		}
+		// Finally output the button html:
+		printf( '<div class="attrib %6$s"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="attrib option" value="%2$s" for="%3$s" data-text-fullname="%2$s" data-text-b="%5$s">%5$s</label></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $stock_class );
 	}
 }
 
@@ -321,7 +335,7 @@ class Wc_class {
 			parse_str(strtr($current_var_attribs, ":,", "=&"), $attribs_array); // parse the attributes object ...
 			$current_var_model_and_size = $attribs_array['model-and-size']; // ...and get only the "model-and-size"
 			$parent_id = $current_var->get_parent_id(); // Get the ID of the parent product
-			$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product (******** function started with this! ********)
+			$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product (***** later switch to use "molswc_get_peer_variations" function from here *****)
 			$peer_variations = $parent_product->get_available_variations(); // Now get all the *possible* peer variations, those that are chlidren of the same product 
 			// Let's iterate though each *possible* peer variation:
 			foreach ($peer_variations as $peer_variation) {
@@ -348,7 +362,7 @@ class Wc_class {
 	}
 }
 
-// Loop through all children of a parent product by ID and return an array with all variations having same "...attr_value" into "...attr_name".
+// Get peer variations: loop through all children of a parent product by ID and return an array with all variations having same "...attr_value" into "...attr_name".
 function molswc_get_peer_variations($parent_id, $based_on_attr_name, $based_on_attr_value) {
 	$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product
 	$peer_variations = $parent_product->get_available_variations(); // Now get all the *possible* peer variations, those that are chlidren of the same product
@@ -356,16 +370,18 @@ function molswc_get_peer_variations($parent_id, $based_on_attr_name, $based_on_a
 				$peer_variation_id      = $peer_variation['variation_id']; // this is peer variation ID
 				$peer_variation_product = wc_get_product( $peer_variation_id ); // this is peer variation product instance
 				$peer_variation_attribs = wc_get_formatted_variation( $peer_variation_product->get_variation_attributes(), true ); // these are peer variation attributes
-				echo '<!-- '; print_r($peer_variation_attribs); echo ' -->'; // so far so good ...
 				parse_str(strtr($peer_variation_attribs, ":,", "=&"), $peer_var_attribs_array); // this is peer variation attributes *array*
-				$peer_var_attrib_name = $peer_var_attribs_array[$based_on_attr_name]; // this is peer variation attribute name, based on these we'll judge *peers*
-				if ($based_on_attr_value == $peer_var_attrib_name) { // check if this *IS* a peer variation (has same "...attr_value" into "...attr_name")
+				$peer_var_attrib_name = $peer_var_attribs_array[$based_on_attr_name]; // this is peer variation attribute name, based on this we'll judge *peers*
+				if ( trim($peer_var_attrib_name) == trim($based_on_attr_value) ) { // check if this *IS* a peer variation (has same "...attr_name" into "...attr_value")
 					$current_peer_vars_array[] = $peer_variation_id; // ...add it to $current_peer_vars_array
 				}
 	}
 	return $current_peer_vars_array;
 }
 
-
-
-
+// Get stock variation by variation ID
+function molswc_get_variation_stock($variation_id) {
+	$variation_instance = wc_get_product( $variation_id ); // Get an instance of the current variation object
+	$variation_stock = $variation_instance->get_stock_quantity(); // Get the stock quantity of the current_var
+	return $variation_stock;
+}
