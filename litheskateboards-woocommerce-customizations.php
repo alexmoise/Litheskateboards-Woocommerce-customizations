@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.2.8
+ * Version: 0.2.9
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -106,14 +106,17 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 		if ( is_numeric($lowest_peer_var_stock) ) {
 			if ( $lowest_peer_var_stock <= 0 ) {
 				$stock_class = 'var_stock_backorder';
+				$stock_hint = '(backorder)';
 			} elseif ( $lowest_peer_var_stock > 0 ) {
 				$stock_class = 'var_stock_instock';
+				$stock_hint = '(in stock!)';
 			} 
 		} else {
 			$stock_class = 'var_stock_not_available';
+			$stock_hint = '(n/a)';
 		}
 		// Finally output the button html:
-		printf( '<div class="attrib %6$s"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="attrib option" value="%2$s" for="%3$s" data-text-fullname="%2$s" data-text-b="%5$s">%5$s</label></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $stock_class );
+		printf( '<div class="attrib %6$s"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="attrib option" value="%2$s" for="%3$s" data-text-fullname="%2$s" data-text-b="%5$s">%5$s<span class="stock_hint %6$s">%7$s</span></label></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $stock_class, $stock_hint );
 	}
 }
 

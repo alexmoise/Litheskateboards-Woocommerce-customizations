@@ -175,7 +175,7 @@ a#reset-product-filters {
   display:  none;
 }
 /* xoo Product Popup styling - on MOBILES */
-@media(max-width:767px) {
+@media(max-width:768px) {
   .xoo-qv-container.woocommerce.single-product .xoo-qv-images { width: 100%; }
   .xoo-qv-container.woocommerce.single-product .xoo-qv-summary { width: 100%; margin: 0;}
   .xoo-qv-container.woocommerce.single-product {
@@ -260,7 +260,7 @@ a#reset-product-filters {
 
 /* style disabled radio buttons */
 .has-been-disabled {
-  opacity: 0.3;
+  /* opacity: 0.3; */
 }
 /* style selected radio buttons */
 .has-been-selected {
@@ -269,6 +269,9 @@ a#reset-product-filters {
 /* style checked radio buttons */
 #table-variations .radio-checked {
 	border: 1px solid #42d62c;
+	color: #42d62c;
+}
+#table-variations .radio-checked label.attrib {
 	color: #42d62c;
 }
 /* product tabs removal */
@@ -307,23 +310,36 @@ body.single-product .container .product_title.entry-title {
 	cursor: pointer;
 	text-align: center;
 }
-.table.variations .tbody .value.td div.attrib.var_stock_backorder {
+.table.variations .tbody .value.td label.attrib.option > span.stock_hint {
+    float: right;
+    margin: 0 10px;
+    position: absolute;
+	font-size: 10px !important;
+	color: inherit !important;
+}
+.table.variations .tbody .value.td div.attrib.var_stock_backorder,
+.table.variations .tbody .value.td div.attrib.var_stock_backorder label.attrib {
     color: #606060;
     border-color: #606060;
 }
-.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover {
-    color: #949494;
-    border-color: #949494;
-}
-.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled {
-	border: 1px solid transparent; /* disabled buttons without border */
-} 
-.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled > label.attrib.option {
-	color: #606060; /* disabled buttons greyed out */
-} 
 .table.variations .tbody .value-buttons.td.td > div:not(.has-been-disabled):hover {
     border: 1px solid white;
 }
+.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover,
+.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover label.attrib {
+    color: #949494;
+    border-color: #949494;
+}
+.table.variations .tbody .value.td div.attrib.var_stock_not_available:hover, 
+.table.variations .tbody .value.td div.attrib.var_stock_not_available, 
+.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled {
+	border: 1px solid transparent; /* disabled buttons without border */
+} 
+.table.variations .tbody .value.td div.attrib.var_stock_not_available > label.attrib.option, 
+.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled > label.attrib.option {
+	color: #606060; /* disabled buttons greyed out */
+} 
+
 .value.td > div > input[type='radio'], 
 .value-buttons.td > div > input[type='radio'], 
 .value.td > .each-attrib > div > input[type='radio'] {
@@ -334,6 +350,9 @@ body.single-product .container .product_title.entry-title {
 	cursor: pointer;
 	display: block;
 	padding: 2px;
+}
+.value-buttons.td > div > label.attrib.option {
+    margin-right: 50px;
 }
 .value-buttons.td > div.attrib.has-been-disabled > label { 
 	cursor: not-allowed; 
