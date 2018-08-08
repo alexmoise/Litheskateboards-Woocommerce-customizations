@@ -44,6 +44,19 @@ function molswc_remove_wcvarhints_js() {
 }
 add_action('wp_enqueue_scripts','molswc_remove_wcvarhints_js');
 
+// Redirect wholesale users from products to wholesale form
+add_action('template_redirect', 'molswc_redirect_wholesalers');
+function molswc_redirect_wholesalers () {
+	$curr_user_roles = wp_get_current_user()->roles;
+	if ( in_array('wholesale_customer', $curr_user_roles) ) {
+		if ( is_product() || is_product_category() ) {
+			wp_redirect('/wholesale-order-form/');
+			exit();
+		}
+		
+	}
+}
+
 // Go straight to Checkout when a Payment Method button has been pressed
 add_filter('woocommerce_add_to_cart_redirect', 'molswc_go_to_checkout');
 function molswc_go_to_checkout() {
@@ -220,8 +233,8 @@ function molswc_product_filters() {
 		}
 		$unique_models_and_sizes[] = array_unique($all_model_and_sizes);
 	}
-	$complete_unique_list_models_and_sizes = array_unique($unique_models_and_sizes);
-	$final_models_and_sizes_list = molswc_flat_array($complete_unique_list_models_and_sizes);
+	$flat_models_and_sizes_list = molswc_flat_array($unique_models_and_sizes);
+	$final_models_and_sizes_list = array_unique($flat_models_and_sizes_list); 
 	$chosen_attribs = molswc_designated_options(); // sync this later with Woocommerce ... or easily define these some other way ...
 	foreach ( $chosen_attribs as $chosen_attrib ) { 
 		$only_widths[] = str_replace($chosen_attrib." ", "", $final_models_and_sizes_list);
