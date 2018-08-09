@@ -187,6 +187,19 @@ function molswc_mobile_scroll_hint () {
 	}
 }
 
+// No wholesale products in SHop, even for admins
+add_action( 'woocommerce_product_query', 'molswc_no_wholesale_products_in_shop' ); 
+function molswc_no_wholesale_products_in_shop( $q ) {
+    $tax_query = (array) $q->get( 'tax_query' );
+    $tax_query[] = array(
+           'taxonomy' => 'product_cat',
+           'field' => 'slug',
+           'terms' => array( 'wholesale' ), 
+           'operator' => 'NOT IN'
+    );
+    $q->set( 'tax_query', $tax_query );
+}
+
 // The product filter - pulling the attributes for adding them to product LI element. Used in "content-product.php" file in this plugin
 // add_action( 'woocommerce_before_shop_loop_item', molswc_instock_variations ); // "woocommerce_before_shop_loop_item" is just before each item (good for debug)
 function molswc_instock_variations() {
@@ -383,14 +396,14 @@ function molswc_get_peer_variations($parent_id, $based_on_attr_name, $based_on_a
 	$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product
 	$peer_variations = $parent_product->get_available_variations(); // Now get all the *possible* peer variations, those that are chlidren of the same product
 	foreach ($peer_variations as $peer_variation) {
-				$peer_variation_id      = $peer_variation['variation_id']; // this is peer variation ID
-				$peer_variation_product = wc_get_product( $peer_variation_id ); // this is peer variation product instance
-				$peer_variation_attribs = wc_get_formatted_variation( $peer_variation_product->get_variation_attributes(), true ); // these are peer variation attributes
-				parse_str(strtr($peer_variation_attribs, ":,", "=&"), $peer_var_attribs_array); // this is peer variation attributes *array*
-				$peer_var_attrib_name = $peer_var_attribs_array[$based_on_attr_name]; // this is peer variation attribute name, based on this we'll judge *peers*
-				if ( trim($peer_var_attrib_name) == trim($based_on_attr_value) ) { // check if this *IS* a peer variation (has same "...attr_name" into "...attr_value")
-					$current_peer_vars_array[] = $peer_variation_id; // ...add it to $current_peer_vars_array
-				}
+		$peer_variation_id      = $peer_variation['variation_id']; // this is peer variation ID
+		$peer_variation_product = wc_get_product( $peer_variation_id ); // this is peer variation product instance
+		$peer_variation_attribs = wc_get_formatted_variation( $peer_variation_product->get_variation_attributes(), true ); // these are peer variation attributes
+		parse_str(strtr($peer_variation_attribs, ":,", "=&"), $peer_var_attribs_array); // this is peer variation attributes *array*
+		$peer_var_attrib_name = $peer_var_attribs_array[$based_on_attr_name]; // this is peer variation attribute name, based on this we'll judge *peers*
+		if ( trim($peer_var_attrib_name) == trim($based_on_attr_value) ) { // check if this *IS* a peer variation (has same "...attr_name" into "...attr_value")
+			$current_peer_vars_array[] = $peer_variation_id; // ...add it to $current_peer_vars_array
+		}
 	}
 	return $current_peer_vars_array;
 }

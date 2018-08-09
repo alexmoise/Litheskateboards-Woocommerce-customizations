@@ -96,7 +96,8 @@ a#reset-product-filters {
 	max-height: 100vh;
 	max-width: 900px;
 	border-radius: 8px !important;
-	border: 1px solid #cbcbcb;
+	border: transparent;
+    background: transparent;
 }
 .xoo-qv-container .xoo-qv-main {
   background-color: #212121;
@@ -105,6 +106,8 @@ a#reset-product-filters {
   height:  auto;
   max-height: 90vh;
   border-radius: 8px !important;
+  border: 1px solid #cbcbcb;
+  box-shadow: 0 0 1px 0px #cbcbcb inset, 0 0 1px 0px #cbcbcb;
 }
 .xoo-qv-container a.reset_variations {
     color: #cbcbcb;
