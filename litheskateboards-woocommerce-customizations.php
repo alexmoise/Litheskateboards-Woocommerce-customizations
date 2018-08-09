@@ -49,7 +49,7 @@ add_action('template_redirect', 'molswc_redirect_wholesalers');
 function molswc_redirect_wholesalers () {
 	$curr_user_roles = wp_get_current_user()->roles;
 	if ( in_array('wholesale_customer', $curr_user_roles) ) {
-		if ( is_product() || is_product_category() ) {
+		if ( is_shop() || is_product() || is_product_category() ) {
 			wp_redirect('/wholesale-order-form/');
 			exit();
 		}
