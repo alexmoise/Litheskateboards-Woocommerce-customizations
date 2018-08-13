@@ -4,12 +4,15 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). No settings page needed at this moment (but could be added later if needed). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.2.10
+ * Version: 0.2.11
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
 
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
+
+// Adding admin options
+include( plugin_dir_path( __FILE__ ) . 'lswc-options.php' );
 
 // Adding own CSS
 function molswc_adding_styles() {
