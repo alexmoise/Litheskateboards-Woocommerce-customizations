@@ -260,7 +260,22 @@ a#reset-product-filters {
 .table.variations .tbody .tr:last-child .value.td > div {
 	padding: 0 4px;
 }
-
+/* style the new code of radio buttons, so it won't be affected by the right margin necessary for the stock hint */
+#table-variations .inner-attrib input {
+    display:  none;
+}
+#table-variations .inner-attrib {
+	display: block;
+    font-weight: bold;
+    font-size: 0.92em;
+    color: white;
+}
+#table-variations .inner-attrib label.attrib.option {
+    cursor: pointer;
+    display: inline-block;
+    padding: 2px;
+    width: 90%;
+}
 /* style disabled radio buttons */
 .has-been-disabled {
   /* opacity: 0.3; */
@@ -274,7 +289,7 @@ a#reset-product-filters {
 	border: 1px solid #42d62c;
 	color: #42d62c;
 }
-#table-variations .radio-checked label.attrib {
+#table-variations .radio-checked label.attrib .inner-attrib {
 	color: #42d62c;
 }
 /* product tabs removal */
@@ -313,15 +328,12 @@ body.single-product .container .product_title.entry-title {
 	cursor: pointer;
 	text-align: center;
 }
-.table.variations .tbody .value.td label.attrib.option > span.stock_hint {
-    float: right;
+.table.variations .tbody .value.td label.attrib.option .inner-attrib span.stock_hint {
     margin: 0 10px;
-    position: absolute;
 	font-size: 10px !important;
 	color: inherit !important;
 }
-.table.variations .tbody .value.td div.attrib.var_stock_backorder,
-.table.variations .tbody .value.td div.attrib.var_stock_backorder label.attrib {
+.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled > label.attrib.option .inner-attrib {
     color: #606060;
     border-color: #606060;
 }
@@ -338,11 +350,10 @@ body.single-product .container .product_title.entry-title {
 .table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled {
 	border: 1px solid transparent; /* disabled buttons without border */
 } 
-.table.variations .tbody .value.td div.attrib.var_stock_not_available > label.attrib.option, 
-.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled > label.attrib.option {
-	color: #606060; /* disabled buttons greyed out */
-} 
-
+.table.variations .tbody .value.td div.attrib.var_stock_not_available > label.attrib.option .inner-attrib,
+.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled > label.attrib.option .inner-attrib {
+   color: #606060 !important; /* disabled buttons greyed out */
+}
 .value.td > div > input[type='radio'], 
 .value-buttons.td > div > input[type='radio'], 
 .value.td > .each-attrib > div > input[type='radio'] {
@@ -353,9 +364,6 @@ body.single-product .container .product_title.entry-title {
 	cursor: pointer;
 	display: block;
 	padding: 2px;
-}
-.value-buttons.td > div > label.attrib.option {
-    margin-right: 50px;
 }
 .value-buttons.td > div.attrib.has-been-disabled > label { 
 	cursor: not-allowed; 
