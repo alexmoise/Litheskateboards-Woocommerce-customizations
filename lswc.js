@@ -62,6 +62,19 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	jQuery( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
 	setTimeout(function() { appendAttribPrices(); }, 500); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
 	molswcPaymentsButtonsReFit(); // Call the re-fit function to count the buttons and set their width according with their number
+	
+	// Now, about the Estimated Delivery time:
+	jQuery('span.attribStockStatus').remove(); // First remove it from where it is displayed so it won't get displayed twice
+	// ... then check if the currently "checked" button has "in_stock" status and if so, display "estdelivery_instock" variable defined for  in HTML
+	if ( molswc_check_current_status() == 'var_stock_instock' && typeof estdelivery_instock !== 'undefined' ) { 
+	jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">Est. delivery: '+estdelivery_instock+'</span>');
+	// console.log('Est. deliv.: '+estdelivery_instock); 
+	}
+	// ... otherwise check if the currently "checked" button has "backorder" status and if so, display "estdelivery_backorder" variable defined in HTML
+	if ( molswc_check_current_status() == 'var_stock_backorder' && typeof estdelivery_backorder !== 'undefined' ) { 
+	jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">Est. delivery: '+estdelivery_backorder+'</span>');
+	// console.log('Est. deliv.: '+estdelivery_backorder); 
+	}
 });
 
 // === III. Product display functions -> SINGLE PRODUCT PAGE ONLY: ===
@@ -393,4 +406,13 @@ function molswcPaymentsButtonsReFit() {
 			jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled) span.attrib-description').fadeIn(250);
 		}, 250);
 	}, 250);
+}
+
+// === Check stock status of currently selected Width button
+// Get the stock status from the "data-stock-status" attribute that is outputted in the form by the PHP function responsible with the buttons (called "print_attribute_radio_attrib")
+function molswc_check_current_status() {
+	var stockTarget = jQuery('div.attrib input[type="radio"]:checked');
+	var stockStatus = jQuery(stockTarget).attr("data-stock-status");
+	// console.log('StockStat: '+stockStatus);
+	return stockStatus;
 }

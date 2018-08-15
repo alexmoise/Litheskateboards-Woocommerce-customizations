@@ -406,11 +406,17 @@ body.single-product .container .product_title.entry-title {
 .table.variations .tbody .tr:not(:last-child) > .value.td > .each-attrib {
   flex: 1;
 }
-.table.variations span.attribPrice {
+.table.variations span.attribPrice, 
+.table.variations span.attribStockStatus {
   display: block;
   color: #cbcbcb;
-  font-size: 16px;
   font-weight: bold;
+}
+.table.variations span.attribPrice {
+  font-size: 16px;
+}
+.table.variations span.attribStockStatus {
+  font-size: 14px;
 }
 .table.variations .tbody .value.td div.tax, 
 .table.variations .tbody .value.td div.attrib  {
