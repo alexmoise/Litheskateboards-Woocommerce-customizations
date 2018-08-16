@@ -19,7 +19,7 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 	jQuery(".each-attrib .value-buttons.td").children('.attrib:not(.has-been-disabled)').each(function(i) {
 		jQuery(this).delay((Math.floor((Math.random()*1000)+1)) ).fadeTo( Math.floor((Math.random()*500)+1) ,1).delay( 100 );
 	});
-	setTimeout(function() { jQuery('.xoo-qv-container .attribute-model-and-size.tr').addClass('after-removed'); }, 1000);
+	setTimeout(function() { jQuery('.xoo-qv-container .table.variations > .tbody > .select.tr').addClass('after-removed'); }, 1000);
 	jQuery('.xoo-qv-container div.tax').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
 		if (!jQuery(this).hasClass( "has-been-disabled" ))
 		{
@@ -227,12 +227,12 @@ function ajaxAttribPrices() {
 	var $cart = jQuery(".xoo-qv-main form.variations_form");
 	if (typeof $cart === 'undefined' || $cart.length <= 0) { return; }
 	var product_id = $cart.attr('data-product_id'); 
-	// console.log('Prod ID: '+product_id);
+	console.log('Prod ID: '+product_id);
 	var data = {
 		'action': 'wmp_variation_price_array',
 		'product_id': product_id
 	};
-	// console.log('DATA: '+ JSON.stringify(data, null, 2) );
+	console.log('DATA: '+ JSON.stringify(data, null, 2) );
 	jQuery.ajax({
 		url: wm_pvar.ajax_url,
 		type: "POST",
