@@ -418,10 +418,10 @@ body.single-product .container .product_title.entry-title {
 .table.variations span.attribStockStatus {
   display: block;
   color: #cbcbcb;
-  font-weight: bold;
 }
 .table.variations span.attribPrice {
   font-size: 16px;
+  font-weight: bold;
 }
 .table.variations span.attribStockStatus {
   font-size: 14px;
