@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.0
+ * Version: 1.0.1
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
 
@@ -28,6 +28,8 @@ function molswc_admin_options_page_callback() { ?>
 	<form method="post" action="options.php">
     <?php settings_fields( 'molswc-settings-group' ); ?>
     <?php do_settings_sections( 'molswc-settings-group' ); ?>
+	
+	<?php submit_button(); ?>
 
 	<h2>Estimated delivery time</h2>
 	<p>Fill in the estimated delivery time, together with the details you need to display in Payment Plan buttons. Examples: "Max. 3 weeks" or "Usually 3 days" etc.<br>
@@ -77,6 +79,19 @@ function molswc_admin_options_page_callback() { ?>
 	</table>
 	
 	<?php submit_button(); ?>
+	
+	<h2>Other relevant settings</h2>
+	<p>These are settings that exists in Woocommerce but it would take more clicks to get to them - so we added links to them here, for convenience</p>
+	
+	<table class="form-table">
+		<tr valign="top">
+			<th scope="row">Global Attributes Edit Screen: </th>
+			<td>
+				<a href="/wp-admin/edit.php?post_type=product&page=product_attributes">Global attributes edit screen</a>
+			</td>
+		</tr>
+	</table>
+
 </form>
 	
 <?php } ?>

@@ -361,7 +361,7 @@ body.single-product .container .product_title.entry-title {
 }
 .value.td > div > label, 
 .value-buttons.td > div > label {
-	cursor: pointer;
+	cursor: inherit;
 	display: block;
 	padding: 2px;
 }

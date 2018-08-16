@@ -24,6 +24,7 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 		if (!jQuery(this).hasClass( "has-been-disabled" ))
 		{
 			jQuery(this).find('input[type="radio"]').prop('checked', true);
+			jQuery(".table.variations div.tax:not(.has-been-disabled)").attr('style', 'cursor: not-allowed;');
 			jQuery(".table.variations div.tax:not(.has-been-disabled)").off();
 			jQuery(".table.variations div.tax:not(.has-been-disabled) *").off();
 			jQuery(".table.variations div.tax:not(.has-been-disabled)").fadeTo("fast",0.2);
@@ -112,6 +113,7 @@ jQuery('body.single-product .table.variations div.tax').click(function (e) { // 
 	if (!jQuery(this).hasClass( "has-been-disabled" ))
 	{
 		jQuery(this).find('input[type="radio"]').prop('checked', true);
+		jQuery(".table.variations div.tax:not(.has-been-disabled)").attr('style', 'cursor: not-allowed;');
 		jQuery(".table.variations div.tax:not(.has-been-disabled)").off();
 		jQuery(".table.variations div.tax:not(.has-been-disabled) *").off();
 		jQuery(".table.variations div.tax:not(.has-been-disabled)").fadeTo("fast",0.2);
