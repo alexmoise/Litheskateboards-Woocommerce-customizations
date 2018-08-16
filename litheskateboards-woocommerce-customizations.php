@@ -36,8 +36,11 @@ function molswc_webapp_meta() {
 
 // Define the options to separate lists
 function molswc_designated_options() {
-	$designated_options = array('Street', 'Vert');
-	return $designated_options;
+	function molswc_trim_value(&$value) { $value = trim($value); } // just another simple trim function, for later use
+	$raw_designated_options = strip_tags(get_option( 'molswc_designated_options' )); // get raw options as defined in options DB table
+	$designated_options = explode(',', $raw_designated_options); // create an array with options
+	array_walk($designated_options, 'molswc_trim_value'); // remove possible white space at the beginning or the end of each array element (using previously defined trim function)
+	return $designated_options; // finally return the array to wherever is needed
 }
 
 // Get rid of original JS from WC Variations Price Hints ... (for good, we won't replace it anymore as all functions are now in lswc.js)
