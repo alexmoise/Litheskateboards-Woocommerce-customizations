@@ -56,9 +56,9 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	jQuery( '.table.variations input[type="radio"]:not(:checked)'	).next().toggleClass('selected',false);
 	if (jQuery(this).parents().find('input[type="radio"]').is(':checked')) // to hide or not hide payments if any other attribute is selected
 	{
-		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',true); // hide it with a hiding class
+		jQuery('.select.tax_attrib').toggleClass('unhide-payments',true); // hide it with a hiding class
 	} else {
-		jQuery('.attribute-pa_paying-plan').toggleClass('unhide-payments',false); // reveal it by removing hiding class
+		jQuery('.select.tax_attrib').toggleClass('unhide-payments',false); // reveal it by removing hiding class
 	}
 	jQuery( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
 	setTimeout(function() { appendAttribPrices(); }, 500); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
@@ -176,7 +176,7 @@ function fcurrSelectedKey() {
 // Get the Paying Plan "value" (it's actually the slug), and create an array object together with the corresponding attributes IDs:
 function fcurrPayingplanKey() {
 	var currKey = [];
-	jQuery('.variations .select.attribute-pa_paying-plan .option').each(function () {
+	jQuery('.variations .select.tax_attrib .option').each(function () {
 		localVal = jQuery(this).attr('value'); 
 		for (var key in wm_pvar.products_attributes_values) { 
 			if (wm_pvar.products_attributes_values[key] === localVal) {
@@ -227,12 +227,10 @@ function ajaxAttribPrices() {
 	var $cart = jQuery(".xoo-qv-main form.variations_form");
 	if (typeof $cart === 'undefined' || $cart.length <= 0) { return; }
 	var product_id = $cart.attr('data-product_id'); 
-	console.log('Prod ID: '+product_id);
 	var data = {
 		'action': 'wmp_variation_price_array',
 		'product_id': product_id
 	};
-	console.log('DATA: '+ JSON.stringify(data, null, 2) );
 	jQuery.ajax({
 		url: wm_pvar.ajax_url,
 		type: "POST",
