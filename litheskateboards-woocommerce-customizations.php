@@ -121,15 +121,24 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
 		$parent_product_id = $product->get_id(); // getting the parent product
 		$peer_vars = molswc_get_peer_variations($parent_product_id, $name, $value); // getting the peer variations (see the function for details)
-		if ($peer_vars) {
-			foreach ($peer_vars as $peer_var) {
-				$peer_var_stock[$peer_var] = molswc_get_variation_stock($peer_var); // get the stock for each peer variation
+		if ($peer_vars) { // Now, if there's any peer_vars found ...
+			$peer_var_non_subscription_available = 'no'; // ... start assuming there's no non-subscription product available ...
+			foreach ($peer_vars as $peer_var) { // ... then iterate through all peer_vars ...
+				$peer_var_stock[$peer_var] = molswc_get_variation_stock($peer_var); // ... and get the stock for each peer variation ...
+					if ( !Subscriptio_Subscription_Product::is_subscription($peer_var) ) { // ... then check current peer_var si NOT subscription ...
+						$peer_var_non_subscription_available = 'yes'; // ... and if it's not, set the non_subscription_available flag to 'yes'
+					} 
 			}
-			$lowest_peer_var_stock = min($peer_var_stock); // get the lowest stock from all variations, just in case (it should be synced anyway)
+			$subs_user = molswc_check_user_subscription_able(); // Now check if current user is subscription-able ...
+			if ($subs_user == 'no' && $peer_var_non_subscription_available == 'no') { // ... then check if the user subscription-able status AND the non-subscription product available
+				$lowest_peer_var_stock = 'n/a'; // user non-subscription-able and no non-subscription plan available? Then prepare it to be shown as unavailable!
+			} else {
+				$lowest_peer_var_stock = min($peer_var_stock); // Otherwise get the lowest stock from all variations, just in case (it should be synced anyway)
+			}
 		} else {
 			$lowest_peer_var_stock = 'n/a'; // get something in case of no stock at all
 		}
-		// Now define the class that will be applied
+		// Now define the class that will be applied:
 		if ( is_numeric($lowest_peer_var_stock) ) {
 			if ( $lowest_peer_var_stock <= 0 ) {
 				$stock_class = 'var_stock_backorder';
@@ -460,7 +469,7 @@ echo "
 }
 
 // Prevent Left/Right product hints to show Wholesale and Private products - not yet done
-add_filter('avia_post_nav_settings','molswc_same_category_product_prev_next', 10, 1);
+// add_filter('avia_post_nav_settings','molswc_same_category_product_prev_next', 10, 1);
 function molswc_same_category_product_prev_next($settings) {
 	echo '<!-- avia_settings: '; print_r($settings); echo ' -->';
      $settings['same_category'] = true;
