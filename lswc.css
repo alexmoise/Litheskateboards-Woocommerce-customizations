@@ -286,11 +286,11 @@ a#reset-product-filters {
 }
 /* style checked radio buttons */
 #table-variations .radio-checked {
-	border: 1px solid #42d62c;
-	color: #42d62c;
+	border: 1px solid #42d62c !important;
+	color: #42d62c !important;
 }
 #table-variations .radio-checked label.attrib .inner-attrib {
-	color: #42d62c;
+	color: #42d62c !important;
 }
 /* product tabs removal */
 ul.tabs.wc-tabs {
