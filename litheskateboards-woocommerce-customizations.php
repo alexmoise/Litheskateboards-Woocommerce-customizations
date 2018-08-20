@@ -459,4 +459,13 @@ echo "
 ";
 }
 
+// Prevent Left/Right product hints to show Wholesale and Private products - not yet done
+add_filter('avia_post_nav_settings','molswc_same_category_product_prev_next', 10, 1);
+function molswc_same_category_product_prev_next($settings) {
+	echo '<!-- avia_settings: '; print_r($settings); echo ' -->';
+     $settings['same_category'] = true;
+	echo '<!-- avia_settings: '; print_r($settings); echo ' -->';
+     return $settings;
+}
+
 ?>
