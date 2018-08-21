@@ -292,6 +292,10 @@ a#reset-product-filters {
 #table-variations .radio-checked label.attrib .inner-attrib {
 	color: #42d62c !important;
 }
+/* Hide Term Description when there's only one Term available */
+.hide-because-is-single {
+    display: none;
+}
 /* product tabs removal */
 ul.tabs.wc-tabs {
   display: none;
@@ -395,14 +399,14 @@ body.single-product .container .product_title.entry-title {
 	display: inline-block;
 }
 .table.variations .tbody .value.td .each-attrib {
-  border-radius: 0;
+	border-radius: 0;
 }
 .table.variations .tbody .value.td .each-attrib > div.td {
     padding: 5px;
 }
 .table.variations .tbody .value.td .each-attrib .value.td, 
 .table.variations .tbody .value.td .each-attrib .value-buttons.td {
-	  width: 100%;
+	width: 100%;
 }
 .table.variations .tbody .value.td .each-attrib:last-child {
     border-left: 1px solid #606060;

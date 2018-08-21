@@ -61,6 +61,16 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 		jQuery('.select.tax_attrib').toggleClass('unhide-payments',false); // reveal it by removing hiding class
 	}
 	jQuery( '*[class=""]' ).removeAttr('class'); // removing empty "class" attribute, but only when it's empty ;-)
+	jQuery( '*[style=""]' ).removeAttr('style'); // also remove "style" attribs when become empty
+	
+	// Hide Payment Plan description if only one plan remains
+	if ( jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').length == 1 )
+	{
+		jQuery(".table.variations .tax > .attrib-description").toggleClass('hide-because-is-single',true);
+	} else {
+		jQuery(".table.variations .tax > .attrib-description").toggleClass('hide-because-is-single',false);
+	}
+	
 	setTimeout(function() { appendAttribPrices(); }, 500); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
 	molswcPaymentsButtonsReFit(); // Call the re-fit function to count the buttons and set their width according with their number
 	
@@ -403,7 +413,7 @@ function molswcPaymentsButtonsReFit() {
 		// jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').attr('style', 'width: calc((100% / '+paymentsCnt+') - 14px) !important;'); 
 		setTimeout(function() { // then wait another 250 and fade in what's not disabled:
 			jQuery('#table-variations div.tax:not(.has-been-disabled)').fadeIn(250);
-			jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled) span.attrib-description').fadeIn(250);
+			jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled) span.attrib-description:not(.hide-because-is-single)').fadeIn(250);
 		}, 250);
 	}, 250);
 }
