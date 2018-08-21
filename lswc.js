@@ -64,11 +64,13 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	jQuery( '*[style=""]' ).removeAttr('style'); // also remove "style" attribs when become empty
 	
 	// Hide Payment Plan description if only one plan remains
-	if ( jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').length == 1 )
-	{
-		jQuery(".table.variations .tax > .attrib-description").toggleClass('hide-because-is-single',true);
-	} else {
-		jQuery(".table.variations .tax > .attrib-description").toggleClass('hide-because-is-single',false);
+	if ( subs_user == 'no' ) {
+		if ( jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').length == 1 )
+		{
+			jQuery(".table.variations .tax > .attrib-description").toggleClass('hide-because-is-single',true);
+		} else {
+			jQuery(".table.variations .tax > .attrib-description").toggleClass('hide-because-is-single',false);
+		}
 	}
 	
 	setTimeout(function() { appendAttribPrices(); }, 500); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)

@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). The settings page is under the Woocommerce section in WP Admin left menu. Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.3.1
+ * Version: 0.3.2
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -373,7 +373,7 @@ function molswc_disable_variations_user_based( $active, $variation ) {
     }
 }
 
-// Sync peer variations stock at placing new order. (peer variations are those which have the sane 'model-and-size' attribute but different 'payment-plan' global attribute)
+// Sync peer variations stock at placing new order. (peer variations are those which have the same 'model-and-size' attribute but different 'payment-plan' global attribute)
 add_action( 'woocommerce_reduce_order_stock', array('Wc_class', 'molswc_stock_adjutments'));
 class Wc_class {
 	public static function molswc_stock_adjutments($order) {
@@ -400,7 +400,7 @@ class Wc_class {
 				parse_str(strtr($peer_variation_attribs, ":,", "=&"), $peer_var_attribs_array); // this is peer variation attributes *array*
 				$peer_var_peering_attrib = $peer_var_attribs_array[$attrib_to_use_for_peering]; // this is peer variation 'model-and-size' attribute
 				if ($current_var_peering_attrib == $peer_var_peering_attrib) { // check if this *IS* a peer variation (has same Model-and-Size or so)
-					// Start creating the $peer_vars_working_array to store the IDs of variations that wold be synced later
+					// Start creating the $peer_vars_working_array to store the IDs of variations that would be synced later
 					if ( !isset($peer_vars_working_array[$peer_variation_id]) ) { // if this peer variations is not in working array ...
 						$peer_vars_working_array[$peer_variation_id] = $current_var_stock; // ...add it with ID as index and current stock as value
 					} else { // otherwise ...
@@ -456,12 +456,10 @@ add_action( 'wp_head', 'molswc_js_variables' );
 function molswc_js_variables() {
 echo "
 <script type='text/javascript'>
-/* <![CDATA[ */
-";
-	echo " var a_test_variable = '2hey';";
+/* <![CDATA[ */";
+	echo "\r\n var subs_user = '".molswc_check_user_subscription_able()."';"; 
 	if (get_option( 'molswc_estdelivery_instock' )) 	{ echo "\r\n var estdelivery_instock = '".strip_tags(get_option( 'molswc_estdelivery_instock' ))."';"; }
 	if (get_option( 'molswc_estdelivery_backorder' )) 	{ echo "\r\n var estdelivery_backorder = '".strip_tags(get_option( 'molswc_estdelivery_backorder' ))."';"; }
-
 echo "
 /* ]]> */
 </script>
