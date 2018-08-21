@@ -301,15 +301,15 @@ form.variations_form.cart .single_variation_wrap {
   display: none !important;
 }
 /* hiding Payment Plans title */
-div.select.attribute-pa_paying-plan .label.td {
+div.select.tax_attrib .label.td {
     display: none;
 }
 
 /* payment options group (un)hide */
-.attribute-pa_paying-plan.tr {
+.tax_attrib.tr {
   display: none;
 }
-.attribute-pa_paying-plan.tr.unhide-payments {
+.tax_attrib.tr.unhide-payments {
   display: block;
 }
 
