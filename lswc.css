@@ -444,11 +444,14 @@ div#av_section_1 {
 	display: none;
 }
 .threesixty-images > li > img {
-    border: 0 !important;
+	border: 0 !important;
+	max-height: 80vh;
+	object-fit: contain;
 }
 .woocommerce-product-gallery .threesixty-image {
     width: 100% !important;
 }
+.single-product img.threesixty-preview-image, 
 .single-product div.product .woocommerce-product-gallery img {
     border: 0;
     width: 100% !important;
