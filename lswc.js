@@ -81,12 +81,10 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	// ... then check if the currently "checked" button has "in_stock" status and if so, display "estdelivery_instock" variable defined for  in HTML
 	if ( molswc_check_current_status() == 'var_stock_instock' && typeof estdelivery_instock !== 'undefined' ) { 
 	jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">Est. delivery: '+estdelivery_instock+'</span>');
-	// console.log('Est. deliv.: '+estdelivery_instock); 
 	}
 	// ... otherwise check if the currently "checked" button has "backorder" status and if so, display "estdelivery_backorder" variable defined in HTML
 	if ( molswc_check_current_status() == 'var_stock_backorder' && typeof estdelivery_backorder !== 'undefined' ) { 
 	jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">Est. delivery: '+estdelivery_backorder+'</span>');
-	// console.log('Est. deliv.: '+estdelivery_backorder); 
 	}
 });
 
@@ -291,34 +289,26 @@ jQuery(document).on('click', '#reset-product-filters', function() {
 jQuery(document).delegate( '.product-filters', 'change', function() {
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
 	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
-	// if ( filtermodel ) { console.log(' Model: '+filtermodel); }
-	// if ( filterwidth ) { console.log(' Width: '+filterwidth); }
 	if ( filtermodel ) { 
-		// console.log('filtermodel only: '+filtermodel);
 		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filtermodel+'"]').fadeIn(); 
 		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filtermodel+'"]').fadeOut(); 
 	}
 	if ( filterwidth ) { 
-		// console.log('filterwidth only: '+filterwidth);
 		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filterwidth+'"]').fadeIn(); 
 		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filterwidth+'"]').fadeOut(); 
 	}
 	if ( filtermodel && filterwidth ) { 
 		filtercomplete = filtermodel + ' ' + filterwidth;
-		// console.log('filtercomplete: '+filtercomplete);
 		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filtercomplete+'"]').fadeIn(); 
 		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filtercomplete+'"]').fadeOut(); 
 	}
-	// console.log('Combination: ' + filtermodel + ' ' + filterwidth + ' Boards have it: ' + checkIfModelWidthExists( filtermodel, filterwidth, getAllAttributes() ));
 });
 // Disable WIDTHS that are not possible in boards filters drop downs
 jQuery(document).delegate( 'select[name="Models"]', 'change', function() {
-	// console.log('Models changed!');
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
 	jQuery( 'select[name="Widths"] > option' ).each( function( index, element ){
 		var checkingwidth = jQuery( this ).val();
 		var optionPossible = checkIfModelWidthExists( filtermodel, checkingwidth, getAllAttributes() );
-		// console.log( 'Checking: '+filtermodel+' '+checkingwidth+' '+optionPossible );
 		if(optionPossible == false) {
 			jQuery( this ).attr('disabled', 'disabled');
 		}
@@ -329,12 +319,10 @@ jQuery(document).delegate( 'select[name="Models"]', 'change', function() {
 });
 // Disable MODELS that are not possible in boards filters drop downs
 jQuery(document).delegate( 'select[name="Widths"]', 'change', function() {
-	// console.log('Widths changed!');
 	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
 	jQuery( 'select[name="Models"] > option' ).each( function( index, element ){
 		var checkingmodel = jQuery( this ).val();
 		var optionPossible = checkIfModelWidthExists( checkingmodel, filterwidth, getAllAttributes() );
-		// console.log( 'Checking: '+checkingmodel+' '+filterwidth+' '+optionPossible );
 		if(optionPossible == false) {
 			jQuery( this ).attr('disabled', 'disabled');
 		}
@@ -351,7 +339,6 @@ function enableOnlyAvailableModelsAndWidths () {
 		jQuery(".product-filters select[name='Models'] > option:not([hidden])").each(function() {
 			var modeltocheck = this.value;
 			var optionPossible = checkIfModelWidthExists( modeltocheck, widthtocheck, getAllAttributes() );
-			// console.log( 'Checking Widths: '+widthtocheck+' '+modeltocheck+' '+optionPossible );
 			if(optionPossible == true) {
 				jQuery( this ).removeAttr('disabled');
 			}
@@ -363,7 +350,6 @@ function enableOnlyAvailableModelsAndWidths () {
 		jQuery(".product-filters select[name='Widths'] > option:not([hidden])").each(function() {
 			var widthtocheck = this.value;
 			var optionPossible = checkIfModelWidthExists( modeltocheck, widthtocheck, getAllAttributes() );
-			// console.log( 'Checking Models: '+modeltocheck+' '+widthtocheck+' '+optionPossible );
 			if(optionPossible == true) {
 				jQuery( this ).removeAttr('disabled');
 			}
@@ -372,7 +358,6 @@ function enableOnlyAvailableModelsAndWidths () {
 }
 // FUNCTION to check if model-width combination is possible
 function checkIfModelWidthExists (modeltocheck, widthtocheck, allcombinations) {
-	// console.log(' InFunc: '+modeltocheck+' | '+widthtocheck+' | '+allcombinations);		
 	var hasPartialMatch = allcombinations.some(function(v){ return v.indexOf(modeltocheck+' '+widthtocheck)>=0 }) // check array elements by partial strings
 	return hasPartialMatch;
 }
@@ -425,6 +410,5 @@ function molswcPaymentsButtonsReFit() {
 function molswc_check_current_status() {
 	var stockTarget = jQuery('div.attrib input[type="radio"]:checked');
 	var stockStatus = jQuery(stockTarget).attr("data-stock-status");
-	// console.log('StockStat: '+stockStatus);
 	return stockStatus;
 }

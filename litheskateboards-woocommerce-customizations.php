@@ -3,8 +3,8 @@
  * Plugin Name: Litheskateboards Woocommerce customizations
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
- * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting all previous ones, 3. jump directly to checkout after selecting the last option (Payment Plan). The settings page is under the Woocommerce section in WP Admin left menu. Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at https://moise.pro/contact/
- * Version: 0.3.3
+ * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
+ * Version: 1.0.0
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -27,6 +27,15 @@ function molswc_adding_scripts() {
 	wp_enqueue_script('lswc-script');
 }
 add_action( 'wp_enqueue_scripts', 'molswc_adding_scripts', 9999999 ); 
+
+// Adding the Settings link in Plugins Page, next to Deactivate link
+function molswc_plugin_action_links( $molswclinks ) {
+	$molswclinks = array_merge( array(
+		'<a href="' . esc_url( admin_url( '/admin.php?page=lithe-options' ) ) . '">' . __( 'Settings' ) . '</a>'
+	), $molswclinks );
+	return $molswclinks;
+}
+add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'molswc_plugin_action_links' );
 
 // Adding mobile app capability meta
 add_action( 'wp_head', 'molswc_webapp_meta' ); 
@@ -430,7 +439,6 @@ function molswc_check_if_custom_attrib_exists($attribs_array) {
 function molswc_get_peer_variations($parent_id, $based_on_attr_name, $based_on_attr_value) {
 	$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product
 	$peer_variations = $parent_product->get_available_variations(); // Now get all the *possible* peer variations, those that are children of the same product
-	// echo '<!-- peer_variations: '; print_r($peer_variations); echo ' -->';
 	foreach ($peer_variations as $peer_variation) {
 		$peer_variation_id      = $peer_variation['variation_id']; // this is peer variation ID
 		$peer_variation_product = wc_get_product( $peer_variation_id ); // this is peer variation product instance
@@ -466,13 +474,7 @@ echo "
 ";
 }
 
-// Prevent Left/Right product hints to show Wholesale and Private products - not yet done
-// add_filter('avia_post_nav_settings','molswc_same_category_product_prev_next', 10, 1);
-function molswc_same_category_product_prev_next($settings) {
-	echo '<!-- avia_settings: '; print_r($settings); echo ' -->';
-     $settings['same_category'] = true;
-	echo '<!-- avia_settings: '; print_r($settings); echo ' -->';
-     return $settings;
-}
+// Prevent Left/Right product hints to show in product pages. Could change its settings and made it show, see it in parent theme, in "functions-enfold.php file around line 505
+function avia_post_nav($same_category = false, $taxonomy = 'category') { return; }
 
 ?>
