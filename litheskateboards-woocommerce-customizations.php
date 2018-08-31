@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.5
+ * Version: 1.0.6
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -340,6 +340,26 @@ function molswc_flat_array(array $array) {
     $return = array();
     array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
     return $return;
+}
+
+// Rack bottom and Rack top images in main shop page
+// Adding Rack Top:
+add_action( 'woocommerce_before_shop_loop', 'molswc_rack_top_image', 40 );
+function molswc_rack_top_image() {
+	$top_image_file_url = plugins_url('images/Rack_Top.png', __FILE__);
+	echo '
+	<div class="rack_top">
+		<img class="rack_top_image" src="'.$top_image_file_url.'" alt="Lithe Skateboards Rack Top">
+	</div>';
+}
+// Adding Rack Bottom:
+add_action( 'woocommerce_after_shop_loop', 'molswc_rack_bottom_image', 0 );
+function molswc_rack_bottom_image() {
+	$bottom_image_file_url = plugins_url('images/Rack_Bottom.png', __FILE__);
+	echo '
+	<div class="rack_bottom">
+		<img class="rack_bottom_image" src="'.$bottom_image_file_url.'" alt="Lithe Skateboards Rack Bottom">
+	</div>';
 }
 
 // User subscription-able

@@ -68,6 +68,22 @@ a#reset-product-filters {
   color: #12ff1e;
   text-decoration: none;
 }
+.woocommerce-page img.rack_top_image {
+    display: block;
+    width: 100%;
+}
+.woocommerce-page img.rack_bottom_image {
+    width: 100%;
+}
+ul.products:after {
+    content: ' ';
+    display: block;
+    margin-bottom: 4.5%;
+	clear: both;
+}
+ul.products {
+   margin: -1.4vw 0 0 0;
+}
 
 /* xoo Product Popup styling */
 .xoo-qv-container .xoo-qv-summary h1.product_title.entry-title { display:none; } /* hide H1 in its initial place in DOM (will move it with JS anyway) */
