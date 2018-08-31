@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -31,7 +31,7 @@ add_action( 'wp_enqueue_scripts', 'molswc_adding_scripts', 9999999 );
 // Adding the Settings link in Plugins Page, next to Deactivate link
 function molswc_plugin_action_links( $molswclinks ) {
 	$molswclinks = array_merge( array(
-		'<a href="' . esc_url( admin_url( '/admin.php?page=lithe-options' ) ) . '">' . __( 'Settings' ) . '</a>'
+		'<a target="_blank" href="' . esc_url( admin_url( '/admin.php?page=lithe-options' ) ) . '">' . __( 'Settings' ) . '</a>'
 	), $molswclinks );
 	return $molswclinks;
 }
@@ -43,13 +43,30 @@ function molswc_webapp_meta() {
     echo '<meta name="mobile-web-app-capable" content="yes">';
 }
 
+// Just another simple trim function, for later use :-)
+function molswc_trim_value(&$value) { $value = trim($value); } 
+
 // Define the options to separate lists
 function molswc_designated_options() {
-	function molswc_trim_value(&$value) { $value = trim($value); } // just another simple trim function, for later use
 	$raw_designated_options = strip_tags(get_option( 'molswc_designated_options' )); // get raw options as defined in options DB table
 	$designated_options = explode(',', $raw_designated_options); // create an array with options
 	array_walk($designated_options, 'molswc_trim_value'); // remove possible white space at the beginning or the end of each array element (using previously defined trim function)
 	return $designated_options; // finally return the array to wherever is needed
+}
+
+// Exclude the products in these categories from displaying on the shop page
+add_action( 'woocommerce_product_query', 'molswc_custom_boards_query' );
+function molswc_custom_boards_query( $q ) {
+	$raw_excluded_categories = strip_tags(get_option( 'molswc_excluded_categories' )); // get raw options as defined in options DB table
+	$excluded_categories = explode(',', $raw_excluded_categories); // create an array with options
+    $tax_query = (array) $q->get( 'tax_query' );
+    $tax_query[] = array(
+           'taxonomy' => 'product_cat',
+           'field' => 'slug',
+           'terms' => $excluded_categories, 
+           'operator' => 'NOT IN'
+    );
+    $q->set( 'tax_query', $tax_query );
 }
 
 // Get rid of original JS from WC Variations Price Hints ... (for good, we won't replace it anymore as all functions are now in lswc.js)
@@ -225,7 +242,7 @@ function molswc_mobile_scroll_hint () {
 	}
 }
 
-// No wholesale products in SHop, even for admins
+// No wholesale products in Shop, even for admins
 add_action( 'woocommerce_product_query', 'molswc_no_wholesale_products_in_shop' ); 
 function molswc_no_wholesale_products_in_shop( $q ) {
     $tax_query = (array) $q->get( 'tax_query' );
@@ -286,7 +303,7 @@ function molswc_product_filters() {
 	}
 	$flat_models_and_sizes_list = molswc_flat_array($unique_models_and_sizes);
 	$final_models_and_sizes_list = array_unique($flat_models_and_sizes_list); 
-	$chosen_attribs = molswc_designated_options(); // sync this later with Woocommerce ... or easily define these some other way ...
+	$chosen_attribs = molswc_designated_options();
 	foreach ( $chosen_attribs as $chosen_attrib ) { 
 		$only_widths[] = str_replace($chosen_attrib." ", "", $final_models_and_sizes_list);
 	}

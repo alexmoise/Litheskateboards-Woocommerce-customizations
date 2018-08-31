@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.1
+ * Version: 1.0.5
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
 
@@ -17,6 +17,7 @@ function molswc_register_settings() {
 	register_setting( 'molswc-settings-group', 'molswc_estdelivery_instock' );
 	register_setting( 'molswc-settings-group', 'molswc_estdelivery_backorder' );
 	register_setting( 'molswc-settings-group', 'molswc_designated_options' );
+	register_setting( 'molswc-settings-group', 'molswc_excluded_categories' );
 	register_setting( 'molswc-settings-group', 'molswc_delete_options_uninstall' );
 }
 
@@ -61,6 +62,19 @@ function molswc_admin_options_page_callback() { ?>
 			<td> 
 				<input name="molswc_designated_options" type="text" id="molswc_designated_options" aria-describedby="molswc_designated_options" value="<?php echo strip_tags(get_option( 'molswc_designated_options' )); ?>" class="regular-text">
 				<span>(Columns will be created with the order specified here.)</span>
+			</td>
+		</tr>
+	</table>
+	
+	<h2>Excluded categories</h2>
+	<p>Comma separated list of categories <strong>slugs</strong> that will be excluded from showing in SHOP page. Example: "accessories, wholesale".</p>
+	
+	<table class="form-table">
+		<tr valign="top">
+			<th scope="row">The "excluded categories" are: </th>
+			<td> 
+				<input name="molswc_excluded_categories" type="text" id="molswc_excluded_categories" aria-describedby="molswc_excluded_categories" value="<?php echo strip_tags(get_option( 'molswc_excluded_categories' )); ?>" class="regular-text">
+				<span>(Comma separated list of <strong>slugs</strong>, pick them from <a target="_blank" href="/wp-admin/edit-tags.php?taxonomy=product_cat&post_type=product">Categories page</a>.)</span>
 			</td>
 		</tr>
 	</table>
