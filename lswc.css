@@ -32,11 +32,11 @@ div#main {
   filter: brightness(125%);
 }
 ul.products li.product {
-  margin: 0 0 -25px 0;
+  margin: 0 0 -4% 0;
 }
 @media only screen and (max-width: 767px) {
 	ul.products li.product {
-		margin: 0 0 -10px 0 !important;
+		margin: 0 0 -4% 0 !important;
 		width: 100% !important;
 	}
 }
