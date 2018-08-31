@@ -74,6 +74,7 @@ a#reset-product-filters {
 }
 .woocommerce-page img.rack_bottom_image {
     width: 100%;
+	margin-bottom: -9px;
 }
 ul.products:after {
     content: ' ';
@@ -83,6 +84,9 @@ ul.products:after {
 }
 ul.products {
    margin: -1.4vw 0 0 0;
+}
+.archive.woocommerce main.template-shop.content {
+    padding-bottom: 0;
 }
 
 /* xoo Product Popup styling */
