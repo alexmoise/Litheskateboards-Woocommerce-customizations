@@ -306,6 +306,10 @@ form.variations_form.cart .single_variation_wrap {
 div.select.tax_attrib .label.td {
     display: none;
 }
+/* Hide variable price range */
+.av-woo-purchase-button > p.price {
+    display: none !important;
+}
 
 /* payment options group (un)hide */
 .tax_attrib.tr {
