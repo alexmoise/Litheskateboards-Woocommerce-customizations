@@ -80,11 +80,11 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	jQuery('span.attribStockStatus').remove(); // First remove it from where it is displayed so it won't get displayed twice
 	// ... then check if the currently "checked" button has "in_stock" status and if so, display "estdelivery_instock" variable defined for  in HTML
 	if ( molswc_check_current_status() == 'var_stock_instock' && typeof estdelivery_instock !== 'undefined' ) { 
-	jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">Est. delivery: '+estdelivery_instock+'</span>');
+	jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">'+estdelivery_instock+'</span>');
 	}
 	// ... otherwise check if the currently "checked" button has "backorder" status and if so, display "estdelivery_backorder" variable defined in HTML
 	if ( molswc_check_current_status() == 'var_stock_backorder' && typeof estdelivery_backorder !== 'undefined' ) { 
-	jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">Est. delivery: '+estdelivery_backorder+'</span>');
+	jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">'+estdelivery_backorder+'</span>');
 	}
 });
 
