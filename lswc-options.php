@@ -1,7 +1,8 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.5
+ * Version: 1.0.11
+ * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
 
@@ -18,6 +19,7 @@ function molswc_register_settings() {
 	register_setting( 'molswc-settings-group', 'molswc_estdelivery_backorder' );
 	register_setting( 'molswc-settings-group', 'molswc_designated_options' );
 	register_setting( 'molswc-settings-group', 'molswc_excluded_categories' );
+	register_setting( 'molswc-settings-group', 'molswc_enable_avia_debug' );
 	register_setting( 'molswc-settings-group', 'molswc_delete_options_uninstall' );
 }
 
@@ -75,6 +77,19 @@ function molswc_admin_options_page_callback() { ?>
 			<td> 
 				<input name="molswc_excluded_categories" type="text" id="molswc_excluded_categories" aria-describedby="molswc_excluded_categories" value="<?php echo strip_tags(get_option( 'molswc_excluded_categories' )); ?>" class="regular-text">
 				<span>(Comma separated list of <strong>slugs</strong>, pick them from <a target="_blank" href="/wp-admin/edit-tags.php?taxonomy=product_cat&post_type=product">Categories page</a>.)</span>
+			</td>
+		</tr>
+	</table>
+	
+	<h2>Enable Avia Debug</h2>
+	<p>Checking the option below will enable Avia Debug, useful for copy page/product content from one website to another</p>
+	
+	<table class="form-table">
+		<tr valign="top">
+			<th scope="row">Enable Avia Debug: </th>
+			<td>
+				<input name="molswc_enable_avia_debug" type="checkbox" value="1" <?php checked( '1', get_option( 'molswc_enable_avia_debug' ) ); ?> />
+				<span>(While this is enabled the Page Code text are will be available at the end of Avia Page Builder section. Enable on other web site too to make copy/paste possible.)</span>
 			</td>
 		</tr>
 	</table>
