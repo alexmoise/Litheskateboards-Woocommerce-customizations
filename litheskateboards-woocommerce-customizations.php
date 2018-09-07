@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.11
+ * Version: 1.0.12
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -70,11 +70,20 @@ function molswc_custom_boards_query( $q ) {
 }
 
 // Get rid of original JS from WC Variations Price Hints ... (for good, we won't replace it anymore as all functions are now in lswc.js)
+add_action('wp_print_scripts','molswc_remove_wcvarhints_js');
 function molswc_remove_wcvarhints_js() {
     wp_dequeue_script('wm_variation_price_hints_script');
     wp_deregister_script('wm_variation_price_hints_script');
 }
-add_action('wp_enqueue_scripts','molswc_remove_wcvarhints_js');
+
+// Get rid of the original spinner function of the Smart Product Viewer plugin, and enqueue the one with the customized JS code
+add_action('wp_print_scripts','molswc_replace_spinner_js');
+function molswc_replace_spinner_js() {
+    wp_dequeue_script('smart-product');
+    wp_deregister_script('smart-product');
+	wp_register_script('smart-product-custom', plugins_url('smart.product.min.js', __FILE__));
+	wp_enqueue_script('smart-product-custom');
+}
 
 // Redirect wholesale users from products to wholesale form
 add_action('template_redirect', 'molswc_redirect_wholesalers');
