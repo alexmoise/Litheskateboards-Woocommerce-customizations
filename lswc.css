@@ -1,3 +1,9 @@
+/**
+ * CSS styles for Litheskateboards Woocommerce customizations
+ * Version: 1.0.13
+ * (version above is equal with main plugin file version when this file was updated)
+ */
+
 /* shop default page */
 div#main {
     background-color: #212121;
@@ -119,7 +125,7 @@ ul.products {
 	max-width: 850px;
 }
 .xoo-qv-container .xoo-qv-main {
-  background-color: #212121;
+  background-color: #262626;
   position: relative;
   padding: 10px 20px;
   height:  auto;
@@ -452,7 +458,7 @@ body.single-product .container .product_title.entry-title {
 
 /* Bottom section styling */
 div#av_section_1 {
-	background-color: #212121;
+	background-color: #262626;
 	border-top: 0;
 }
 .improvement_notice p {
