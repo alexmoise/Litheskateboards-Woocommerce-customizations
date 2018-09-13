@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.15
+ * Version: 1.0.16
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -95,20 +95,21 @@ function molswc_redirect_wholesalers () {
 	if ( in_array('wholesale_customer', $curr_user_roles) ) { // first check if the current logged in user is a wholesale customer,
 		if ( has_term( 'wholesale', 'product_cat' ) ) { return; } // then just get out of this function if the product IS in "wholesale" category;
 		if ( is_shop() || is_product() || is_product_category() ) { // otherwise check if we're on the shop || product || category ...
-			wp_redirect('/wholesale/wholesale-order-form/'); // ...and redirect if so, to the wholesale form page ...
+			wp_redirect('/wholesale/order-form/'); // ...and redirect if so, to the wholesale form page ...
 			exit(); // ...then exit and the redirect will do the rest.
 		}
-		if ( $curr_slug == 'wholesale-login' ) {
-			wp_redirect('/wholesale/wholesale-order-form/'); // if already logged and Wholesaler then go straight to wholesale order form
+		if ( $curr_slug == 'login' ) {
+			wp_redirect('/wholesale/order-form/'); // if already logged and Wholesaler then go straight to wholesale order form
 			exit();
 		}
 	}
 	if ( !in_array('wholesale_customer', $curr_user_roles) ) {
-		if ( $curr_slug == 'wholesale-order-form' ) {
-			wp_redirect('/wholesale/wholesale-login/'); // if trying to get to the wholesale order form but not logged in then go to wholesale login
+		if ( $curr_slug == 'order-form' ) {
+			wp_redirect('/wholesale/login/'); // if trying to get to the wholesale order form but not logged in then go to wholesale login
 			exit();
 		}
 	}
+
 }
 
 // Shop page title changed to "Shop - Lithe Skateboards"
