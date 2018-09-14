@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.16
+ * Version: 1.0.17
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -87,29 +87,28 @@ function molswc_replace_spinner_js() {
 	wp_enqueue_script('smart-product-custom');
 }
 
-// Redirect wholesale users from products to wholesale form and non-wholesale users the other way around ... plus few more tricks - like login and WS products
+// Redirect wholesale users from products to wholesale form and non-wholesale users the other way around ... plus few more tricks - like login and (non)WS products
 add_action('template_redirect', 'molswc_redirect_wholesalers');
 function molswc_redirect_wholesalers () {
 	$curr_slug = get_post_field( 'post_name', get_post() );
+	$curr_url = rtrim(get_permalink(), "/");
+	if ( molswc_is_wholesale_user() ) { 
+		if ( is_shop() && !is_product() ) 						{ wp_redirect('/wholesale/order-form/'); 	exit(); }
+		if ( is_product() && !molswc_is_wholesale_product() )	{ wp_redirect($curr_url.'-ws'); 			exit(); }
+		if ( $curr_slug == 'login' ) 							{ wp_redirect('/wholesale/order-form/'); 	exit(); }
+	}
+	if ( !molswc_is_wholesale_user() ) {
+		if ( $curr_slug == 'order-form' ) 						{ wp_redirect('/wholesale/login/'); 		exit(); }
+		if ( is_product() && molswc_is_wholesale_product() )	{ wp_redirect(rtrim($curr_url, "-ws")); 	exit(); }
+	}
+}
+// functions to check if wholesale or not, for both user and product
+function molswc_is_wholesale_user() {
 	$curr_user_roles = wp_get_current_user()->roles;
-	if ( in_array('wholesale_customer', $curr_user_roles) ) { // first check if the current logged in user is a wholesale customer,
-		if ( has_term( 'wholesale', 'product_cat' ) ) { return; } // then just get out of this function if the product IS in "wholesale" category;
-		if ( is_shop() || is_product() || is_product_category() ) { // otherwise check if we're on the shop || product || category ...
-			wp_redirect('/wholesale/order-form/'); // ...and redirect if so, to the wholesale form page ...
-			exit(); // ...then exit and the redirect will do the rest.
-		}
-		if ( $curr_slug == 'login' ) {
-			wp_redirect('/wholesale/order-form/'); // if already logged and Wholesaler then go straight to wholesale order form
-			exit();
-		}
-	}
-	if ( !in_array('wholesale_customer', $curr_user_roles) ) {
-		if ( $curr_slug == 'order-form' ) {
-			wp_redirect('/wholesale/login/'); // if trying to get to the wholesale order form but not logged in then go to wholesale login
-			exit();
-		}
-	}
-
+	if ( in_array('wholesale_customer', $curr_user_roles) ) { return true; }
+}
+function molswc_is_wholesale_product() {
+	if ( has_term( 'wholesale', 'product_cat' ) ) { return true; }
 }
 
 // Shop page title changed to "Shop - Lithe Skateboards"
