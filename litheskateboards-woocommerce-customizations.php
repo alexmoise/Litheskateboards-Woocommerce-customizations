@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.19
+ * Version: 1.0.20
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -136,7 +136,7 @@ if ( ! function_exists( 'molswc_builder_set_debug' ) ) {
 }
 
 // Extend conditional variations limit
-// add_filter( 'woocommerce_ajax_variation_threshold', 'molswc_wc_ajax_variation_threshold', 10, 2 );
+add_filter( 'woocommerce_ajax_variation_threshold', 'molswc_wc_ajax_variation_threshold', 10, 2 );
 function molswc_wc_ajax_variation_threshold( $qty, $product ) {
     return 50;
 }
@@ -239,9 +239,9 @@ function molswc_layout_adjustments() {
 	remove_action( 'xoo-qv-images','xoo_qv_product_image',20); // also remove the regular image from popup ...
 	add_action( 'xoo-qv-images', array('SmartProductPlugin', 'wooCommerceImageAction'), 19 ); // ... and replace it with Product Smart Spinner:
 	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_rating', 10 ); // remove XOO Product Popup actions: rating
+	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_price', 15 ); // remove XOO Product Popup actions: price range
 	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_excerpt', 20 ); // remove XOO Product Popup actions: excerpt
 	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_meta', 30 ); // remove XOO Product Popup actions: meta
-	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_price', 15 ); // remove XOO Product Popup actions: price range
 	remove_action( 'woocommerce_after_single_product_summary','avia_woocommerce_output_related_products',20); // remove related products in single product page:
 	remove_action( 'woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10 );
 	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
@@ -552,5 +552,92 @@ echo "
 if(!function_exists('avia_post_nav')) {
 	function avia_post_nav($same_category = false, $taxonomy = 'category') { return; }
 }
+
+// Fragment cache class used for popup content caching,
+// Based on https://github.com/pressjitsu/fragment-cache/blob/master/fragment-cache.php
+// Called in /Litheskateboards-Woocommerce-customizations/template/woocommerce/single-product/add-to-cart/variable.php, observe the parameters there
+// Could be called anywhere else if needed :-)
+class Pj_Fragment_Cache {
+	private static $key;
+	private static $args;
+	private static $lock;
+	public static function output( $key, $args = array() ) {
+		if ( self::$lock )
+			throw new Exception( 'Output started but previous output was not stored.' );
+		$args = wp_parse_args( $args, array(
+			'storage' => 'transient', // object-cache, meta
+			'unique' => array(),
+			'ttl' => 0,
+			// Meta storage only
+			'meta_type' => '',
+			'object_id' => 0,
+		) );
+		$args['unique'] = md5( json_encode( $args['unique'] ) );
+		$cache = self::_get( $key, $args );
+		$serve_cache = true;
+		if ( empty( $cache ) ) {
+			$serve_cache = false;
+		} elseif ( $args['ttl'] > 0 && $cache['timestamp'] < time() + $args['ttl'] ) {
+			$serve_cache = false;
+		} elseif ( ! hash_equals( $cache['unique'], $args['unique'] ) ) {
+			$serve_cache = false;
+		} elseif ( $args['disable'] ) {
+			$serve_cache = false;
+		}
+		if ( ! $serve_cache ) {
+			self::$key = $key;
+			self::$args = $args;
+			self::$lock = true;
+			ob_start();
+			return false;
+		}
+		echo '<!-- start cache block with key = ' . $key . ' -->' . $cache['data'] . '<!-- end cache block with key = ' . $key . ' -->';
+		return true;
+	}
+	private static function _get( $key, $args ) {
+		$cache = null;
+		switch ( $args['storage'] ) {
+			case 'transient':
+				$cache = get_transient( '_pj_fragment_cache:' . $key );
+				break;
+			case 'object-cache':
+				$cache = wp_cache_get( $key, 'pj_fragment_cache' );
+				break;
+			case 'meta':
+				if ( empty( $args['meta_type'] ) || empty( $args['object_id'] ) )
+					throw new Exception( 'When using meta storage meta_type and object_id are required.' );
+				$cache = get_metadata( $args['meta_type'], $args['object_id'], '_pj_fragment_cache:' . $key, true );
+				break;
+		}
+		return $cache;
+	}
+	private static function _set( $key, $args, $value ) {
+		switch ( $args['storage'] ) {
+			case 'transient':
+				$cache = set_transient( '_pj_fragment_cache:' . $key, $value, $args['ttl'] );
+				break;
+			case 'object-cache':
+				$cache = wp_cache_set( $key, $value, 'pj_fragment_cache', $args['ttl'] );
+				break;
+			case 'meta':
+				$cache = update_metadata( $args['meta_type'], $args['object_id'], '_pj_fragment_cache:' . $key, $value );
+				break;
+		}
+		return true;
+	}
+	public static function store() {
+		if ( ! self::$lock )
+			throw new Exception( 'Attempt to store but output was not started.' );
+		self::$lock = false;
+		$data = ob_get_clean();
+		$cache = array(
+			'data' => $data,
+			'timestamp' => time(),
+			'unique' => self::$args['unique'],
+		);
+		self::_set( self::$key, self::$args, $cache );
+		echo $data;
+	}
+} // done fragment caching.
 
 ?>

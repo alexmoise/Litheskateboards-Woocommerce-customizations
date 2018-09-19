@@ -8,6 +8,8 @@
  *
  * Modified to use radio buttons instead of dropdowns
  * @author 8manos
+ * 
+ * Lithe version: 1.0.20
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,7 +20,25 @@ global $product;
 
 $attribute_keys = array_keys( $attributes );
 
-do_action( 'woocommerce_before_add_to_cart_form' ); ?>
+do_action( 'woocommerce_before_add_to_cart_form' ); 
+
+// building the cache args array
+$fragm_cache_args = array();
+$fragm_cache_args['storage'] = 'transient';
+// $fragm_cache_args['disable'] = 'true'; // could disable cache completely, for debug purposes
+
+// building a unique cache key here: add conditions below so the key changes when the form content should change; the order of elements is important too
+$fragm_cache_key_build['identifier'] = 'lswc_cache_fragment'; // set a unique name at the beginning of the transient, we'll use this later do delete these transients
+$fragm_cache_key_build['buildid'] = '114'; // a rebuild option, just increase this number and all transients will become obsolete (but not deleted from DB, so beware!)
+$fragm_cache_key_build['productid'] = $product->get_id(); // add product ID in the mix, so the product forms does not mix :-)
+$fragm_cache_key_build['isproduct'] = is_product() ?: 0; // check if is a product page, because the popup access creates the form without the "wm_pvar" data
+$fragm_cache_key_build['usersubscript'] = molswc_check_user_subscription_able(); // add user subscription-able condition to the key, because these users have different prices
+// $fragm_cache_key_build['userlogged'] = is_user_logged_in() ?: 0; // check if there's a user authenticated, otherwise return 0
+
+$fragm_cache_key = implode('_', $fragm_cache_key_build); // defining a unique key for caching the forms uniquely for each board, user status, etc.
+if ( !Pj_Fragment_Cache::output( $fragm_cache_key, $fragm_cache_args ) ) { // conditionally call the cache output right here before building the whole <form>:
+
+?>
 
 <form class="variations_form cart" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->get_id() ); ?>" data-product_variations="<?php echo htmlspecialchars( wp_json_encode( $available_variations ) ) ?>">
 	<?php do_action( 'woocommerce_before_variations_form' ); ?>
@@ -93,4 +113,11 @@ do_action( 'woocommerce_before_add_to_cart_form' ); ?>
 	<?php do_action( 'woocommerce_after_variations_form' ); ?>
 </form>
 
-<?php do_action( 'woocommerce_after_add_to_cart_form' ); ?>
+<?php 
+
+Pj_Fragment_Cache::store();
+} // Since the <form> is built at this moment let's close fragment cache call here.
+
+do_action( 'woocommerce_after_add_to_cart_form' ); 
+
+?>
