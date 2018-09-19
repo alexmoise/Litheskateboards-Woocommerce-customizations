@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.18
+ * Version: 1.0.19
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -136,10 +136,10 @@ if ( ! function_exists( 'molswc_builder_set_debug' ) ) {
 }
 
 // Extend conditional variations limit
+// add_filter( 'woocommerce_ajax_variation_threshold', 'molswc_wc_ajax_variation_threshold', 10, 2 );
 function molswc_wc_ajax_variation_threshold( $qty, $product ) {
     return 50;
 }
-add_filter( 'woocommerce_ajax_variation_threshold', 'molswc_wc_ajax_variation_threshold', 10, 2 );
 
 // Override WooCommerce Template used in WC Variations Radio Buttons
 add_filter( 'woocommerce_locate_template', 'molswc_replace_woocommerce_templates', 20, 3 );
