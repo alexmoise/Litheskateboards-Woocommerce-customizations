@@ -9,7 +9,8 @@
  * Modified to use radio buttons instead of dropdowns
  * @author 8manos
  * 
- * Lithe version: 1.0.20
+ * Lithe version: 1.0.21
+ * (version above is equal with main plugin file version when this file was updated)
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -28,8 +29,8 @@ $fragm_cache_args['storage'] = 'transient';
 // $fragm_cache_args['disable'] = 'true'; // could disable cache completely, for debug purposes
 
 // building a unique cache key here: add conditions below so the key changes when the form content should change; the order of elements is important too
-$fragm_cache_key_build['identifier'] = 'lswc_cache_fragment'; // set a unique name at the beginning of the transient, we'll use this later do delete these transients
-$fragm_cache_key_build['buildid'] = '114'; // a rebuild option, just increase this number and all transients will become obsolete (but not deleted from DB, so beware!)
+$fragm_cache_key_build['identifier'] = 'prod_form'; // set a unique name at the beginning of the transient, we'll use this later do delete these transients
+$fragm_cache_key_build['buildid'] = get_option( 'molswc_fragment_cache_buildid' ); // a rebuild option, just increase this number and all transients will become obsolete (but not deleted from DB, so beware!)
 $fragm_cache_key_build['productid'] = $product->get_id(); // add product ID in the mix, so the product forms does not mix :-)
 $fragm_cache_key_build['isproduct'] = is_product() ?: 0; // check if is a product page, because the popup access creates the form without the "wm_pvar" data
 $fragm_cache_key_build['usersubscript'] = molswc_check_user_subscription_able(); // add user subscription-able condition to the key, because these users have different prices

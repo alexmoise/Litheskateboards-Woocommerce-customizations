@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.11
+ * Version: 1.0.21
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -19,6 +19,7 @@ function molswc_register_settings() {
 	register_setting( 'molswc-settings-group', 'molswc_estdelivery_backorder' );
 	register_setting( 'molswc-settings-group', 'molswc_designated_options' );
 	register_setting( 'molswc-settings-group', 'molswc_excluded_categories' );
+	register_setting( 'molswc-settings-group', 'molswc_fragment_cache_buildid' );
 	register_setting( 'molswc-settings-group', 'molswc_enable_avia_debug' );
 	register_setting( 'molswc-settings-group', 'molswc_delete_options_uninstall' );
 }
@@ -77,6 +78,19 @@ function molswc_admin_options_page_callback() { ?>
 			<td> 
 				<input name="molswc_excluded_categories" type="text" id="molswc_excluded_categories" aria-describedby="molswc_excluded_categories" value="<?php echo strip_tags(get_option( 'molswc_excluded_categories' )); ?>" class="regular-text">
 				<span>(Comma separated list of <strong>slugs</strong>, pick them from <a target="_blank" href="/wp-admin/edit-tags.php?taxonomy=product_cat&post_type=product">Categories page</a>.)</span>
+			</td>
+		</tr>
+	</table>
+	
+	<h2>Fragment cache options</h2>
+	<p>Fragment cache caches bits of pages in database and return them when needed. For the moment it caches the product variations form, which is extremly costly to compute with all its variations, stock and prices.<br><strong>If there's a page cache plugin activated clear its cache after clearing this!</strong></p>
+	
+	<table class="form-table">
+		<tr valign="top">
+			<th scope="row">Fragment Cache build ID: </th>
+			<td> 
+				<input name="molswc_fragment_cache_buildid" type="number" min="1" max="9999" step="1" id="molswc_fragment_cache_buildid" aria-describedby="molswc_fragment_cache_buildid" value="<?php echo strip_tags(get_option( 'molswc_fragment_cache_buildid' )); ?>" class="regular-text">
+				<span>(Just changing this number (must be a number!) all the fragments will be invalid - and a new set will be generated at next visit/crawl)</span>
 			</td>
 		</tr>
 	</table>

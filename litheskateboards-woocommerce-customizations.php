@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.20
+ * Version: 1.0.21
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -598,7 +598,7 @@ class Pj_Fragment_Cache {
 		$cache = null;
 		switch ( $args['storage'] ) {
 			case 'transient':
-				$cache = get_transient( '_pj_fragment_cache:' . $key );
+				$cache = get_transient( 'lswc_cache_' . $key );
 				break;
 			case 'object-cache':
 				$cache = wp_cache_get( $key, 'pj_fragment_cache' );
@@ -606,7 +606,7 @@ class Pj_Fragment_Cache {
 			case 'meta':
 				if ( empty( $args['meta_type'] ) || empty( $args['object_id'] ) )
 					throw new Exception( 'When using meta storage meta_type and object_id are required.' );
-				$cache = get_metadata( $args['meta_type'], $args['object_id'], '_pj_fragment_cache:' . $key, true );
+				$cache = get_metadata( $args['meta_type'], $args['object_id'], 'lswc_cache_' . $key, true );
 				break;
 		}
 		return $cache;
@@ -614,13 +614,13 @@ class Pj_Fragment_Cache {
 	private static function _set( $key, $args, $value ) {
 		switch ( $args['storage'] ) {
 			case 'transient':
-				$cache = set_transient( '_pj_fragment_cache:' . $key, $value, $args['ttl'] );
+				$cache = set_transient( 'lswc_cache_' . $key, $value, $args['ttl'] );
 				break;
 			case 'object-cache':
 				$cache = wp_cache_set( $key, $value, 'pj_fragment_cache', $args['ttl'] );
 				break;
 			case 'meta':
-				$cache = update_metadata( $args['meta_type'], $args['object_id'], '_pj_fragment_cache:' . $key, $value );
+				$cache = update_metadata( $args['meta_type'], $args['object_id'], 'lswc_cache_' . $key, $value );
 				break;
 		}
 		return true;
