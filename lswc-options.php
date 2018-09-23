@@ -99,7 +99,7 @@ function molswc_admin_options_page_callback() { ?>
 			<th scope="row">Clear ALL fragments: </th>
 			<td>
 				<input name="molswc_transient_keys_purging" type="checkbox" value="1" <?php checked( '1', get_option( 'molswc_transient_keys_purging' ) ); ?> />
-				<span>(Checking this box and clicking on Save button will delete all cached fragments.)<br>(work in progress, has no effect at this moment)</span>
+				<span>(Checking this box and clicking on Save button will delete all cached fragments.)</span>
 			</td>
 		</tr>
 	</table>
