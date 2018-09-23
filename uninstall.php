@@ -1,12 +1,12 @@
 <?php
 /**
  * Uninstall of Litheskateboards Woocommerce customizations plugin.
- * Version: 1.0.21
+ * Version: 1.0.23
  * (version above is equal with main plugin file version when this file was updated)
  */
 
-if ( ! defined( 'ABSPATH' ) ) 			{exit(0);}
-if ( ! defined('WP_UNINSTALL_PLUGIN')) 	{die;}
+if ( ! defined( 'ABSPATH' ) ) 				{exit(0);}
+if ( ! defined( 'WP_UNINSTALL_PLUGIN' ))	{die;}
 
 // First check if removal is requested
 if ( get_option( 'molswc_delete_options_uninstall' ) ) {
@@ -16,8 +16,9 @@ if ( get_option( 'molswc_delete_options_uninstall' ) ) {
 	$molswc_option_remove_estdelivery_backorder			= 'molswc_estdelivery_backorder';
 	$molswc_option_remove_designated_options			= 'molswc_designated_options';
 	$molswc_option_remove_excluded_categories			= 'molswc_excluded_categories';
-	$molswc_option_remove_fragment_cache_buildid		= 'molswc_fragment_cache_buildid';
 	$molswc_option_remove_enable_avia_debug				= 'molswc_enable_avia_debug';
+	$molswc_option_remove_transient_keys				= 'molswc_transient_keys';
+	$molswc_option_remove_transient_keys_purging		= 'molswc_transient_keys_purging';
 	$molswc_option_remove_delete_options_uninstall		= 'molswc_delete_options_uninstall';
 
 	// And finally remove the options!
@@ -25,8 +26,9 @@ if ( get_option( 'molswc_delete_options_uninstall' ) ) {
 	delete_option( $molswc_option_remove_estdelivery_backorder );
 	delete_option( $molswc_option_remove_designated_options );
 	delete_option( $molswc_option_remove_excluded_categories );
-	delete_option( $molswc_option_remove_fragment_cache_buildid );
 	delete_option( $molswc_option_remove_enable_avia_debug );
+	delete_option( $molswc_option_remove_transient_keys );
+	delete_option( $molswc_option_remove_transient_keys_purging );
 	delete_option( $molswc_option_remove_delete_options_uninstall );
 }
 ?>

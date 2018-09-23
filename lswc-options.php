@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.21
+ * Version: 1.0.23
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -19,9 +19,18 @@ function molswc_register_settings() {
 	register_setting( 'molswc-settings-group', 'molswc_estdelivery_backorder' );
 	register_setting( 'molswc-settings-group', 'molswc_designated_options' );
 	register_setting( 'molswc-settings-group', 'molswc_excluded_categories' );
-	register_setting( 'molswc-settings-group', 'molswc_fragment_cache_buildid' );
 	register_setting( 'molswc-settings-group', 'molswc_enable_avia_debug' );
+	register_setting( 'molswc-settings-group', 'molswc_transient_keys_purging' );
 	register_setting( 'molswc-settings-group', 'molswc_delete_options_uninstall' );
+}
+
+// Delete all fragments stored as transients if instructed so
+if ( isset( $_GET['settings-updated'] ) ) { add_action( 'admin_notices', 'mofsb_fragments_purging_notice' ); }
+function mofsb_fragments_purging_notice() {
+	if ( get_option ( 'molswc_transient_keys_purging' ) == 1 )  {
+		molswc_delete_all_transients(); // 1. call the deleting function
+		update_option( 'molswc_transient_keys_purging', '' ); // 2. set back the option to "unset"
+	}
 }
 
 // This is the form in the admin page
@@ -87,10 +96,10 @@ function molswc_admin_options_page_callback() { ?>
 	
 	<table class="form-table">
 		<tr valign="top">
-			<th scope="row">Fragment Cache build ID: </th>
-			<td> 
-				<input name="molswc_fragment_cache_buildid" type="number" min="1" max="9999" step="1" id="molswc_fragment_cache_buildid" aria-describedby="molswc_fragment_cache_buildid" value="<?php echo strip_tags(get_option( 'molswc_fragment_cache_buildid' )); ?>" class="regular-text">
-				<span>(Just changing this number (must be a number!) all the fragments will be invalid - and a new set will be generated at next visit/crawl)</span>
+			<th scope="row">Clear ALL fragments: </th>
+			<td>
+				<input name="molswc_transient_keys_purging" type="checkbox" value="1" <?php checked( '1', get_option( 'molswc_transient_keys_purging' ) ); ?> />
+				<span>(Checking this box and clicking on Save button will delete all cached fragments.)<br>(work in progress, has no effect at this moment)</span>
 			</td>
 		</tr>
 	</table>
