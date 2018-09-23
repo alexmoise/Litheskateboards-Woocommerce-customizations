@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.23
+ * Version: 1.0.24
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -666,6 +666,33 @@ function molswc_delete_all_transients() {
 	}
 	echo "<div class=\"".$notice_class." notice\"><p>".$deletion_result.".</p></div>";
 	return $deletion_result;
+}
+
+// A function to delete transients key containing a given string
+// ** DON'T PASS NUMBERS AS $containing_string **
+function molswc_delete_some_transients( $containing_string ) {
+	$transient_keys = get_option( 'molswc_transient_keys' );
+	$matching_transients = array_filter($transient_keys, function($var) use ($containing_string){
+		return strpos($var, $containing_string) !== false;
+	});
+	foreach( $matching_transients as $t ) {
+		if (($key = array_search($t, $matching_transients)) !== false) {
+			delete_transient( 'lswc_cache_'.$t );  
+			unset($transient_keys[$key]);
+			update_option( 'molswc_transient_keys', $transient_keys );
+		}
+	}
+}
+
+// Call the cached fragment deletion function to delete the fragments of the products that have been purchased
+add_action( 'woocommerce_reduce_order_stock', 'molswc_delete_transients_for_purchased_products' );
+function molswc_delete_transients_for_purchased_products($order) {
+	$molswc_file = "/home/moise/domains/lithe.moise.pro/public_html/wp-content/testdata.txt";
+	foreach ( $order->get_items() as $item_id => $item_values ) {
+		$current_product = $item_values['product_id'];
+		$designated_fragment_string = 'prod_form_'.$current_product;
+		molswc_delete_some_transients( $designated_fragment_string );
+	}
 }
 
 ?>

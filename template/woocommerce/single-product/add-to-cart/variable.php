@@ -9,7 +9,7 @@
  * Modified to use radio buttons instead of dropdowns
  * @author 8manos
  * 
- * Lithe version: 1.0.23
+ * Lithe version: 1.0.24
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -37,6 +37,7 @@ $fragm_cache_key_build['usersubscript'] = molswc_check_user_subscription_able();
 
 $fragm_cache_key = implode('_', $fragm_cache_key_build); // defining a unique key for caching the forms uniquely for each board, user status, etc.
 if ( !Pj_Fragment_Cache::output( $fragm_cache_key, $fragm_cache_args ) ) { // conditionally call the cache output right here before building the whole <form>:
+molswc_update_transient_keys( $fragm_cache_key ); // First store the fragment key in Options table, function defined in the main plugin file
 
 ?>
 
@@ -116,7 +117,6 @@ if ( !Pj_Fragment_Cache::output( $fragm_cache_key, $fragm_cache_args ) ) { // co
 <?php 
 
 Pj_Fragment_Cache::store();
-molswc_update_transient_keys( $fragm_cache_key ); // Store the fragment key in Options table, function defined in the main plugin file
 } // Since the <form> is built at this moment let's close fragment cache call here.
 
 do_action( 'woocommerce_after_add_to_cart_form' ); 

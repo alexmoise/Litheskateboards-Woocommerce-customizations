@@ -112,7 +112,7 @@ function molswc_admin_options_page_callback() { ?>
 			<th scope="row">Enable Avia Debug: </th>
 			<td>
 				<input name="molswc_enable_avia_debug" type="checkbox" value="1" <?php checked( '1', get_option( 'molswc_enable_avia_debug' ) ); ?> />
-				<span>(While this is enabled the Page Code text are will be available at the end of Avia Page Builder section. Enable on other web site too to make copy/paste possible.)</span>
+				<span>(While this is enabled the Page Code text will be available at the end of Avia Page Builder section. Enable on other web site too to make copy/paste possible.)</span>
 			</td>
 		</tr>
 	</table>
