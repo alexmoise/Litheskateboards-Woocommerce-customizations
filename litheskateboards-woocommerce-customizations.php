@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.24
+ * Version: 1.0.25
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -565,14 +565,11 @@ class Pj_Fragment_Cache {
 		if ( self::$lock )
 			throw new Exception( 'Output started but previous output was not stored.' );
 		$args = wp_parse_args( $args, array(
-			'storage' => 'transient', // object-cache, meta
 			'unique' => array(),
 			'ttl' => 0,
-			// Meta storage only
-			'meta_type' => '',
-			'object_id' => 0,
 		) );
 		$args['unique'] = md5( json_encode( $args['unique'] ) );
+		$args['prefix'] = 'molswc_cached_fragment_';
 		$cache = self::_get( $key, $args );
 		$serve_cache = true;
 		if ( empty( $cache ) ) {
@@ -591,38 +588,18 @@ class Pj_Fragment_Cache {
 			ob_start();
 			return false;
 		}
-		echo '<!-- start cache block with key = ' . $key . ' -->' . $cache['data'] . '<!-- end cache block with key = ' . $key . ' -->';
+		echo '<!-- start cache block with key = '.$args['prefix'].$key.' -->'.$cache['data'].'<!-- end cache block with key = '.$args['prefix'].$key.' -->';
 		return true;
 	}
 	private static function _get( $key, $args ) {
 		$cache = null;
-		switch ( $args['storage'] ) {
-			case 'transient':
-				$cache = get_transient( 'lswc_cache_' . $key );
-				break;
-			case 'object-cache':
-				$cache = wp_cache_get( $key, 'pj_fragment_cache' );
-				break;
-			case 'meta':
-				if ( empty( $args['meta_type'] ) || empty( $args['object_id'] ) )
-					throw new Exception( 'When using meta storage meta_type and object_id are required.' );
-				$cache = get_metadata( $args['meta_type'], $args['object_id'], 'lswc_cache_' . $key, true );
-				break;
-		}
+		$cache = get_option( $args['prefix'].$key );
+				
 		return $cache;
 	}
 	private static function _set( $key, $args, $value ) {
-		switch ( $args['storage'] ) {
-			case 'transient':
-				$cache = set_transient( 'lswc_cache_' . $key, $value, $args['ttl'] );
-				break;
-			case 'object-cache':
-				$cache = wp_cache_set( $key, $value, 'pj_fragment_cache', $args['ttl'] );
-				break;
-			case 'meta':
-				$cache = update_metadata( $args['meta_type'], $args['object_id'], 'lswc_cache_' . $key, $value );
-				break;
-		}
+		$cache = add_option( $args['prefix'].$key, $value, $args['ttl'] );
+		
 		return true;
 	}
 	public static function store() {
@@ -640,59 +617,21 @@ class Pj_Fragment_Cache {
 	}
 } // done fragment caching.
 
-// A function that add transient keys into Options table, so we could identify these later (for deletion)
-function molswc_update_transient_keys( $new_transient_key ) {
-  $transient_keys = get_option( 'molswc_transient_keys' ); // Get the current list of transients
-  $transient_keys[] = $new_transient_key; // Append the new one
-  update_option( 'molswc_transient_keys', $transient_keys ); // Save it to the DB
-}
-
-// A function to delete all fragments cached as transients
-function molswc_delete_all_transients() {
-	$transient_keys = get_option( 'molswc_transient_keys' );  // Get the list of transient keys from the DB.
-	if($transient_keys) {
-		foreach( $transient_keys as $t ) {
-			if (($key = array_search($t, $transient_keys)) !== false) {
-				unset($deletion_result_code);
-				$deletion_result_code = delete_transient('lswc_cache_'.$t);  // For each key, delete that transient.
-				if ($deletion_result_code !== 1) { $deletion_result = 'Transients deleted successfully'; $notice_class = 'notice-info';}
-				unset($transient_keys[$key]); // Also unset it from the transients array
-				update_option( 'molswc_transient_keys', $transient_keys ); // And update the WP option with the new array
-			}
-		}
-	if (!$deletion_result_code) { $deletion_result = 'Error encountered while deleting transients, check options table for remaining ones'; $notice_class = 'notice-warning';}
-	} else {
-		$deletion_result = 'No transients to delete'; $notice_class = 'notice-info';
-	}
-	echo "<div class=\"".$notice_class." notice\"><p>".$deletion_result.".</p></div>";
-	return $deletion_result;
-}
-
-// A function to delete transients key containing a given string
-// ** DON'T PASS NUMBERS AS $containing_string **
-function molswc_delete_some_transients( $containing_string ) {
-	$transient_keys = get_option( 'molswc_transient_keys' );
-	$matching_transients = array_filter($transient_keys, function($var) use ($containing_string){
-		return strpos($var, $containing_string) !== false;
-	});
-	foreach( $matching_transients as $t ) {
-		if (($key = array_search($t, $matching_transients)) !== false) {
-			delete_transient( 'lswc_cache_'.$t );  
-			unset($transient_keys[$key]);
-			update_option( 'molswc_transient_keys', $transient_keys );
-		}
-	}
-}
-
-// Call the cached fragment deletion function to delete the fragments of the products that have been purchased
-add_action( 'woocommerce_reduce_order_stock', 'molswc_delete_transients_for_purchased_products' );
-function molswc_delete_transients_for_purchased_products($order) {
-	$molswc_file = "/home/moise/domains/lithe.moise.pro/public_html/wp-content/testdata.txt";
+// Call the cached fragment deleting function to delete the fragments of the products that have just been purchased - based on partial name, including product ID
+add_action( 'woocommerce_reduce_order_stock', 'molswc_delete_fragments_for_purchased_products' );
+function molswc_delete_fragments_for_purchased_products($order) {
 	foreach ( $order->get_items() as $item_id => $item_values ) {
 		$current_product = $item_values['product_id'];
 		$designated_fragment_string = 'prod_form_'.$current_product;
-		molswc_delete_some_transients( $designated_fragment_string );
+		molswc_delete_fragments( $designated_fragment_string );
 	}
+}
+
+// A function for deleting the fragments based on partial name 
+function molswc_delete_fragments( $prefix ) {
+    global $wpdb;
+    $result = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%{$prefix}%'" );
+	return $result;
 }
 
 ?>

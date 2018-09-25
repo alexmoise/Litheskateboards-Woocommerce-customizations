@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.23
+ * Version: 1.0.25
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -24,12 +24,13 @@ function molswc_register_settings() {
 	register_setting( 'molswc-settings-group', 'molswc_delete_options_uninstall' );
 }
 
-// Delete all fragments stored as transients if instructed so
+// Delete all fragments stored as options if instructed so
 if ( isset( $_GET['settings-updated'] ) ) { add_action( 'admin_notices', 'mofsb_fragments_purging_notice' ); }
 function mofsb_fragments_purging_notice() {
 	if ( get_option ( 'molswc_transient_keys_purging' ) == 1 )  {
-		molswc_delete_all_transients(); // 1. call the deleting function
+		$delete_result = molswc_delete_fragments( 'molswc_cached_fragment' ); // 1. call the deleting function - based on partial name, including the prefix
 		update_option( 'molswc_transient_keys_purging', '' ); // 2. set back the option to "unset"
+		echo '<div class="notice-info notice" style="margin-left: 0px;"><p>Fragments delete finished, '.$delete_result.' fragments deleted.</p></div>';
 	}
 }
 
