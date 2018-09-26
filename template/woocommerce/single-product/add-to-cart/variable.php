@@ -9,7 +9,7 @@
  * Modified to use radio buttons instead of dropdowns
  * @author 8manos
  * 
- * Lithe version: 1.0.25
+ * Lithe version: 1.0.26
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -33,6 +33,10 @@ $fragm_cache_key_build['productid'] = $product->get_id(); // add product ID in t
 $fragm_cache_key_build['isproduct'] = is_product() ?: 0; // check if is a product page, because the popup access creates the form without the "wm_pvar" data
 $fragm_cache_key_build['usersubscript'] = molswc_check_user_subscription_able(); // add user subscription-able condition to the key, because these users have different prices
 // $fragm_cache_key_build['userlogged'] = is_user_logged_in() ?: 0; // check if there's a user authenticated, otherwise return 0
+
+$fragm_cache_full_product_key = $fragm_cache_key_build['identifier'].'_'.$fragm_cache_key_build['productid'].'_1_'.$fragm_cache_key_build['usersubscript']; // Simulate key name for IS_PRODUCT situation
+$fragm_cache_full_product_check = molswc_check_fragments($fragm_cache_full_product_key); // Then check if the IS_PRODUCT situation is already having a fragment
+if($fragm_cache_key_build['isproduct'] == 0 && $fragm_cache_full_product_check == 1) { $fragm_cache_key_build['isproduct'] = 1; } // And use the IS_PRODUCT fragment if available, instead of generating a new one
 
 $fragm_cache_key = implode('_', $fragm_cache_key_build); // defining a unique key for caching the forms uniquely for each board, user status, etc.
 if ( !Pj_Fragment_Cache::output( $fragm_cache_key, $fragm_cache_args ) ) { // conditionally call the cache output right here before building the whole <form>:

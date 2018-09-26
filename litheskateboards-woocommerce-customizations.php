@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.25
+ * Version: 1.0.26
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -594,12 +594,10 @@ class Pj_Fragment_Cache {
 	private static function _get( $key, $args ) {
 		$cache = null;
 		$cache = get_option( $args['prefix'].$key );
-				
 		return $cache;
 	}
 	private static function _set( $key, $args, $value ) {
 		$cache = add_option( $args['prefix'].$key, $value, $args['ttl'] );
-		
 		return true;
 	}
 	public static function store() {
@@ -628,9 +626,15 @@ function molswc_delete_fragments_for_purchased_products($order) {
 }
 
 // A function for deleting the fragments based on partial name 
-function molswc_delete_fragments( $prefix ) {
+function molswc_delete_fragments( $fragment_partial_key ) {
     global $wpdb;
-    $result = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%{$prefix}%'" );
+    $result = $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '%{$fragment_partial_key}%'" );
+	return $result;
+}
+// A function to check if fragment(s) exist
+function molswc_check_fragments( $fragment_partial_key ) {
+    global $wpdb;
+    $result = $wpdb->query( "SELECT * FROM {$wpdb->options} WHERE option_name LIKE '%{$fragment_partial_key}%'" );
 	return $result;
 }
 
