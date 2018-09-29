@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.0.13
+ * Version: 1.0.27
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -428,6 +428,10 @@ body.single-product .container .product_title.entry-title {
 .table.variations span.attribStockStatus {
   display: block;
   color: #cbcbcb;
+}
+.table.variations span.attribPreorderStatus {
+  display: block;
+  color: #42d62c;
 }
 .table.variations span.attribPrice {
   font-size: 16px;

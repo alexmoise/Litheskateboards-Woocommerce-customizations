@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.25
+ * Version: 1.0.27
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -17,6 +17,7 @@ add_action( 'admin_init', 'molswc_register_settings' );
 function molswc_register_settings() {
 	register_setting( 'molswc-settings-group', 'molswc_estdelivery_instock' );
 	register_setting( 'molswc-settings-group', 'molswc_estdelivery_backorder' );
+	register_setting( 'molswc-settings-group', 'molswc_pre_order_message' );
 	register_setting( 'molswc-settings-group', 'molswc_designated_options' );
 	register_setting( 'molswc-settings-group', 'molswc_excluded_categories' );
 	register_setting( 'molswc-settings-group', 'molswc_enable_avia_debug' );
@@ -65,7 +66,20 @@ function molswc_admin_options_page_callback() { ?>
 			</td>
 		</tr>
 	</table>
+
+	<h2>Pre-order message</h2>
+	<p>Fill in the message that will show up in Payment Plan buttons for pre-order variations.</p>
 	
+	<table class="form-table">
+		<tr valign="top">
+			<th scope="row">Pre-order product message: </th>
+			<td> 
+				<input name="molswc_pre_order_message" type="text" id="molswc_pre_order_message" aria-describedby="molswc_pre_order_message" value="<?php echo strip_tags(get_option( 'molswc_pre_order_message' )); ?>" class="regular-text">
+				<span>(Free text allowed, but not HTML.)</span>
+			</td>
+		</tr>
+	</table>
+
 	<h2>Designated options</h2>
 	<p>Comma separated list of attributes used to create the columns in the product page and pop-up. Example: "Vert, Street".</p>
 	

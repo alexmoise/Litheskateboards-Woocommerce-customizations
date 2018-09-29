@@ -1,3 +1,9 @@
+/**
+ * JS functions for Litheskateboards Woocommerce customizations plugin
+ * Version: 1.0.27
+ * (version above is equal with main plugin file version when this file was updated)
+ */
+
 // === I. Product display functions -> XOO POPUP ONLY: ===
 // Initialize the special event needed for detecting XOO Popup removal
 (function($){ $.event.special.destroyed = { remove: function(o) { if (o.handler) { o.handler() } } } })(jQuery)
@@ -17,7 +23,7 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 	molswcDisableScroll(); // prevent body scrolling under the popup
 	jQuery('.xoo-qv-main').bind('destroyed', function() { molswcEnableScroll(); filtercomplete = ''; }) // do stuff when popup closes, based on special event registered above ;-)
 	jQuery(".each-attrib .value-buttons.td").children('.attrib:not(.has-been-disabled)').each(function(i) {
-		jQuery(this).delay((Math.floor((Math.random()*1000)+1)) ).fadeTo( Math.floor((Math.random()*500)+1) ,1).delay( 100 );
+		jQuery(this).fadeTo("fast",1);
 	});
 	setTimeout(function() { jQuery('.xoo-qv-container .table.variations > .tbody > .select.tr').addClass('after-removed'); }, 1000);
 	jQuery('.xoo-qv-container div.tax').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
@@ -73,7 +79,8 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 		}
 	}
 	
-	setTimeout(function() { appendAttribPrices(); }, 500); // Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
+	// Call the VARIATION PRICES Display function (see functions and variables defined below) ;-)
+	setTimeout(function() { appendAttribPrices(); }, 500); // Maybe set a timeout here to give the time for Ajax to complete?
 	molswcPaymentsButtonsReFit(); // Call the re-fit function to count the buttons and set their width according with their number
 	
 	// Now, about the Estimated Delivery time:
@@ -86,6 +93,9 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	if ( molswc_check_current_status() == 'var_stock_backorder' && typeof estdelivery_backorder !== 'undefined' ) { 
 	jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">'+estdelivery_backorder+'</span>');
 	}
+	
+	// Finally add Pre Order status to Payment Plan direct purchase buttons
+	molswc_add_is_pre_order_info();
 });
 
 // === III. Product display functions -> SINGLE PRODUCT PAGE ONLY: ===
@@ -411,4 +421,28 @@ function molswc_check_current_status() {
 	var stockTarget = jQuery('div.attrib input[type="radio"]:checked');
 	var stockStatus = jQuery(stockTarget).attr("data-stock-status");
 	return stockStatus;
+}
+
+// === Add Pre Order information in Payment Plan purchase buttons
+// Function to return the "Model-Width" selected by clicking a button
+function molswc_get_selected_model_width() {
+	var selected_label = jQuery('div.attrib label.attrib.option.selected');
+	var selected_model_width = jQuery(selected_label).attr("value");
+	return selected_model_width;
+}
+
+// Function that add the <span> and Pre Order text
+function molswc_add_is_pre_order_info() {
+	jQuery('span.attribPreorderStatus').remove();
+	jQuery.each(jQuery('.variations_form').data("product_variations"), function() {
+		var selected_model_width = molswc_get_selected_model_width();
+		var all_model_width = this.attributes['attribute_model-width'];
+		if ( this.attributes['attribute_model-width'] == selected_model_width ) {
+			var curr_pre_order = this.is_pre_order;
+			if (curr_pre_order == 'yes') {
+				var curr_paying_plan = this.attributes["attribute_pa_paying-plan"];
+				jQuery('div.tax[data-text-name="'+curr_paying_plan+'"] .attribStockStatus').before('<span class="attribPreorderStatus">'+pre_order_message+'</span>');
+			}
+		}
+	});
 }
