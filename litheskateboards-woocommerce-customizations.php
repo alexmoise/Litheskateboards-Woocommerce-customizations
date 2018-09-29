@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.27
+ * Version: 1.0.28
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -204,14 +204,14 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 		if ( is_numeric($lowest_peer_var_stock) ) {
 			if ( $lowest_peer_var_stock <= 0 ) {
 				$stock_class = 'var_stock_backorder';
-				$stock_hint = '(preorder)';
+				$stock_hint = strip_tags(get_option( 'molswc_backorder_label' ));
 			} elseif ( $lowest_peer_var_stock > 0 ) {
 				$stock_class = 'var_stock_instock';
-				$stock_hint = '(backorder)';
+				$stock_hint = strip_tags(get_option( 'molswc_instock_label' ));
 			} 
 		} else {
 			$stock_class = 'var_stock_not_available';
-			$stock_hint = '(n/a)';
+			$stock_hint = strip_tags(get_option( 'molswc_notavailable_label' ));
 		}
 		// Finally output the button html:
 		printf( '<div class="attrib %6$s"><input type="radio" name="%1$s" value="%2$s" data-stock-status="%6$s" id="%3$s" %4$s /><label class="attrib option" value="%2$s" for="%3$s" data-text-fullname="%2$s" data-text-b="%5$s"><span class="inner-attrib">%5$s<span class="stock_hint %6$s">%7$s</span></span></label></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $stock_class, $stock_hint );

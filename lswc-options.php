@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.27
+ * Version: 1.0.28
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -17,6 +17,9 @@ add_action( 'admin_init', 'molswc_register_settings' );
 function molswc_register_settings() {
 	register_setting( 'molswc-settings-group', 'molswc_estdelivery_instock' );
 	register_setting( 'molswc-settings-group', 'molswc_estdelivery_backorder' );
+	register_setting( 'molswc-settings-group', 'molswc_instock_label' );
+	register_setting( 'molswc-settings-group', 'molswc_backorder_label' );
+	register_setting( 'molswc-settings-group', 'molswc_notavailable_label' );
 	register_setting( 'molswc-settings-group', 'molswc_pre_order_message' );
 	register_setting( 'molswc-settings-group', 'molswc_designated_options' );
 	register_setting( 'molswc-settings-group', 'molswc_excluded_categories' );
@@ -63,6 +66,33 @@ function molswc_admin_options_page_callback() { ?>
 			<td> 
 				<input name="molswc_estdelivery_backorder" type="text" id="molswc_estdelivery_backorder" aria-describedby="molswc_estdelivery_backorder" value="<?php echo strip_tags(get_option( 'molswc_estdelivery_backorder' )); ?>" class="regular-text">
 				<span>(Free text allowed, but not HTML.)</span>
+			</td>
+		</tr>
+	</table>
+
+	<h2>Stock status labels</h2>
+	<p>Fill in the labels for In Stock, for Back Order and for Not Available stock hints; these will show on Model/Width buttons in product page and pop up.</p>
+		
+	<table class="form-table">
+		<tr valign="top">
+			<th scope="row">IN STOCK label: </th>
+			<td> 
+				<input name="molswc_instock_label" type="text" id="molswc_instock_label" aria-describedby="molswc_instock_label" value="<?php echo strip_tags(get_option( 'molswc_instock_label' )); ?>" class="regular-text">
+				<span>(Keep it (very!) short, or the label will exceed button width on some screen widths. Free text allowed, but not HTML.)</span>
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">BACKORDER label: </th>
+			<td> 
+				<input name="molswc_backorder_label" type="text" id="molswc_backorder_label" aria-describedby="molswc_backorder_label" value="<?php echo strip_tags(get_option( 'molswc_backorder_label' )); ?>" class="regular-text">
+				<span>(Keep it (very!) short, or the label will exceed button width on some screen widths. Free text allowed, but not HTML.)</span>
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">NOT AVAILABLE label: </th>
+			<td> 
+				<input name="molswc_notavailable_label" type="text" id="molswc_notavailable_label" aria-describedby="molswc_notavailable_label" value="<?php echo strip_tags(get_option( 'molswc_notavailable_label' )); ?>" class="regular-text">
+				<span>(Keep it (very!) short, or the label will exceed button width on some screen widths. Free text allowed, but not HTML.)</span>
 			</td>
 		</tr>
 	</table>
