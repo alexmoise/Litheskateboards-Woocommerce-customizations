@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.28
+ * Version: 1.0.29
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -178,16 +178,16 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 		global $product;
 		$input_name = 'attribute_' . esc_attr( $name ) ;
 		$esc_value = esc_attr( $value );
-		$id = esc_attr( $name . '_v_' . $value . $product->get_id() ); //added product ID at the end of the name to target single products
+		$parent_product_id = $product->get_id(); // getting the parent product ID
+		$id = esc_attr( $name . '_v_' . $value . '_p_'. $parent_product_id ); // added product ID at the end of the name to target single products
 		$checked = checked( $checked_value, $value, false );
 		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
-		$parent_product_id = $product->get_id(); // getting the parent product
 		$peer_vars = molswc_get_peer_variations($parent_product_id, $name, $value); // getting the peer variations (see the function for details)
 		if ($peer_vars) { // Now, if there's any peer_vars found ...
 			$peer_var_non_subscription_available = 'no'; // ... start assuming there's no non-subscription product available ...
 			foreach ($peer_vars as $peer_var) { // ... then iterate through all peer_vars ...
 				$peer_var_stock[$peer_var] = molswc_get_variation_stock($peer_var); // ... and get the stock for each peer variation ...
-					if ( !Subscriptio_Subscription_Product::is_subscription($peer_var) ) { // ... then check current peer_var si NOT subscription ...
+					if ( !Subscriptio_Subscription_Product::is_subscription($peer_var) ) { // ... then check current peer_var is NOT subscription ...
 						$peer_var_non_subscription_available = 'yes'; // ... and if it's not, set the non_subscription_available flag to 'yes'
 					} 
 			}
@@ -526,20 +526,13 @@ function molswc_get_peer_variations($parent_id, $based_on_attr_name, $based_on_a
 	return $current_peer_vars_array;
 }
 
-// Get stock variation by variation ID
-function molswc_get_variation_stock($variation_id) {
-	$variation_instance = wc_get_product( $variation_id ); // Get an instance of the current variation object
-	$variation_stock = $variation_instance->get_stock_quantity(); // Get the stock quantity of the current_var
-	return $variation_stock;
-}
-
 // Outputting JS variables in HTML, for using them later
 add_action( 'wp_head', 'molswc_js_variables' ); 
 function molswc_js_variables() {
 echo "
 <script type='text/javascript'>
 /* <![CDATA[ */";
-	echo "\r\n var subs_user = '".molswc_check_user_subscription_able()."';"; 
+														  echo "\r\n var subs_user = '".molswc_check_user_subscription_able()."';"; 
 	if (get_option( 'molswc_estdelivery_instock' )) 	{ echo "\r\n var estdelivery_instock = '".strip_tags(get_option( 'molswc_estdelivery_instock' ))."';"; }
 	if (get_option( 'molswc_estdelivery_backorder' )) 	{ echo "\r\n var estdelivery_backorder = '".strip_tags(get_option( 'molswc_estdelivery_backorder' ))."';"; }
 	if (get_option( 'molswc_pre_order_message' )) 		{ echo "\r\n var pre_order_message = '".strip_tags(get_option( 'molswc_pre_order_message' ))."';"; }
@@ -638,5 +631,89 @@ function molswc_check_fragments( $fragment_partial_key ) {
     $result = $wpdb->query( "SELECT * FROM {$wpdb->options} WHERE option_name LIKE '%{$fragment_partial_key}%'" );
 	return $result;
 }
+
+// === Backorder stock level functions
+// Add back order stock level number box
+add_action( 'woocommerce_variation_options_inventory', 'molswc_variation_backorder_stock_level', 10, 3 ); 
+function molswc_variation_backorder_stock_level( $loop, $variation_data, $variation ) {
+	woocommerce_wp_text_input( 
+		array( 
+			'id'          => 'backorder_stock_level[' . $variation->ID . ']', 
+			'value'       => get_post_meta( $variation->ID, 'backorder_stock_level', true ), // Use these line to get it wherever it might be needed
+			'type'        => 'number',
+			'style' 	  => 'width: 100%; vertical-align: middle; margin: 2px 0 0; padding: 5px;',
+			'label'       => __( 'Backorder stock level', 'woocommerce' ), 
+			'desc_tip'    => 'true',
+			'description' => __( 'How many back ordered boards are coming?', 'woocommerce' ),
+			'custom_attributes' => array(
+				'step' 	=> '1',
+				'min'	=> '0'
+			) 
+		)
+	);      
+}
+
+// Save back order stock level
+add_action( 'woocommerce_save_product_variation', 'molswc_save_variation_backorder_stock_level', 10, 2 );
+function molswc_save_variation_backorder_stock_level( $post_id ) {
+	$number_field = $_POST['backorder_stock_level'][ $post_id ];
+	if( ! empty( $number_field ) ) {
+		update_post_meta( $post_id, 'backorder_stock_level', esc_attr( $number_field ) );
+	}
+}
+
+// Store 
+add_filter( 'woocommerce_available_variation', 'molswc_store_variation_backorder_stock_level' );
+function molswc_store_variation_backorder_stock_level( $variations ) {
+    $variations['backorder_stock_level'] = get_post_meta( $variations[ 'variation_id' ], 'backorder_stock_level', true );
+    return $variations;
+}
+
+// Get stock variation by variation ID
+function molswc_get_variation_stock($variation_id) {
+	$variation_instance = wc_get_product( $variation_id ); // Get an instance of the current variation object
+	$variation_stock = $variation_instance->get_stock_quantity(); // Get the stock quantity of the current_var
+	return $variation_stock;
+}
+
+// Calculate true stock LEVEL by variation ID
+// Returns an array, check the items below to pick them
+// Use: $truelevel = molswc_get_true_stock_level($variation_id)['true_stock_level'];
+function molswc_get_true_stock_level($variation_id) {
+	$variation_instance = wc_get_product( $variation_id ); // Get an instance of the current variation object
+	$true_stock_data['woo_stock_level'] = $variation_instance->get_stock_quantity(); // Get the stock quantity of the current_var
+	$true_stock_data['backorder_stock_level'] = get_post_meta( $variation_id, 'backorder_stock_level', true ); // Get the backorder_stock_level of the current_var
+	$true_stock_data['true_stock_level'] = $true_stock_data['woo_stock_level'] + $true_stock_data['backorder_stock_level']; // Calculate true stock level
+	return $true_stock_data;
+}
+
+// Calculate true stock STATUS by variation ID
+// Returns an array, check the items below to pick them
+// Use: $truestatus = molswc_get_true_stock_status($variation_id)['true_stock_status'];
+function molswc_get_true_stock_status($variation_id) {
+	$true_stock_data = molswc_get_true_stock_level($variation_id);
+	if( $true_stock_data['woo_stock_level'] > 0 ) { // If woocommerce stock level is positive ...
+		$true_stock_data['true_stock_status'] = 'true_instock'; // ...then report 'true_in_stock'
+	} elseif ( $true_stock_data['woo_stock_level'] <= 0 && $true_stock_data['woo_stock_level'] > (0 - $true_stock_data['backorder_stock_level']) ) { // if woocommerce stock level is negative but above backorder
+		$true_stock_data['true_stock_status'] = 'true_backorder'; // ... report 'true_backorder'
+	} else { // otherwise ...
+		$true_stock_data['true_stock_status'] = 'true_preorder'; // ... just report 'true_preorder'.
+	}
+	return $true_stock_data;
+}
+
+
+/* Just a debug function to check the "true" values
+add_action( 'wp_footer', 'test_molswc_get_true_stock_data' );
+function test_molswc_get_true_stock_data() {
+	$varid = 6702;
+	
+	$truelevel = molswc_get_true_stock_level($varid)['true_stock_level'];
+	echo '<!-- '.$varid.' Truelevel = '.$truelevel.' -->';
+	
+	$truestatus = molswc_get_true_stock_status($varid)['true_stock_status'];
+	echo '<!-- '.$varid.' Truestatus = '.$truestatus.' -->';
+}
+*/
 
 ?>
