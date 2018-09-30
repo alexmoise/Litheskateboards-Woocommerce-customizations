@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.29
+ * Version: 1.0.30
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -186,7 +186,7 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 		if ($peer_vars) { // Now, if there's any peer_vars found ...
 			$peer_var_non_subscription_available = 'no'; // ... start assuming there's no non-subscription product available ...
 			foreach ($peer_vars as $peer_var) { // ... then iterate through all peer_vars ...
-				$peer_var_stock[$peer_var] = molswc_get_variation_stock($peer_var); // ... and get the stock for each peer variation ...
+				$peer_var_stock[$peer_var] = molswc_get_true_stock_status($peer_var)['true_stock_status']; // ... and get the stock for each peer variation ...
 					if ( !Subscriptio_Subscription_Product::is_subscription($peer_var) ) { // ... then check current peer_var is NOT subscription ...
 						$peer_var_non_subscription_available = 'yes'; // ... and if it's not, set the non_subscription_available flag to 'yes'
 					} 
@@ -200,15 +200,19 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 		} else {
 			$lowest_peer_var_stock = 'n/a'; // get something in case of no stock at all
 		}
+		// $lowest_peer_var_stock may be either: 1 = 'true_preorder' OR 2 = 'true_backorder'; OR 3 = 'true_instock';
 		// Now define the class that will be applied:
 		if ( is_numeric($lowest_peer_var_stock) ) {
-			if ( $lowest_peer_var_stock <= 0 ) {
+			if ( $lowest_peer_var_stock == 1 ) {
+				$stock_class = 'var_stock_preorder';
+				$stock_hint = strip_tags(get_option( 'molswc_preorder_label' ));
+			} elseif ( $lowest_peer_var_stock == 2 ) {
 				$stock_class = 'var_stock_backorder';
 				$stock_hint = strip_tags(get_option( 'molswc_backorder_label' ));
-			} elseif ( $lowest_peer_var_stock > 0 ) {
+			} elseif ( $lowest_peer_var_stock == 3 ) {
 				$stock_class = 'var_stock_instock';
 				$stock_hint = strip_tags(get_option( 'molswc_instock_label' ));
-			} 
+			}
 		} else {
 			$stock_class = 'var_stock_not_available';
 			$stock_hint = strip_tags(get_option( 'molswc_notavailable_label' ));
@@ -535,6 +539,7 @@ echo "
 														  echo "\r\n var subs_user = '".molswc_check_user_subscription_able()."';"; 
 	if (get_option( 'molswc_estdelivery_instock' )) 	{ echo "\r\n var estdelivery_instock = '".strip_tags(get_option( 'molswc_estdelivery_instock' ))."';"; }
 	if (get_option( 'molswc_estdelivery_backorder' )) 	{ echo "\r\n var estdelivery_backorder = '".strip_tags(get_option( 'molswc_estdelivery_backorder' ))."';"; }
+	if (get_option( 'molswc_estdelivery_preorder' )) 	{ echo "\r\n var estdelivery_preorder = '".strip_tags(get_option( 'molswc_estdelivery_preorder' ))."';"; }
 	if (get_option( 'molswc_pre_order_message' )) 		{ echo "\r\n var pre_order_message = '".strip_tags(get_option( 'molswc_pre_order_message' ))."';"; }
 echo "
 /* ]]> */
@@ -690,14 +695,15 @@ function molswc_get_true_stock_level($variation_id) {
 // Calculate true stock STATUS by variation ID
 // Returns an array, check the items below to pick them
 // Use: $truestatus = molswc_get_true_stock_status($variation_id)['true_stock_status'];
+// Get: 1 = 'true_preorder' OR 2 = 'true_backorder'; OR 3 = 'true_instock';
 function molswc_get_true_stock_status($variation_id) {
 	$true_stock_data = molswc_get_true_stock_level($variation_id);
 	if( $true_stock_data['woo_stock_level'] > 0 ) { // If woocommerce stock level is positive ...
-		$true_stock_data['true_stock_status'] = 'true_instock'; // ...then report 'true_in_stock'
-	} elseif ( $true_stock_data['woo_stock_level'] <= 0 && $true_stock_data['woo_stock_level'] > (0 - $true_stock_data['backorder_stock_level']) ) { // if woocommerce stock level is negative but above backorder
-		$true_stock_data['true_stock_status'] = 'true_backorder'; // ... report 'true_backorder'
+		$true_stock_data['true_stock_status'] = 3; // 'true_instock'; // ...then report 'true_in_stock'
+	} elseif ( $true_stock_data['woo_stock_level'] <= 0 && $true_stock_data['woo_stock_level'] >= (0 - $true_stock_data['backorder_stock_level']) ) { // if woocommerce stock level is negative but above backorder
+		$true_stock_data['true_stock_status'] = 2; // 'true_backorder'; // ... report 'true_backorder'
 	} else { // otherwise ...
-		$true_stock_data['true_stock_status'] = 'true_preorder'; // ... just report 'true_preorder'.
+		$true_stock_data['true_stock_status'] = 1; // 'true_preorder'; // ... just report 'true_preorder'.
 	}
 	return $true_stock_data;
 }

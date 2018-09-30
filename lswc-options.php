@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.28
+ * Version: 1.0.30
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -17,8 +17,10 @@ add_action( 'admin_init', 'molswc_register_settings' );
 function molswc_register_settings() {
 	register_setting( 'molswc-settings-group', 'molswc_estdelivery_instock' );
 	register_setting( 'molswc-settings-group', 'molswc_estdelivery_backorder' );
+	register_setting( 'molswc-settings-group', 'molswc_estdelivery_preorder' );
 	register_setting( 'molswc-settings-group', 'molswc_instock_label' );
 	register_setting( 'molswc-settings-group', 'molswc_backorder_label' );
+	register_setting( 'molswc-settings-group', 'molswc_preorder_label' );
 	register_setting( 'molswc-settings-group', 'molswc_notavailable_label' );
 	register_setting( 'molswc-settings-group', 'molswc_pre_order_message' );
 	register_setting( 'molswc-settings-group', 'molswc_designated_options' );
@@ -41,19 +43,40 @@ function mofsb_fragments_purging_notice() {
 // This is the form in the admin page
 function molswc_admin_options_page_callback() { ?>
     <h1>Lithe Shop Options Page</h1>
-	<p>Adjust the options of the <strong>Litheskateboards Woocommerce customizations</strong> plugin.</p>
+	<p>Adjust the options of the <strong>Litheskateboards Woocommerce customizations</strong> plugin, then click on any <strong>Save Changes</strong> button to apply the changes.</p>
+	
+	<p><strong>How stock levels are calculated:</strong><br>
+	Stock &gt; 0 returns <strong>In Stock</strong><br>
+	Stock &lt;= zero AND &gt;= (zero - backorder-level) returns <strong>Back Order</strong><br>
+	Stock &lt;= zero AND &lt; (zero - backorder-level) returns <strong>Pre Order</strong><br>
+	</p>
 
 	<form method="post" action="options.php">
     <?php settings_fields( 'molswc-settings-group' ); ?>
     <?php do_settings_sections( 'molswc-settings-group' ); ?>
-	
-	<?php submit_button(); ?>
 
-	<h2>Estimated delivery time</h2>
-	<p>Fill in the estimated delivery time, together with the details you need to display in Payment Plan buttons. Examples: "Max. 3 weeks" or "Usually 3 days" etc.<br>
+	<h2>Estimated delivery messages</h2>
+	<p>Fill in the estimated delivery message, together with the details you need to display in Payment Plan buttons. Examples: "Max. 3 weeks" or "Usually 3 days" etc.<br>
 	<strong>Leave empty to disable.</strong></p>
 		
 	<table class="form-table">
+
+		<tr valign="top">
+			<th scope="row">PRE ORDER est. delivery: </th>
+			<td> 
+				<input name="molswc_estdelivery_preorder" type="text" id="molswc_estdelivery_preorder" aria-describedby="molswc_estdelivery_preorder" value="<?php echo strip_tags(get_option( 'molswc_estdelivery_preorder' )); ?>" class="regular-text">
+				<span>(Free text allowed, but not HTML.)</span>
+			</td>
+		</tr>
+		
+		<tr valign="top">
+			<th scope="row">BACK ORDER est. delivery: </th>
+			<td> 
+				<input name="molswc_estdelivery_backorder" type="text" id="molswc_estdelivery_backorder" aria-describedby="molswc_estdelivery_backorder" value="<?php echo strip_tags(get_option( 'molswc_estdelivery_backorder' )); ?>" class="regular-text">
+				<span>(Free text allowed, but not HTML.)</span>
+			</td>
+		</tr>
+		
 		<tr valign="top">
 			<th scope="row">IN STOCK est. delivery: </th>
 			<td> 
@@ -61,30 +84,34 @@ function molswc_admin_options_page_callback() { ?>
 				<span>(Free text allowed, but not HTML.)</span>
 			</td>
 		</tr>
-		<tr valign="top">
-			<th scope="row">BACKORDER est. delivery: </th>
-			<td> 
-				<input name="molswc_estdelivery_backorder" type="text" id="molswc_estdelivery_backorder" aria-describedby="molswc_estdelivery_backorder" value="<?php echo strip_tags(get_option( 'molswc_estdelivery_backorder' )); ?>" class="regular-text">
-				<span>(Free text allowed, but not HTML.)</span>
-			</td>
-		</tr>
+		
 	</table>
+	
+	<?php submit_button(); ?>
 
 	<h2>Stock status labels</h2>
-	<p>Fill in the labels for In Stock, for Back Order and for Not Available stock hints; these will show on Model/Width buttons in product page and pop up.</p>
+	<p>Fill in the stock hint labels that will show on Model/Width buttons in product page and pop up.</p>
 		
 	<table class="form-table">
+		
 		<tr valign="top">
-			<th scope="row">IN STOCK label: </th>
+			<th scope="row">PRE ORDER label: </th>
 			<td> 
-				<input name="molswc_instock_label" type="text" id="molswc_instock_label" aria-describedby="molswc_instock_label" value="<?php echo strip_tags(get_option( 'molswc_instock_label' )); ?>" class="regular-text">
+				<input name="molswc_preorder_label" type="text" id="molswc_preorder_label" aria-describedby="molswc_preorder_label" value="<?php echo strip_tags(get_option( 'molswc_preorder_label' )); ?>" class="regular-text">
 				<span>(Keep it (very!) short, or the label will exceed button width on some screen widths. Free text allowed, but not HTML.)</span>
 			</td>
 		</tr>
 		<tr valign="top">
-			<th scope="row">BACKORDER label: </th>
+			<th scope="row">BACK ORDER label: </th>
 			<td> 
 				<input name="molswc_backorder_label" type="text" id="molswc_backorder_label" aria-describedby="molswc_backorder_label" value="<?php echo strip_tags(get_option( 'molswc_backorder_label' )); ?>" class="regular-text">
+				<span>(Keep it (very!) short, or the label will exceed button width on some screen widths. Free text allowed, but not HTML.)</span>
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">IN STOCK label: </th>
+			<td> 
+				<input name="molswc_instock_label" type="text" id="molswc_instock_label" aria-describedby="molswc_instock_label" value="<?php echo strip_tags(get_option( 'molswc_instock_label' )); ?>" class="regular-text">
 				<span>(Keep it (very!) short, or the label will exceed button width on some screen widths. Free text allowed, but not HTML.)</span>
 			</td>
 		</tr>
@@ -96,9 +123,12 @@ function molswc_admin_options_page_callback() { ?>
 			</td>
 		</tr>
 	</table>
+	
+	<?php submit_button(); ?>
 
 	<h2>Pre-order message</h2>
-	<p>Fill in the message that will show up in Payment Plan buttons for pre-order variations.</p>
+	<p>Fill in the message that will show up in Payment Plan buttons for pre-order variations.<br>
+	<strong>Leave empty to disable.</strong></p>
 	
 	<table class="form-table">
 		<tr valign="top">
@@ -135,6 +165,8 @@ function molswc_admin_options_page_callback() { ?>
 			</td>
 		</tr>
 	</table>
+	
+	<?php submit_button(); ?>
 	
 	<h2>Fragment cache options</h2>
 	<p>Fragment cache caches bits of pages in database and return them when needed. For the moment it caches the product variations form, which is extremly costly to compute with all its variations, stock and prices.<br><strong>If there's a page cache plugin activated clear its cache after clearing this!</strong></p>

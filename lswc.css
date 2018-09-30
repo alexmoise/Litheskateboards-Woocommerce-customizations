@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.0.27
+ * Version: 1.0.30
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -359,6 +359,16 @@ body.single-product .container .product_title.entry-title {
 }
 .table.variations .tbody .value.td div.attrib.var_stock_backorder:hover,
 .table.variations .tbody .value.td div.attrib.var_stock_backorder:hover .inner-attrib {
+    color: #949494 !important;
+    border-color: #949494 !important;
+}
+.table.variations .tbody .value.td div.attrib.var_stock_preorder,
+.table.variations .tbody .value.td div.attrib.var_stock_preorder .inner-attrib {
+    color: #606060 !important;
+    border-color: #353535 !important;
+}
+.table.variations .tbody .value.td div.attrib.var_stock_preorder:hover,
+.table.variations .tbody .value.td div.attrib.var_stock_preorder:hover .inner-attrib {
     color: #949494 !important;
     border-color: #949494 !important;
 }

@@ -1,7 +1,7 @@
 <?php
 /**
  * Uninstall of Litheskateboards Woocommerce customizations plugin.
- * Version: 1.0.28
+ * Version: 1.0.30
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -17,8 +17,10 @@ if ( get_option( 'molswc_delete_options_uninstall' ) ) {
 	// Next define options to remove as variables ..
 	$molswc_option_remove_estdelivery_instock			= 'molswc_estdelivery_instock';
 	$molswc_option_remove_estdelivery_backorder			= 'molswc_estdelivery_backorder';
+	$molswc_option_remove_estdelivery_preorder			= 'molswc_estdelivery_preorder';
 	$molswc_option_remove_instock_label					= 'molswc_instock_label';
 	$molswc_option_remove_backorder_label				= 'molswc_backorder_label';
+	$molswc_option_remove_preorder_label				= 'molswc_preorder_label';
 	$molswc_option_remove_notavailable_label			= 'molswc_notavailable_label';
 	$molswc_option_remove_pre_order_message				= 'molswc_pre_order_message';
 	$molswc_option_remove_designated_options			= 'molswc_designated_options';
@@ -30,8 +32,10 @@ if ( get_option( 'molswc_delete_options_uninstall' ) ) {
 	// And finally remove the options!
 	delete_option( $molswc_option_remove_estdelivery_instock );
 	delete_option( $molswc_option_remove_estdelivery_backorder );
+	delete_option( $molswc_option_remove_estdelivery_preorder );
 	delete_option( $molswc_option_remove_instock_label );
 	delete_option( $molswc_option_remove_backorder_label );
+	delete_option( $molswc_option_remove_preorder_label );
 	delete_option( $molswc_option_remove_notavailable_label );
 	delete_option( $molswc_option_remove_pre_order_message );
 	delete_option( $molswc_option_remove_designated_options );
