@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.34
+ * Version: 1.0.35
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -15,19 +15,42 @@ function molswc_register_admin_options_page() {
 // Register the settings here
 add_action( 'admin_init', 'molswc_register_settings' );
 function molswc_register_settings() {
-	register_setting( 'molswc-settings-group', 'molswc_estdelivery_instock' );
-	register_setting( 'molswc-settings-group', 'molswc_estdelivery_backorder' );
-	register_setting( 'molswc-settings-group', 'molswc_estdelivery_preorder' );
-	register_setting( 'molswc-settings-group', 'molswc_instock_label' );
-	register_setting( 'molswc-settings-group', 'molswc_backorder_label' );
-	register_setting( 'molswc-settings-group', 'molswc_preorder_label' );
-	register_setting( 'molswc-settings-group', 'molswc_notavailable_label' );
-	register_setting( 'molswc-settings-group', 'molswc_pre_order_message' );
-	register_setting( 'molswc-settings-group', 'molswc_designated_options' );
-	register_setting( 'molswc-settings-group', 'molswc_excluded_categories' );
-	register_setting( 'molswc-settings-group', 'molswc_enable_avia_debug' );
-	register_setting( 'molswc-settings-group', 'molswc_transient_keys_purging' );
-	register_setting( 'molswc-settings-group', 'molswc_delete_options_uninstall' );
+	// First define the options (beware there's a copy of this array in uninstall.php for the moment)
+	$molswc_settings_array = array(
+		'molswc_estdelivery_instock',
+		'molswc_estdelivery_backorder',
+		'molswc_estdelivery_preorder',
+		'molswc_instock_label',
+		'molswc_backorder_label',
+		'molswc_preorder_label',
+		'molswc_notavailable_label',
+		'molswc_pre_order_message',
+		'molswc_designated_options',
+		'molswc_excluded_categories',
+		'molswc_enable_avia_debug',
+		'molswc_transient_keys_purging',
+		'molswc_instock_label_color',
+		'molswc_instock_label_hover_color',
+		'molswc_instock_border_color',
+		'molswc_instock_border_hover_color',
+		'molswc_backorder_label_color',
+		'molswc_backorder_label_hover_color',
+		'molswc_backorder_border_color',
+		'molswc_backorder_border_hover_color',
+		'molswc_preorder_label_color',
+		'molswc_preorder_label_hover_color',
+		'molswc_preorder_border_color',
+		'molswc_preorder_border_hover_color',
+		'molswc_notavailable_label_color',
+		'molswc_notavailable_label_hover_color',
+		'molswc_notavailable_border_color',
+		'molswc_notavailable_border_hover_color',
+		'molswc_delete_options_uninstall',
+	);
+	/// Then register each of them
+	foreach ( $molswc_settings_array as $molswc_setting ) {
+		register_setting( 'molswc-settings-group', $molswc_setting );
+	}
 }
 
 // Delete all fragments stored as options if instructed so
@@ -122,6 +145,95 @@ function molswc_admin_options_page_callback() { ?>
 				<span>(Keep it (very!) short, or the label will exceed button width on some screen widths. Free text allowed, but not HTML.)</span>
 			</td>
 		</tr>
+	</table>
+	
+	<?php submit_button(); ?>
+	
+		<h2>Buttons colors based on True Stock Status</h2>
+	<p>Fill in the colors for the buttons. Use HEX value (like ) or "transparent". Things like "blue" or "green" may also work.</p>
+		
+	<table class="form-table">
+
+		<tr valign="top">
+			<th scope="row">PRE ORDER button colors </th>
+			<td> 
+				<span>Normal color:</span>
+				<input name="molswc_preorder_label_color" type="text" id="molswc_preorder_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_label_color" value="<?php echo strip_tags(get_option( 'molswc_preorder_label_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover color:</span>
+				<input name="molswc_preorder_label_hover_color" type="text" id="molswc_preorder_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_label_hover_color" value="<?php echo strip_tags(get_option( 'molswc_preorder_label_hover_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal border color:</span>
+				<input name="molswc_preorder_border_color" type="text" id="molswc_preorder_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_border_color" value="<?php echo strip_tags(get_option( 'molswc_preorder_border_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover border color:</span>
+				<input name="molswc_preorder_border_hover_color" type="text" id="molswc_preorder_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_border_hover_color" value="<?php echo strip_tags(get_option( 'molswc_preorder_border_hover_color' )); ?>" class="regular-text">
+			</td>
+		</tr>
+		
+		<tr valign="top">
+			<th scope="row">BACK ORDER button colors </th>
+			<td> 
+				<span>Normal color:</span>
+				<input name="molswc_backorder_label_color" type="text" id="molswc_backorder_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_label_color" value="<?php echo strip_tags(get_option( 'molswc_backorder_label_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover color:</span>
+				<input name="molswc_backorder_label_hover_color" type="text" id="molswc_backorder_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_label_hover_color" value="<?php echo strip_tags(get_option( 'molswc_backorder_label_hover_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal border color:</span>
+				<input name="molswc_backorder_border_color" type="text" id="molswc_backorder_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_border_color" value="<?php echo strip_tags(get_option( 'molswc_backorder_border_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover border color:</span>
+				<input name="molswc_backorder_border_hover_color" type="text" id="molswc_backorder_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_border_hover_color" value="<?php echo strip_tags(get_option( 'molswc_backorder_border_hover_color' )); ?>" class="regular-text">
+			</td>
+		</tr>
+		
+		<tr valign="top">
+			<th scope="row">IN STOCK button colors </th>
+			<td> 
+				<span>Normal color:</span>
+				<input name="molswc_instock_label_color" type="text" id="molswc_instock_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_label_color" value="<?php echo strip_tags(get_option( 'molswc_instock_label_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover color:</span>
+				<input name="molswc_instock_label_hover_color" type="text" id="molswc_instock_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_label_hover_color" value="<?php echo strip_tags(get_option( 'molswc_instock_label_hover_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal border color:</span>
+				<input name="molswc_instock_border_color" type="text" id="molswc_instock_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_border_color" value="<?php echo strip_tags(get_option( 'molswc_instock_border_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover border color:</span>
+				<input name="molswc_instock_border_hover_color" type="text" id="molswc_instock_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_border_hover_color" value="<?php echo strip_tags(get_option( 'molswc_instock_border_hover_color' )); ?>" class="regular-text">
+			</td>
+		</tr>
+		
+		<tr valign="top">
+			<th scope="row">N/A button colors </th>
+			<td> 
+				<span>Normal color:</span>
+				<input name="molswc_notavailable_label_color" type="text" id="molswc_notavailable_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_label_color" value="<?php echo strip_tags(get_option( 'molswc_notavailable_label_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover color:</span>
+				<input name="molswc_notavailable_label_hover_color" type="text" id="molswc_notavailable_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_label_hover_color" value="<?php echo strip_tags(get_option( 'molswc_notavailable_label_hover_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal border color:</span>
+				<input name="molswc_notavailable_border_color" type="text" id="molswc_notavailable_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_border_color" value="<?php echo strip_tags(get_option( 'molswc_notavailable_border_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover border color:</span>
+				<input name="molswc_notavailable_border_hover_color" type="text" id="molswc_notavailable_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_border_hover_color" value="<?php echo strip_tags(get_option( 'molswc_notavailable_border_hover_color' )); ?>" class="regular-text">
+			</td>
+		</tr>
+
 	</table>
 	
 	<?php submit_button(); ?>

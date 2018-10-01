@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.34
+ * Version: 1.0.35
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -94,6 +94,58 @@ function molswc_replace_spinner_js() {
     wp_deregister_script('smart-product');
 	wp_register_script('smart-product-custom', plugins_url('smart.product.min.js', __FILE__));
 	wp_enqueue_script('smart-product-custom');
+}
+
+// Output buttons colors styles as defined in Options Admin page
+add_action( 'wp_head', 'molswc_styles_for_buttons_colors', 99999 );
+function molswc_styles_for_buttons_colors() {
+	$molswc_buttons_colors_css = "<style type='text/css'>
+		/* In Stock */
+		.table.variations .tbody .value.td div.attrib.var_stock_instock,
+		.table.variations .tbody .value.td div.attrib.var_stock_instock .inner-attrib {
+			color: ".strip_tags(get_option( 'molswc_instock_label_color' ))." !important;
+			border-color: ".strip_tags(get_option( 'molswc_instock_border_color' ))." !important;
+		}
+		.table.variations .tbody .value.td div.attrib.var_stock_instock:hover,
+		.table.variations .tbody .value.td div.attrib.var_stock_instock:hover .inner-attrib {
+			color: ".strip_tags(get_option( 'molswc_instock_label_hover_color' ))." !important;
+			border-color: ".strip_tags(get_option( 'molswc_instock_border_hover_color' ))." !important;
+		}
+		/* Back Order */
+		.table.variations .tbody .value.td div.attrib.var_stock_backorder,
+		.table.variations .tbody .value.td div.attrib.var_stock_backorder .inner-attrib {
+			color: ".strip_tags(get_option( 'molswc_backorder_label_color' ))." !important;
+			border-color: ".strip_tags(get_option( 'molswc_backorder_border_color' ))." !important;
+		}
+		.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover,
+		.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover .inner-attrib {
+			color: ".strip_tags(get_option( 'molswc_backorder_label_hover_color' ))." !important;
+			border-color: ".strip_tags(get_option( 'molswc_backorder_border_hover_color' ))." !important;
+		}
+		/* Pre Order */
+		.table.variations .tbody .value.td div.attrib.var_stock_preorder,
+		.table.variations .tbody .value.td div.attrib.var_stock_preorder .inner-attrib {
+			color: ".strip_tags(get_option( 'molswc_preorder_label_color' ))." !important;
+			border-color: ".strip_tags(get_option( 'molswc_preorder_border_color' ))." !important;
+		}
+		.table.variations .tbody .value.td div.attrib.var_stock_preorder:hover,
+		.table.variations .tbody .value.td div.attrib.var_stock_preorder:hover .inner-attrib {
+			color: ".strip_tags(get_option( 'molswc_preorder_label_hover_color' ))." !important;
+			border-color: ".strip_tags(get_option( 'molswc_preorder_border_hover_color' ))." !important;
+		}
+		/* Not Available */
+		.table.variations .tbody .value.td div.attrib.var_stock_not_available,
+		.table.variations .tbody .value.td div.attrib.var_stock_not_available .inner-attrib {
+			color: ".strip_tags(get_option( 'molswc_notavailable_label_color' ))." !important;
+			border-color: ".strip_tags(get_option( 'molswc_notavailable_border_color' ))." !important;
+		}
+		.table.variations .tbody .value.td div.attrib.var_stock_not_available:hover,
+		.table.variations .tbody .value.td div.attrib.var_stock_not_available:hover .inner-attrib {
+			color: ".strip_tags(get_option( 'molswc_notavailable_label_hover_color' ))." !important;
+			border-color: ".strip_tags(get_option( 'molswc_notavailable_border_hover_color' ))." !important;
+		}
+	</style>";
+	echo "\n<!-- Buttons Colors START -->\n".$molswc_buttons_colors_css."\n<!-- Buttons Colors END -->\n" ;
 }
 
 // Redirect wholesale users from products to wholesale form and non-wholesale users the other way around ... plus few more tricks - like login and (non)WS products

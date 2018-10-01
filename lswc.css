@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.0.30
+ * Version: 1.0.35
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -330,11 +330,10 @@ body.single-product .container .product_title.entry-title {
     text-align: center;
 }
 
-
 /* == MAKE BUTTONS - ALL == */
 .table.variations .tbody .value.td > div.tax, 
 .table.variations .tbody .value-buttons.td > div.attrib {
-	border: 1px solid #cbcbcb;
+	border: 1px solid;
 	border-radius: 5px;
 	margin: 8px;
 	cursor: pointer;
@@ -345,42 +344,7 @@ body.single-product .container .product_title.entry-title {
 	font-size: 10px !important;
 	color: inherit !important;
 }
-.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled > label.attrib.option .inner-attrib {
-    color: #606060;
-    border-color: #606060;
-}
-.table.variations .tbody .value-buttons.td.td > div:not(.has-been-disabled):hover {
-    border: 1px solid white;
-}
-.table.variations .tbody .value.td div.attrib.var_stock_backorder,
-.table.variations .tbody .value.td div.attrib.var_stock_backorder .inner-attrib {
-    color: #606060 !important;
-    border-color: #606060 !important;
-}
-.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover,
-.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover .inner-attrib {
-    color: #949494 !important;
-    border-color: #949494 !important;
-}
-.table.variations .tbody .value.td div.attrib.var_stock_preorder,
-.table.variations .tbody .value.td div.attrib.var_stock_preorder .inner-attrib {
-    color: #606060 !important;
-    border-color: #353535 !important;
-}
-.table.variations .tbody .value.td div.attrib.var_stock_preorder:hover,
-.table.variations .tbody .value.td div.attrib.var_stock_preorder:hover .inner-attrib {
-    color: #949494 !important;
-    border-color: #949494 !important;
-}
-.table.variations .tbody .value.td div.attrib.var_stock_not_available:hover, 
-.table.variations .tbody .value.td div.attrib.var_stock_not_available, 
-.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled {
-	border: 1px solid transparent; /* disabled buttons without border */
-} 
-.table.variations .tbody .value.td div.attrib.var_stock_not_available > label.attrib.option .inner-attrib,
-.table.variations .tbody .value-buttons.td > div.attrib.has-been-disabled > label.attrib.option .inner-attrib {
-   color: #606060 !important; /* disabled buttons greyed out */
-}
+/* here were the buttons colors */
 .value.td > div > input[type='radio'], 
 .value-buttons.td > div > input[type='radio'], 
 .value.td > .each-attrib > div > input[type='radio'] {
