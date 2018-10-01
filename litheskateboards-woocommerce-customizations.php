@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.31
+ * Version: 1.0.32
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -228,7 +228,7 @@ if ( ! function_exists( 'print_attribute_radio_tax' ) ) {
 		global $product;
 		$input_name = 'attribute_' . esc_attr( $name ) ;
 		$esc_value = esc_attr( $value );
-		$id = esc_attr( $name . '_v_' . $value . $product->get_id() ); //added product ID at the end of the name to target single products
+		$id = esc_attr( $name . '_v_' . $value . '_p_'. $product->get_id() ); //added product ID at the end of the name to target single products
 		$checked = checked( $checked_value, $value, false );
 		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
 		printf( '<div class="tax" data-text-name="%2$s"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="tax option" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</label><span class="attrib-description">%6$s</span></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description );
@@ -638,7 +638,7 @@ function molswc_check_fragments( $fragment_partial_key ) {
 }
 
 // === Backorder stock level functions
-// Add back order stock level number box
+// Add back order stock level number box to each variation in its edit screen
 add_action( 'woocommerce_variation_options_inventory', 'molswc_variation_backorder_stock_level', 10, 3 ); 
 function molswc_variation_backorder_stock_level( $loop, $variation_data, $variation ) {
 	woocommerce_wp_text_input( 
@@ -658,7 +658,7 @@ function molswc_variation_backorder_stock_level( $loop, $variation_data, $variat
 	);      
 }
 
-// Save back order stock level
+// Save back order stock level when saving the Product Edit screen or only the Variations
 add_action( 'woocommerce_save_product_variation', 'molswc_save_variation_backorder_stock_level', 10, 2 );
 function molswc_save_variation_backorder_stock_level( $post_id ) {
 	$number_field = $_POST['backorder_stock_level'][ $post_id ];
@@ -667,7 +667,7 @@ function molswc_save_variation_backorder_stock_level( $post_id ) {
 	}
 }
 
-// Store 
+// Store back order stock level in variation meta data, so it gets outputted in the variations_form
 add_filter( 'woocommerce_available_variation', 'molswc_store_variation_backorder_stock_level' );
 function molswc_store_variation_backorder_stock_level( $variations ) {
     $variations['backorder_stock_level'] = get_post_meta( $variations[ 'variation_id' ], 'backorder_stock_level', true );
@@ -701,18 +701,28 @@ function molswc_get_true_stock_status($variation_id) {
 	return $true_stock_data;
 }
 
-
-/* Just a debug function to check the "true" values
-add_action( 'wp_footer', 'test_molswc_get_true_stock_data' );
-function test_molswc_get_true_stock_data() {
-	$varid = 6702;
-	
-	$truelevel = molswc_get_true_stock_level($varid)['true_stock_level'];
-	echo '<!-- '.$varid.' Truelevel = '.$truelevel.' -->';
-	
-	$truestatus = molswc_get_true_stock_status($varid)['true_stock_status'];
-	echo '<!-- '.$varid.' Truestatus = '.$truestatus.' -->';
+// Set preorder status of variation, aka "_ywpo_preorder" product meta, to 'yes' or 'no
+function molswc_set_preorder_status($variation_id, $is_preorder) {
+	if( $is_preorder == 'yes' || $is_preorder == 'no' ) {
+		update_post_meta( $variation_id, '_ywpo_preorder', $is_preorder );
+	}
 }
-*/
+
+// Set the right preorder status of variation at purchase level
+add_action( 'woocommerce_reduce_order_stock', array('Wc_class_preorder_adjustments', 'molswc_adjust_preorder_status'));
+class Wc_class_preorder_adjustments {
+	public static function molswc_adjust_preorder_status($order) {
+		foreach ( $order->get_items() as $item_id => $item_values ) { // Iterating though each order items
+			$item_id = $item_values->get_id(); // The item ID
+			$current_var_id = $item_values['variation_id']; // current variation ID 
+			$current_var_id_true_stock_status = molswc_get_true_stock_status($current_var_id)['true_stock_status'];
+			if( $current_var_id_true_stock_status == 1 ) {
+				molswc_set_preorder_status($current_var_id, 'yes');
+			} else {
+				molswc_set_preorder_status($current_var_id, 'no');
+			}
+		}
+	}
+}
 
 ?>
