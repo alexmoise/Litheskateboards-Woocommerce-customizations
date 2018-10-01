@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.33
+ * Version: 1.0.34
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -700,7 +700,7 @@ function molswc_get_true_stock_status($variation_id) {
 	$true_stock_data = molswc_get_true_stock_level($variation_id);
 	if( $true_stock_data['woo_stock_level'] > 0 ) { // If woocommerce stock level is positive ...
 		$true_stock_data['true_stock_status'] = 3; // 'true_instock'; // ...then report 'true_in_stock'
-	} elseif ( $true_stock_data['woo_stock_level'] <= 0 && $true_stock_data['woo_stock_level'] >= (0 - $true_stock_data['backorder_stock_level']) ) { // if woocommerce stock level is negative but above backorder
+	} elseif ( $true_stock_data['woo_stock_level'] <= 0 && $true_stock_data['woo_stock_level'] > (0 - $true_stock_data['backorder_stock_level']) ) { // if woocommerce stock level is negative but above backorder
 		$true_stock_data['true_stock_status'] = 2; // 'true_backorder'; // ... report 'true_backorder'
 	} else { // otherwise ...
 		$true_stock_data['true_stock_status'] = 1; // 'true_preorder'; // ... just report 'true_preorder'.
