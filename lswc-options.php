@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.30
+ * Version: 1.0.33
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -45,10 +45,10 @@ function molswc_admin_options_page_callback() { ?>
     <h1>Lithe Shop Options Page</h1>
 	<p>Adjust the options of the <strong>Litheskateboards Woocommerce customizations</strong> plugin, then click on any <strong>Save Changes</strong> button to apply the changes.</p>
 	
-	<p><strong>How stock levels are calculated:</strong><br>
-	Stock &gt; 0 returns <strong>In Stock</strong><br>
-	Stock &lt;= zero AND &gt;= (zero - backorder-level) returns <strong>Back Order</strong><br>
-	Stock &lt;= zero AND &lt; (zero - backorder-level) returns <strong>Pre Order</strong><br>
+	<p><strong>How "True Stock Levels" are calculated:</strong><br>
+	<strong>In stock</strong>: stock is &gt; 0<br>
+	<strong>Backorder</strong>: stock is &lt;= 0 AND &gt; (0 - backorder_level)<br>
+	<strong>Preorder</strong>: stock is &lt;= 0 AND &lt; (0 - backorder_level)<br>
 	</p>
 
 	<form method="post" action="options.php">

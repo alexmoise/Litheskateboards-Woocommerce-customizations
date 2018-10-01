@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.32
+ * Version: 1.0.33
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -41,6 +41,15 @@ add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'molswc_plugin
 add_action( 'wp_head', 'molswc_webapp_meta' ); 
 function molswc_webapp_meta() {
     echo '<meta name="mobile-web-app-capable" content="yes">';
+}
+
+// Debug variable to file; precede it with a label for better understanding
+function molswc_debug_to_file($output_label, $something_to_output) {
+	$timestamp = date("Y-m-d H:i:s");
+	if ( defined('ABSPATH') ) { $path_to_wp_content = ABSPATH.'wp-content/'; $molswc_file = $path_to_wp_content.'testdata.txt';} else { return; }
+	file_put_contents($molswc_file, "\n".$timestamp.": ### Debug_to_file triggered ### ", FILE_APPEND | LOCK_EX);
+	$readable_thing = print_r($something_to_output, true); 
+	file_put_contents($molswc_file, "\n".$timestamp.": ".$output_label." = ".$readable_thing."  ", FILE_APPEND | LOCK_EX);	
 }
 
 // Just another simple trim function, for later use :-)
@@ -464,8 +473,6 @@ function molswc_disable_variations_user_based( $active, $variation ) {
 add_action( 'woocommerce_reduce_order_stock', array('Wc_class', 'molswc_stock_adjutments'));
 class Wc_class {
 	public static function molswc_stock_adjutments($order) {
-		// $molswc_file = "/homepages/7/d434880338/htdocs/litheskateboards/staging/wp-content/testdata.txt";
-		// file_put_contents($molswc_file, "\n** 13 ThankYou triggered ... \n", FILE_APPEND | LOCK_EX);
 		foreach ( $order->get_items() as $item_id => $item_values ) { // Iterating though each order items
 			$item_id = $item_values->get_id(); // The item ID
 			$item_qty = $item_values['qty']; // Item quantity
@@ -547,7 +554,7 @@ echo "
 ";
 }
 
-// Prevent Left/Right product hints to show in product pages. Could change its settings and made it show, see it in parent theme, in "functions-enfold.php file around line 505
+// Prevent Left/Right product hints to show in product pages. Could change its settings and made it show, see it in parent theme, in "functions-enfold.php" file around line 505
 if(!function_exists('avia_post_nav')) {
 	function avia_post_nav($same_category = false, $taxonomy = 'category') { return; }
 }
@@ -637,7 +644,7 @@ function molswc_check_fragments( $fragment_partial_key ) {
 	return $result;
 }
 
-// === Backorder stock level functions
+// === Backorder and True Stock Levels functions
 // Add back order stock level number box to each variation in its edit screen
 add_action( 'woocommerce_variation_options_inventory', 'molswc_variation_backorder_stock_level', 10, 3 ); 
 function molswc_variation_backorder_stock_level( $loop, $variation_data, $variation ) {
@@ -701,25 +708,39 @@ function molswc_get_true_stock_status($variation_id) {
 	return $true_stock_data;
 }
 
-// Set preorder status of variation, aka "_ywpo_preorder" product meta, to 'yes' or 'no
+// Set preorder status of variation, aka "_ywpo_preorder" product meta, to 'yes' or 'no'
 function molswc_set_preorder_status($variation_id, $is_preorder) {
 	if( $is_preorder == 'yes' || $is_preorder == 'no' ) {
 		update_post_meta( $variation_id, '_ywpo_preorder', $is_preorder );
 	}
 }
 
-// Set the right preorder status of variation at purchase level
+// Set *and sync!* the right pre order status of variation at purchase level
 add_action( 'woocommerce_reduce_order_stock', array('Wc_class_preorder_adjustments', 'molswc_adjust_preorder_status'));
 class Wc_class_preorder_adjustments {
 	public static function molswc_adjust_preorder_status($order) {
 		foreach ( $order->get_items() as $item_id => $item_values ) { // Iterating though each order items
 			$item_id = $item_values->get_id(); // The item ID
 			$current_var_id = $item_values['variation_id']; // current variation ID 
-			$current_var_id_true_stock_status = molswc_get_true_stock_status($current_var_id)['true_stock_status'];
+			$current_var = wc_get_product( $current_var_id ); // Get an instance of the current variation object
+			$parent_id = $current_var->get_parent_id(); // Get the ID of the parent product
+			$current_var_attribs = wc_get_formatted_variation( $current_var->get_variation_attributes(), true ); // Get the attributes of the current variation
+			parse_str(strtr($current_var_attribs, ":,", "=&"), $attribs_array); // parse the attributes object ...
+			$attrib_to_use_for_peering = molswc_check_if_custom_attrib_exists($attribs_array); // now check which attribute we may use for peering ...
+			$attrib_values = $current_var -> attributes; // ... then get all values of the attribute used for peering ...
+			$value_to_use_for_peering = $attrib_values[$attrib_to_use_for_peering]; // ... and get the exact value we need for peeting.
+			$peer_vars = molswc_get_peer_variations($parent_id, $attrib_to_use_for_peering, $value_to_use_for_peering); // Now, get all peer variations based on data we retrieved before
+			foreach ( $peer_vars as $peer_var ) {
+				$peer_vars_working_array[] = $peer_var; // and add each of them to working array that we'll process later
+			}
+		}
+		// Now process the working array, applying the changes
+		foreach ( $peer_vars_working_array as $working_var ) {
+			$current_var_id_true_stock_status = molswc_get_true_stock_status($working_var)['true_stock_status']; 
 			if( $current_var_id_true_stock_status == 1 ) {
-				molswc_set_preorder_status($current_var_id, 'yes');
+				molswc_set_preorder_status($working_var, 'yes');
 			} else {
-				molswc_set_preorder_status($current_var_id, 'no');
+				molswc_set_preorder_status($working_var, 'no');
 			}
 		}
 	}
