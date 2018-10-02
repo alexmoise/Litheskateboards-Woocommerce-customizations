@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.0.35
+ * Version: 1.0.36
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -331,6 +331,9 @@ body.single-product .container .product_title.entry-title {
 }
 
 /* == MAKE BUTTONS - ALL == */
+.table.variations .tbody .value.td > div.tax {
+	border-color: white !important;
+}
 .table.variations .tbody .value.td > div.tax, 
 .table.variations .tbody .value-buttons.td > div.attrib {
 	border: 1px solid;

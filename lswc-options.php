@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.35
+ * Version: 1.0.36
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -85,9 +85,9 @@ function molswc_admin_options_page_callback() { ?>
 	<table class="form-table">
 
 		<tr valign="top">
-			<th scope="row">PRE ORDER est. delivery: </th>
+			<th scope="row">IN STOCK est. delivery: </th>
 			<td> 
-				<input name="molswc_estdelivery_preorder" type="text" id="molswc_estdelivery_preorder" aria-describedby="molswc_estdelivery_preorder" value="<?php echo strip_tags(get_option( 'molswc_estdelivery_preorder' )); ?>" class="regular-text">
+				<input name="molswc_estdelivery_instock" type="text" id="molswc_estdelivery_instock" aria-describedby="molswc_estdelivery_instock" value="<?php echo strip_tags(get_option( 'molswc_estdelivery_instock' )); ?>" class="regular-text">
 				<span>(Free text allowed, but not HTML.)</span>
 			</td>
 		</tr>
@@ -99,15 +99,23 @@ function molswc_admin_options_page_callback() { ?>
 				<span>(Free text allowed, but not HTML.)</span>
 			</td>
 		</tr>
-		
+				
 		<tr valign="top">
-			<th scope="row">IN STOCK est. delivery: </th>
+			<th scope="row">PRE ORDER est. delivery: </th>
 			<td> 
-				<input name="molswc_estdelivery_instock" type="text" id="molswc_estdelivery_instock" aria-describedby="molswc_estdelivery_instock" value="<?php echo strip_tags(get_option( 'molswc_estdelivery_instock' )); ?>" class="regular-text">
+				<input name="molswc_estdelivery_preorder" type="text" id="molswc_estdelivery_preorder" aria-describedby="molswc_estdelivery_preorder" value="<?php echo strip_tags(get_option( 'molswc_estdelivery_preorder' )); ?>" class="regular-text">
 				<span>(Free text allowed, but not HTML.)</span>
 			</td>
 		</tr>
 		
+		<tr valign="top">
+			<th scope="row">PRE ORDER supplemental message: </th>
+			<td> 
+				<input name="molswc_pre_order_message" type="text" id="molswc_pre_order_message" aria-describedby="molswc_pre_order_message" value="<?php echo strip_tags(get_option( 'molswc_pre_order_message' )); ?>" class="regular-text">
+				<span>(This is a supplemental message only for Pre Order. <strong>Leave empty to disable.</strong>)</span>
+			</td>
+		</tr>
+
 	</table>
 	
 	<?php submit_button(); ?>
@@ -116,11 +124,10 @@ function molswc_admin_options_page_callback() { ?>
 	<p>Fill in the stock hint labels that will show on Model/Width buttons in product page and pop up.</p>
 		
 	<table class="form-table">
-		
 		<tr valign="top">
-			<th scope="row">PRE ORDER label: </th>
+			<th scope="row">IN STOCK label: </th>
 			<td> 
-				<input name="molswc_preorder_label" type="text" id="molswc_preorder_label" aria-describedby="molswc_preorder_label" value="<?php echo strip_tags(get_option( 'molswc_preorder_label' )); ?>" class="regular-text">
+				<input name="molswc_instock_label" type="text" id="molswc_instock_label" aria-describedby="molswc_instock_label" value="<?php echo strip_tags(get_option( 'molswc_instock_label' )); ?>" class="regular-text">
 				<span>(Keep it (very!) short, or the label will exceed button width on some screen widths. Free text allowed, but not HTML.)</span>
 			</td>
 		</tr>
@@ -132,9 +139,9 @@ function molswc_admin_options_page_callback() { ?>
 			</td>
 		</tr>
 		<tr valign="top">
-			<th scope="row">IN STOCK label: </th>
+			<th scope="row">PRE ORDER label: </th>
 			<td> 
-				<input name="molswc_instock_label" type="text" id="molswc_instock_label" aria-describedby="molswc_instock_label" value="<?php echo strip_tags(get_option( 'molswc_instock_label' )); ?>" class="regular-text">
+				<input name="molswc_preorder_label" type="text" id="molswc_preorder_label" aria-describedby="molswc_preorder_label" value="<?php echo strip_tags(get_option( 'molswc_preorder_label' )); ?>" class="regular-text">
 				<span>(Keep it (very!) short, or the label will exceed button width on some screen widths. Free text allowed, but not HTML.)</span>
 			</td>
 		</tr>
@@ -237,20 +244,6 @@ function molswc_admin_options_page_callback() { ?>
 	</table>
 	
 	<?php submit_button(); ?>
-
-	<h2>Pre-order message</h2>
-	<p>Fill in the message that will show up in Payment Plan buttons for pre-order variations.<br>
-	<strong>Leave empty to disable.</strong></p>
-	
-	<table class="form-table">
-		<tr valign="top">
-			<th scope="row">Pre-order product message: </th>
-			<td> 
-				<input name="molswc_pre_order_message" type="text" id="molswc_pre_order_message" aria-describedby="molswc_pre_order_message" value="<?php echo strip_tags(get_option( 'molswc_pre_order_message' )); ?>" class="regular-text">
-				<span>(Free text allowed, but not HTML.)</span>
-			</td>
-		</tr>
-	</table>
 
 	<h2>Designated options</h2>
 	<p>Comma separated list of attributes used to create the columns in the product page and pop-up. Example: "Vert, Street".</p>
