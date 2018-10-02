@@ -4,46 +4,42 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.0.37
+ * Version: 1.1.0
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
 
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
 
+// === Some general preparations and customization first:
 // Adding admin options
 include( plugin_dir_path( __FILE__ ) . 'lswc-options.php' );
-
 // Adding own CSS
+add_action( 'wp_enqueue_scripts', 'molswc_adding_styles', 99999999 ); // yeah, "avia-merged-styles" has 999999 :-P
 function molswc_adding_styles() {
 	wp_register_style('lswc-styles', plugins_url('lswc.css', __FILE__));
 	wp_enqueue_style('lswc-styles');
 }
-add_action( 'wp_enqueue_scripts', 'molswc_adding_styles', 99999999 ); // yeah, "avia-merged-styles" has 999999 :-P
-
 // Adding own JS
+add_action( 'wp_enqueue_scripts', 'molswc_adding_scripts', 9999999 );
 function molswc_adding_scripts() {
 	wp_register_script('lswc-script', plugins_url('lswc.js', __FILE__), array('jquery'), '', true);
 	wp_enqueue_script('lswc-script');
 }
-add_action( 'wp_enqueue_scripts', 'molswc_adding_scripts', 9999999 ); 
-
 // Adding the Settings link in Plugins Page, next to Deactivate link
+add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'molswc_plugin_action_links' );
 function molswc_plugin_action_links( $molswclinks ) {
 	$molswclinks = array_merge( array(
 		'<a target="_blank" href="' . esc_url( admin_url( '/admin.php?page=lithe-options' ) ) . '">' . __( 'Settings' ) . '</a>'
 	), $molswclinks );
 	return $molswclinks;
 }
-add_action( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'molswc_plugin_action_links' );
-
 // Adding mobile app capability meta
 add_action( 'wp_head', 'molswc_webapp_meta' ); 
 function molswc_webapp_meta() {
     echo '<meta name="mobile-web-app-capable" content="yes">';
 }
-
-// Debug variable to file; precede it with a label for better understanding
+// Debug variable to file; call it wherever it's needed along with the variable to be outputted and with a label for better understanding
 function molswc_debug_to_file($output_label, $something_to_output) {
 	$timestamp = date("Y-m-d H:i:s");
 	if ( defined('ABSPATH') ) { $path_to_wp_content = ABSPATH.'wp-content/'; $molswc_file = $path_to_wp_content.'testdata.txt';} else { return; }
@@ -51,18 +47,58 @@ function molswc_debug_to_file($output_label, $something_to_output) {
 	$readable_thing = print_r($something_to_output, true); 
 	file_put_contents($molswc_file, "\n".$timestamp.": ".$output_label." = ".$readable_thing."  ", FILE_APPEND | LOCK_EX);	
 }
+// Get rid of original JS from WC Variations Price Hints (all its functions are changed and present now in lswc.js)
+add_action('wp_print_scripts','molswc_remove_wcvarhints_js');
+function molswc_remove_wcvarhints_js() {
+	if ( !is_shop() ) { // we need it in shop because here there's no "current" product, unless popup pops up with one
+		wp_dequeue_script('wm_variation_price_hints_script');
+		wp_deregister_script('wm_variation_price_hints_script');
+	}
+}
+// Get rid of the original spinner function of the Smart Product Viewer plugin, and enqueue the one with the customized JS code
+add_action('wp_print_scripts','molswc_replace_spinner_js');
+function molswc_replace_spinner_js() {
+    wp_dequeue_script('smart-product');
+    wp_deregister_script('smart-product');
+	wp_register_script('smart-product-custom', plugins_url('smart.product.min.js', __FILE__));
+	wp_enqueue_script('smart-product-custom');
+}
+// Enable Avia Builder Debug, for easily copy/paste page contents (an Enfold Theme thing)
+add_action('avia_builder_mode', "molswc_builder_set_debug");
+if ( ! function_exists( 'molswc_builder_set_debug' ) ) {
+	function molswc_builder_set_debug() {
+		if ( get_option( 'molswc_enable_avia_debug' ) ) { return "debug"; }
+	}
+}
 
-// Just another simple trim function, for later use :-)
-function molswc_trim_value(&$value) { $value = trim($value); } 
-
-// Define the options to separate lists
+// === Various Woocommerce Shop and Product customizations below:
+// Shop page title changed to "Shop - Lithe Skateboards"
+add_filter('pre_get_document_title', 'molswc_shop_title_tag');
+function molswc_shop_title_tag(){
+	if ( is_shop() ) {
+		return 'Shop - Lithe Skateboards';
+	}
+}
+// Go straight to Checkout when a Payment Method button has been pressed
+add_filter('woocommerce_add_to_cart_redirect', 'molswc_go_to_checkout');
+function molswc_go_to_checkout() {
+	global $woocommerce;
+	$checkout_url = wc_get_checkout_url();
+	return $checkout_url;
+}
+// Extend conditional variations limit
+add_filter( 'woocommerce_ajax_variation_threshold', 'molswc_wc_ajax_variation_threshold', 10, 2 );
+function molswc_wc_ajax_variation_threshold( $qty, $product ) {
+    return 50;
+}
+// Get the product options we'll use to separate buttons lists
+function molswc_trim_value(&$value) { $value = trim($value); } // Just another simple trim function, used below and maybe somewhere else :-)
 function molswc_designated_options() {
 	$raw_designated_options = strip_tags(get_option( 'molswc_designated_options' )); // get raw options as defined in options DB table
 	$designated_options = explode(',', $raw_designated_options); // create an array with options
 	array_walk($designated_options, 'molswc_trim_value'); // remove possible white space at the beginning or the end of each array element (using previously defined trim function)
 	return $designated_options; // finally return the array to wherever is needed
 }
-
 // Exclude the products in these categories from displaying on the shop page
 add_action( 'woocommerce_product_query', 'molswc_custom_boards_query' );
 function molswc_custom_boards_query( $q ) {
@@ -77,25 +113,6 @@ function molswc_custom_boards_query( $q ) {
     );
     $q->set( 'tax_query', $tax_query );
 }
-
-// Get rid of original JS from WC Variations Price Hints ... (for good, we won't replace it anymore as all functions are now in lswc.js)
-add_action('wp_print_scripts','molswc_remove_wcvarhints_js');
-function molswc_remove_wcvarhints_js() {
-	if ( !is_shop() ) { // we need it in shop because here there's no "current" product, unless popup pops up with one
-		wp_dequeue_script('wm_variation_price_hints_script');
-		wp_deregister_script('wm_variation_price_hints_script');
-	}
-}
-
-// Get rid of the original spinner function of the Smart Product Viewer plugin, and enqueue the one with the customized JS code
-add_action('wp_print_scripts','molswc_replace_spinner_js');
-function molswc_replace_spinner_js() {
-    wp_dequeue_script('smart-product');
-    wp_deregister_script('smart-product');
-	wp_register_script('smart-product-custom', plugins_url('smart.product.min.js', __FILE__));
-	wp_enqueue_script('smart-product-custom');
-}
-
 // Output buttons colors styles as defined in Options Admin page
 add_action( 'wp_head', 'molswc_styles_for_buttons_colors', 99999 );
 function molswc_styles_for_buttons_colors() {
@@ -148,6 +165,7 @@ function molswc_styles_for_buttons_colors() {
 	echo "\n<!-- Buttons Colors START -->\n".$molswc_buttons_colors_css."\n<!-- Buttons Colors END -->\n" ;
 }
 
+// === Wholesale checks and actions
 // Redirect wholesale users from products to wholesale form and non-wholesale users the other way around ... plus few more tricks - like login and (non)WS products
 add_action('template_redirect', 'molswc_redirect_wholesalers');
 function molswc_redirect_wholesalers () {
@@ -171,37 +189,20 @@ function molswc_is_wholesale_user() {
 function molswc_is_wholesale_product() {
 	if ( has_term( 'wholesale', 'product_cat' ) ) { return true; }
 }
-
-// Shop page title changed to "Shop - Lithe Skateboards"
-add_filter('pre_get_document_title', 'molswc_shop_title_tag');
-function molswc_shop_title_tag(){
-	if ( is_shop() ) {
-		return 'Shop - Lithe Skateboards';
-	}
+// No wholesale products in Shop, even for admins
+add_action( 'woocommerce_product_query', 'molswc_no_wholesale_products_in_shop' ); 
+function molswc_no_wholesale_products_in_shop( $q ) {
+    $tax_query = (array) $q->get( 'tax_query' );
+    $tax_query[] = array(
+           'taxonomy' => 'product_cat',
+           'field' => 'slug',
+           'terms' => array( 'wholesale' ), 
+           'operator' => 'NOT IN'
+    );
+    $q->set( 'tax_query', $tax_query );
 }
 
-// Go straight to Checkout when a Payment Method button has been pressed
-add_filter('woocommerce_add_to_cart_redirect', 'molswc_go_to_checkout');
-function molswc_go_to_checkout() {
-	global $woocommerce;
-	$checkout_url = wc_get_checkout_url();
-	return $checkout_url;
-}
-
-// Enable Avia Builder Debug, for easily copy/paste page contents
-add_action('avia_builder_mode', "molswc_builder_set_debug");
-if ( ! function_exists( 'molswc_builder_set_debug' ) ) {
-	function molswc_builder_set_debug() {
-		if ( get_option( 'molswc_enable_avia_debug' ) ) { return "debug"; }
-	}
-}
-
-// Extend conditional variations limit
-add_filter( 'woocommerce_ajax_variation_threshold', 'molswc_wc_ajax_variation_threshold', 10, 2 );
-function molswc_wc_ajax_variation_threshold( $qty, $product ) {
-    return 50;
-}
-
+// === Woocommerce templates overrides
 // Override WooCommerce Template used in WC Variations Radio Buttons
 add_filter( 'woocommerce_locate_template', 'molswc_replace_woocommerce_templates', 20, 3 );
 function molswc_replace_woocommerce_templates( $template, $template_name, $template_path ) {
@@ -220,7 +221,6 @@ function molswc_replace_woocommerce_templates( $template, $template_name, $templ
 	if ( ! $template ) { $template = $_template; }
 	return $template;
 }
-
 // Override WooCommerce Template Parts, now the "content-product.php" file, where we'll add data_attrib to <li> element later...
 add_filter( 'wc_get_template_part', 'molswc_override_woocommerce_template_part', 10, 3 );
 function molswc_override_woocommerce_template_part( $template, $slug, $name ) {
@@ -233,6 +233,7 @@ function molswc_override_woocommerce_template_part( $template, $slug, $name ) {
     return file_exists( $path ) ? $path : $template;
 }
 
+// === Customize variation buttons displayed in both product page and product pop up
 // Replace ATTRIBUTE TYPE variations buttons function of WC Variations Radio Buttons plugin, in order to add the *class needed to hook the variation price hints* JS
 if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 	function print_attribute_radio_attrib( $checked_value, $value, $label, $name ) {
@@ -282,7 +283,6 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 		printf( '<div class="attrib %6$s"><input type="radio" name="%1$s" value="%2$s" data-stock-status="%6$s" id="%3$s" %4$s /><label class="attrib option" value="%2$s" for="%3$s" data-text-fullname="%2$s" data-text-b="%5$s"><span class="inner-attrib">%5$s<span class="stock_hint %6$s">%7$s</span></span></label></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $stock_class, $stock_hint );
 	}
 }
-
 // Replace TAXONOMY TYPE variations buttons function of WC Variations Radio Buttons plugin, in order to add the *variation description*
 if ( ! function_exists( 'print_attribute_radio_tax' ) ) {
 	function print_attribute_radio_tax( $checked_value, $value, $label, $name, $attrib_description ) {
@@ -296,7 +296,8 @@ if ( ! function_exists( 'print_attribute_radio_tax' ) ) {
 	}
 }
 
-// Various Woocommerce layout adjustments below:
+// === Layout and output customization below:
+// Various Woocommerce layout adjustments
 add_action('init', 'molswc_layout_adjustments');
 function molswc_layout_adjustments() {
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 ); // remove short description from original place ...
@@ -319,6 +320,7 @@ function molswc_layout_adjustments() {
 	remove_action( 'woocommerce_product_tabs', 'woocommerce_default_product_tabs', 10 );
 
 }
+/// And some advanced, conditional layout adjustments
 add_action('wp', 'molswc_advanced_layout_adjustments');
 function molswc_advanced_layout_adjustments() {
 	if (is_product()) { // only in product page, otherwise breaks the boards list archive,
@@ -326,8 +328,11 @@ function molswc_advanced_layout_adjustments() {
 		add_action( 'woocommerce_before_main_content', 'woocommerce_template_single_title', 10 ); // ... and add it back on top of the page. *** NO HOOK ON POPUP THOUGH, SO WE CAN'T MOVE IT THERE ***
 	}
 }
-
-// Adding Mobile Scroll Hint Icon
+// Prevent Left/Right product hints to show in product pages. Could change its settings and made it show, see it in parent theme, in "functions-enfold.php" file around line 505
+if(!function_exists('avia_post_nav')) {
+	function avia_post_nav($same_category = false, $taxonomy = 'category') { return; }
+}
+// Adding Mobile Scroll Hint Icon in Product Pop Up
 add_action( 'xoo-qv-images', 'molswc_mobile_scroll_hint', 999 );
 function molswc_mobile_scroll_hint () {
 	if ( wp_is_mobile() ) {
@@ -337,21 +342,44 @@ function molswc_mobile_scroll_hint () {
 		';
 	}
 }
-
-// No wholesale products in Shop, even for admins
-add_action( 'woocommerce_product_query', 'molswc_no_wholesale_products_in_shop' ); 
-function molswc_no_wholesale_products_in_shop( $q ) {
-    $tax_query = (array) $q->get( 'tax_query' );
-    $tax_query[] = array(
-           'taxonomy' => 'product_cat',
-           'field' => 'slug',
-           'terms' => array( 'wholesale' ), 
-           'operator' => 'NOT IN'
-    );
-    $q->set( 'tax_query', $tax_query );
+// Rack bottom and Rack top images in main shop page
+// Adding Rack Top:
+add_action( 'woocommerce_before_shop_loop', 'molswc_rack_top_image', 40 );
+function molswc_rack_top_image() {
+	$top_image_file_url = plugins_url('images/Rack_Top.png', __FILE__);
+	echo '
+	<div class="rack_top">
+		<img class="rack_top_image" src="'.$top_image_file_url.'" alt="Lithe Skateboards Rack Top">
+	</div>';
+}
+// Adding Rack Bottom:
+add_action( 'woocommerce_after_shop_loop', 'molswc_rack_bottom_image', 0 );
+function molswc_rack_bottom_image() {
+	$bottom_image_file_url = plugins_url('images/Rack_Bottom.png', __FILE__);
+	echo '
+	<div class="rack_bottom">
+		<img class="rack_bottom_image" src="'.$bottom_image_file_url.'" alt="Lithe Skateboards Rack Bottom">
+	</div>';
 }
 
-// The product filter - pulling the attributes for adding them to product LI element. Used in "content-product.php" file in this plugin
+// === Outputting JS variables in HTML, for using them later in JS file
+add_action( 'wp_head', 'molswc_js_variables' ); 
+function molswc_js_variables() {
+echo "
+<script type='text/javascript'>
+/* <![CDATA[ */";
+														  echo "\r\n var subs_user = '".molswc_check_user_subscription_able()."';"; 
+	if (get_option( 'molswc_estdelivery_instock' )) 	{ echo "\r\n var estdelivery_instock = '".strip_tags(get_option( 'molswc_estdelivery_instock' ))."';"; }
+	if (get_option( 'molswc_estdelivery_backorder' )) 	{ echo "\r\n var estdelivery_backorder = '".strip_tags(get_option( 'molswc_estdelivery_backorder' ))."';"; }
+	if (get_option( 'molswc_estdelivery_preorder' )) 	{ echo "\r\n var estdelivery_preorder = '".strip_tags(get_option( 'molswc_estdelivery_preorder' ))."';"; }
+	if (get_option( 'molswc_pre_order_message' )) 		{ echo "\r\n var pre_order_message = '".strip_tags(get_option( 'molswc_pre_order_message' ))."';"; }
+echo "
+/* ]]> */
+</script>
+";
+}
+
+// === The product filter - pulling the attributes for adding them to product LI element. Used in "content-product.php" file in this plugin
 // add_action( 'woocommerce_before_shop_loop_item', molswc_instock_variations ); // "woocommerce_before_shop_loop_item" is just before each item (good for debug)
 function molswc_instock_variations() {
 	global $product; 
@@ -438,27 +466,7 @@ function molswc_flat_array(array $array) {
     return $return;
 }
 
-// Rack bottom and Rack top images in main shop page
-// Adding Rack Top:
-add_action( 'woocommerce_before_shop_loop', 'molswc_rack_top_image', 40 );
-function molswc_rack_top_image() {
-	$top_image_file_url = plugins_url('images/Rack_Top.png', __FILE__);
-	echo '
-	<div class="rack_top">
-		<img class="rack_top_image" src="'.$top_image_file_url.'" alt="Lithe Skateboards Rack Top">
-	</div>';
-}
-// Adding Rack Bottom:
-add_action( 'woocommerce_after_shop_loop', 'molswc_rack_bottom_image', 0 );
-function molswc_rack_bottom_image() {
-	$bottom_image_file_url = plugins_url('images/Rack_Bottom.png', __FILE__);
-	echo '
-	<div class="rack_bottom">
-		<img class="rack_bottom_image" src="'.$bottom_image_file_url.'" alt="Lithe Skateboards Rack Bottom">
-	</div>';
-}
-
-// User subscription-able
+// === User subscription-able
 // Adding the option in the user admin screen:
 add_action( 'show_user_profile', 'molswc_user_subscription_able' );
 add_action( 'edit_user_profile', 'molswc_user_subscription_able' );
@@ -521,6 +529,7 @@ function molswc_disable_variations_user_based( $active, $variation ) {
     }
 }
 
+// === Peer Variation stock syncing functions below!
 // Sync peer variations stock at placing new order. (peer variations are those which have the same 'model-and-size' attribute but different 'payment-plan' global attribute)
 add_action( 'woocommerce_reduce_order_stock', array('Wc_class', 'molswc_stock_adjutments'));
 class Wc_class {
@@ -571,7 +580,6 @@ function molswc_check_if_custom_attrib_exists($attribs_array) {
 		}
 	}
 }
-
 // Get peer variations: loop through all children of a parent product by ID and return an array with all variations having same "...attr_value" into "...attr_name".
 function molswc_get_peer_variations($parent_id, $based_on_attr_name, $based_on_attr_value) {
 	$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product
@@ -589,29 +597,8 @@ function molswc_get_peer_variations($parent_id, $based_on_attr_name, $based_on_a
 	return $current_peer_vars_array;
 }
 
-// Outputting JS variables in HTML, for using them later
-add_action( 'wp_head', 'molswc_js_variables' ); 
-function molswc_js_variables() {
-echo "
-<script type='text/javascript'>
-/* <![CDATA[ */";
-														  echo "\r\n var subs_user = '".molswc_check_user_subscription_able()."';"; 
-	if (get_option( 'molswc_estdelivery_instock' )) 	{ echo "\r\n var estdelivery_instock = '".strip_tags(get_option( 'molswc_estdelivery_instock' ))."';"; }
-	if (get_option( 'molswc_estdelivery_backorder' )) 	{ echo "\r\n var estdelivery_backorder = '".strip_tags(get_option( 'molswc_estdelivery_backorder' ))."';"; }
-	if (get_option( 'molswc_estdelivery_preorder' )) 	{ echo "\r\n var estdelivery_preorder = '".strip_tags(get_option( 'molswc_estdelivery_preorder' ))."';"; }
-	if (get_option( 'molswc_pre_order_message' )) 		{ echo "\r\n var pre_order_message = '".strip_tags(get_option( 'molswc_pre_order_message' ))."';"; }
-echo "
-/* ]]> */
-</script>
-";
-}
-
-// Prevent Left/Right product hints to show in product pages. Could change its settings and made it show, see it in parent theme, in "functions-enfold.php" file around line 505
-if(!function_exists('avia_post_nav')) {
-	function avia_post_nav($same_category = false, $taxonomy = 'category') { return; }
-}
-
-// Fragment cache class used for popup content caching,
+// === Fragment cache functions below!
+// A cache class used for popup content caching,
 // Based on https://github.com/pressjitsu/fragment-cache/blob/master/fragment-cache.php
 // Called in /Litheskateboards-Woocommerce-customizations/template/woocommerce/single-product/add-to-cart/variable.php, observe the parameters there
 // Could be called anywhere else if needed :-)
@@ -671,8 +658,7 @@ class Pj_Fragment_Cache {
 		self::_set( self::$key, self::$args, $cache );
 		echo $data;
 	}
-} // done fragment caching.
-
+}
 // Call the cached fragment deleting function to delete the fragments of the products that have just been purchased - based on partial name, including product ID
 add_action( 'woocommerce_reduce_order_stock', 'molswc_delete_fragments_for_purchased_products' );
 function molswc_delete_fragments_for_purchased_products($order) {
@@ -682,7 +668,6 @@ function molswc_delete_fragments_for_purchased_products($order) {
 		molswc_delete_fragments( $designated_fragment_string );
 	}
 }
-
 // A function for deleting the fragments based on partial name 
 function molswc_delete_fragments( $fragment_partial_key ) {
     global $wpdb;
@@ -696,7 +681,7 @@ function molswc_check_fragments( $fragment_partial_key ) {
 	return $result;
 }
 
-// === Backorder and True Stock Levels functions
+// === True Stock Data functions below!
 // Add back order stock level number box to each variation in its edit screen
 add_action( 'woocommerce_variation_options_inventory', 'molswc_variation_backorder_stock_level', 10, 3 ); 
 function molswc_variation_backorder_stock_level( $loop, $variation_data, $variation ) {
@@ -716,7 +701,6 @@ function molswc_variation_backorder_stock_level( $loop, $variation_data, $variat
 		)
 	);      
 }
-
 // Save back order stock level when saving the Product Edit screen or only the Variations
 add_action( 'woocommerce_save_product_variation', 'molswc_save_variation_backorder_stock_level', 10, 2 );
 function molswc_save_variation_backorder_stock_level( $post_id ) {
@@ -725,14 +709,12 @@ function molswc_save_variation_backorder_stock_level( $post_id ) {
 		update_post_meta( $post_id, 'backorder_stock_level', esc_attr( $number_field ) );
 	}
 }
-
 // Store back order stock level in variation meta data, so it gets outputted in the variations_form
 add_filter( 'woocommerce_available_variation', 'molswc_store_variation_backorder_stock_level' );
 function molswc_store_variation_backorder_stock_level( $variations ) {
     $variations['backorder_stock_level'] = get_post_meta( $variations[ 'variation_id' ], 'backorder_stock_level', true );
     return $variations;
 }
-
 // Calculate true stock LEVEL by variation ID
 // Returns an array, check the items below to pick them
 // Use: $truelevel = molswc_get_true_stock_level($variation_id)['true_stock_level'];
@@ -743,7 +725,6 @@ function molswc_get_true_stock_level($variation_id) {
 	$true_stock_data['true_stock_level'] = $true_stock_data['woo_stock_level'] + $true_stock_data['backorder_stock_level']; // Calculate true stock level
 	return $true_stock_data;
 }
-
 // Calculate true stock STATUS by variation ID
 // Returns an array, check the items below to pick them
 // Use: $truestatus = molswc_get_true_stock_status($variation_id)['true_stock_status'];
@@ -759,15 +740,13 @@ function molswc_get_true_stock_status($variation_id) {
 	}
 	return $true_stock_data;
 }
-
 // Set preorder status of variation, aka "_ywpo_preorder" product meta, to 'yes' or 'no'
 function molswc_set_preorder_status($variation_id, $is_preorder) {
 	if( $is_preorder == 'yes' || $is_preorder == 'no' ) {
 		update_post_meta( $variation_id, '_ywpo_preorder', $is_preorder );
 	}
 }
-
-// Set *and sync!* the right pre order status of variation at purchase level
+// Set *and sync!* the right pre order status of variation at purchase
 add_action( 'woocommerce_reduce_order_stock', array('Wc_class_preorder_adjustments', 'molswc_adjust_preorder_status'));
 class Wc_class_preorder_adjustments {
 	public static function molswc_adjust_preorder_status($order) {
@@ -782,12 +761,11 @@ class Wc_class_preorder_adjustments {
 			$attrib_values = $current_var -> attributes; // ... then get all values of the attribute used for peering ...
 			$value_to_use_for_peering = $attrib_values[$attrib_to_use_for_peering]; // ... and get the exact value we need for peeting.
 			$peer_vars = molswc_get_peer_variations($parent_id, $attrib_to_use_for_peering, $value_to_use_for_peering); // Now, get all peer variations based on data we retrieved before
-			foreach ( $peer_vars as $peer_var ) {
-				$peer_vars_working_array[] = $peer_var; // and add each of them to working array that we'll process later
-			}
+			// Here we could plug a first function to bring more data - like stock changes for purchased variations - could use arrayWalk for that
 		}
-		// Now process the working array, applying the changes
-		foreach ( $peer_vars_working_array as $working_var ) {
+		// Main plug in function below - could do anything to process data fetched above
+		// Now just process the $peer_vars array, applying the new "is_preorder" condition based on "true_stock_status"
+		foreach ( $peer_vars as $working_var ) {
 			$current_var_id_true_stock_status = molswc_get_true_stock_status($working_var)['true_stock_status']; 
 			if( $current_var_id_true_stock_status == 1 ) {
 				molswc_set_preorder_status($working_var, 'yes');
@@ -797,5 +775,28 @@ class Wc_class_preorder_adjustments {
 		}
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ?>
