@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on Quick View WooCommerce by XootiX for popup, on WooCommerce Variation Price Hints by Wisslogic for price calculations and also on WC Variations Radio Buttons for transforming selects into buttons. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.0
+ * Version: 1.1.1
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -248,7 +248,7 @@ if ( ! function_exists( 'print_attribute_radio_attrib' ) ) {
 		if ($peer_vars) { // Now, if there's any peer_vars found ...
 			$peer_var_non_subscription_available = 'no'; // ... start assuming there's no non-subscription product available ...
 			foreach ($peer_vars as $peer_var) { // ... then iterate through all peer_vars ...
-				$peer_var_stock[$peer_var] = molswc_get_true_stock_status($peer_var)['true_stock_status']; // ... and get the stock for each peer variation ...
+				$peer_var_stock[$peer_var] = molswc_calculate_true_stock_status($peer_var)['true_stock_status']; // ... and get the stock for each peer variation ...
 					if ( !Subscriptio_Subscription_Product::is_subscription($peer_var) ) { // ... then check current peer_var is NOT subscription ...
 						$peer_var_non_subscription_available = 'yes'; // ... and if it's not, set the non_subscription_available flag to 'yes'
 					} 
@@ -535,33 +535,19 @@ add_action( 'woocommerce_reduce_order_stock', array('Wc_class', 'molswc_stock_ad
 class Wc_class {
 	public static function molswc_stock_adjutments($order) {
 		foreach ( $order->get_items() as $item_id => $item_values ) { // Iterating though each order items
-			$item_id = $item_values->get_id(); // The item ID
 			$item_qty = $item_values['qty']; // Item quantity
 			$current_var_id = $item_values['variation_id']; // current variation ID 
 			$current_var = wc_get_product( $current_var_id ); // Get an instance of the current variation object
 			$current_var_stock = $current_var->get_stock_quantity(); // Get the stock quantity of the current_var
-			$current_var_attribs = wc_get_formatted_variation( $current_var->get_variation_attributes(), true ); // Get the attributes of the current variation
-			parse_str(strtr($current_var_attribs, ":,", "=&"), $attribs_array); // parse the attributes object ...
-			$attrib_to_use_for_peering = molswc_check_if_custom_attrib_exists($attribs_array); // now check which attribute we may use for peering ...
-			$current_var_peering_attrib = $attribs_array[$attrib_to_use_for_peering]; // ...and get only that special model (based on an array defined in the function called above - maybe change that later to Admin?)
-			$parent_id = $current_var->get_parent_id(); // Get the ID of the parent product
-			$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product (***** later maybe switch to use "molswc_get_peer_variations" function from here *****)
-			$peer_variations = $parent_product->get_available_variations(); // Now get all the *possible* peer variations, those that are children of the same product 
-			// Let's iterate though each *possible* peer variation:
-			foreach ($peer_variations as $peer_variation) {
-				$peer_variation_id      = $peer_variation['variation_id']; // this is peer variation ID
-				$peer_variation_product = wc_get_product( $peer_variation_id ); // this is peer variation product instance
-				$peer_variation_attribs = wc_get_formatted_variation( $peer_variation_product->get_variation_attributes(), true ); // these are peer variation attributes
-				parse_str(strtr($peer_variation_attribs, ":,", "=&"), $peer_var_attribs_array); // this is peer variation attributes *array*
-				$peer_var_peering_attrib = $peer_var_attribs_array[$attrib_to_use_for_peering]; // this is peer variation 'model-and-size' attribute
-				if ($current_var_peering_attrib == $peer_var_peering_attrib) { // check if this *IS* a peer variation (has same Model-and-Size or so)
-					// Start creating the $peer_vars_working_array to store the IDs of variations that would be synced later
-					if ( !isset($peer_vars_working_array[$peer_variation_id]) ) { // if this peer variations is not in working array ...
-						$peer_vars_working_array[$peer_variation_id] = $current_var_stock; // ...add it with ID as index and current stock as value
-					} else { // otherwise ...
-						$new_peer_var_stock_value = $peer_vars_working_array[$peer_variation_id] - $item_qty; // ...subtract current variation quantity from the value stored in the working array ...
-						$peer_vars_working_array[$peer_variation_id] = $new_peer_var_stock_value; // ...and store the new value in the working array
-					}
+			$prepared_data = molswc_get_peer_variations_prepare( $current_var_id );
+			$peer_vars = molswc_get_peer_variations($prepared_data['parent_id'], $prepared_data['attrib_to_use_for_peering'], $prepared_data['value_to_use_for_peering']); // Just get the peer variations
+			foreach ( $peer_vars as $peer_var ) {
+			// Start creating the $peer_vars_working_array to store the IDs of variations along with the appropriate stock level
+				if ( !isset($peer_vars_working_array[$peer_var]) ) { // if this peer variations is not in working array ...
+					$peer_vars_working_array[$peer_var] = $current_var_stock; // ...add it with ID as index and current stock as value
+				} else { // otherwise ...
+					$new_peer_var_stock_value = $peer_vars_working_array[$peer_var] - $item_qty; // ...subtract current variation quantity from the value stored in the working array ...
+					$peer_vars_working_array[$peer_var] = $new_peer_var_stock_value; // ...and store the new value in the working array
 				}
 			}
 		}
@@ -580,7 +566,25 @@ function molswc_check_if_custom_attrib_exists($attribs_array) {
 		}
 	}
 }
+// Prepare data for "get_peer_variations". Takes a Variation ID and returns an array with its Parent ID, Attribute For Peering and Value for Peering
+function molswc_get_peer_variations_prepare( $variation_id ) {
+	$current_var = wc_get_product( $variation_id ); // Get an instance of the current variation object
+	$parent_id = $current_var->get_parent_id(); // Get the ID of the parent product
+	$current_var_attribs = wc_get_formatted_variation( $current_var->get_variation_attributes(), true ); // Get the attributes of the current variation
+	parse_str(strtr($current_var_attribs, ":,", "=&"), $attribs_array); // parse the attributes object ...
+	$attrib_to_use_for_peering = molswc_check_if_custom_attrib_exists($attribs_array); // now check which attribute we may use for peering ...
+	$attrib_values = $current_var -> attributes; // ... then get all values of the attribute used for peering ...
+	$value_to_use_for_peering = $attrib_values[$attrib_to_use_for_peering]; // ... and get the exact value we need for peeting.
+	// Now build the array that we'll later return
+	$returned_data = array (
+		"parent_id" => 					$parent_id,
+		"attrib_to_use_for_peering" => 	$attrib_to_use_for_peering,
+		"value_to_use_for_peering" => 	$value_to_use_for_peering
+	);
+	return $returned_data; // and finally return the data!
+}
 // Get peer variations: loop through all children of a parent product by ID and return an array with all variations having same "...attr_value" into "...attr_name".
+// See and use "molswc_get_peer_variations_prepare" function to get the parameters based on a single Variation ID
 function molswc_get_peer_variations($parent_id, $based_on_attr_name, $based_on_attr_value) {
 	$parent_product = wc_get_product( $parent_id ); // Get an instance of parent product
 	$peer_variations = $parent_product->get_available_variations(); // Now get all the *possible* peer variations, those that are children of the same product
@@ -597,8 +601,176 @@ function molswc_get_peer_variations($parent_id, $based_on_attr_name, $based_on_a
 	return $current_peer_vars_array;
 }
 
-// === Fragment cache functions below!
-// A cache class used for popup content caching,
+// === True Stock Data functions below! (uses some functions from above for syncing)
+// Add back order stock level number box to each variation in its edit screen
+add_action( 'woocommerce_variation_options_inventory', 'molswc_variation_backorder_stock_level', 10, 3 ); 
+function molswc_variation_backorder_stock_level( $loop, $variation_data, $variation ) {
+	woocommerce_wp_text_input( 
+		array( 
+			'id'          => 'backorder_stock_level[' . $variation->ID . ']', 
+			'value'       => get_post_meta( $variation->ID, 'backorder_stock_level', true ), // Use these line to get it wherever it might be needed
+			'type'        => 'number',
+			'style' 	  => 'width: 100%; vertical-align: middle; margin: 2px 0 0; padding: 5px;',
+			'label'       => __( 'Backorder stock level', 'woocommerce' ), 
+			'desc_tip'    => 'true',
+			'description' => __( 'How many back ordered boards are coming?', 'woocommerce' ),
+			'custom_attributes' => array(
+				'step' 	=> '1',
+				'min'	=> '0'
+			) 
+		)
+	);      
+}
+// Store variation ID and other data in some Wp_Options, we'll use these to sync between variations at Variation Save, see below
+// Also save the "backorder_stock_level" at this moment
+add_action( 'woocommerce_save_product_variation', 'molswc_save_variation_backorder_stock_level', 10, 2 );
+function molswc_save_variation_backorder_stock_level( $post_id ) {
+	$parent_product_id = molswc_get_peer_variations_prepare($post_id)['parent_id']; // We need the parent product ID first
+	// Then let's start taking care of the "backorder_stock_level" sync first
+	$backorder_stock_level = $_POST['backorder_stock_level'][ $post_id ]; // Get the backorder_stock_level from Edit Form
+	if(is_numeric( $backorder_stock_level ) ) {
+		// First save the "backorder_stock_level" at this moment - this is mandatory for saving the "backorder_stock_level"
+		update_post_meta( $post_id, 'backorder_stock_level', esc_attr( $backorder_stock_level ) );   
+		// Then insert the variation ID and "backorder_stock_level" in an array stored in a Wp_Option for later sync
+		$var_bo_stock_save_option_key = 'molswc_cached_fragment'.'_option_save_bo_stock_'.$parent_product_id; // Get key of option holding the currently saved variations
+		$currently_saved_variations_bo_stock = get_option($var_bo_stock_save_option_key); // Get the very option holding the currently saved variations
+		$currently_saved_variations_bo_stock[$post_id] = $backorder_stock_level; // Add the currently saved variation data
+		update_option($var_bo_stock_save_option_key, $currently_saved_variations_bo_stock); // Insert it back in the Wp_Option
+	}
+	// Finally do the same for stock wp_option sync:
+	$post_saved_index = array_search($post_id, $_POST['variable_post_id']); // Get the variation ID from the index of $_POST saved data 
+	$main_stock_level = $_POST['variable_stock'][ $post_saved_index ]; // Then get the saved stock value for it
+	if(is_numeric( $main_stock_level ) ) {
+		$var_main_stock_save_option_key = 'molswc_cached_fragment'.'_option_save_main_stock_'.$parent_product_id; // Get key of option holding the currently saved variations
+		$currently_saved_variations_main_stock = get_option($var_main_stock_save_option_key);
+		$currently_saved_variations_main_stock[$post_id] = $main_stock_level;
+		update_option($var_main_stock_save_option_key, $currently_saved_variations_main_stock);
+	}
+}
+// Sync the "backorder_stock_level" of variations saved in Product Edit screen AND also set the "preorder_status" accordingly
+// This only runs once at the end of saving the product variations, so we have all changed variations and their "backorder_stock_level" at this moment, see above
+add_action( 'woocommerce_ajax_save_product_variations', 'molswc_bo_sync_on_product_save', 10, 1 );
+function molswc_bo_sync_on_product_save( $product_id ) {
+	$var_bo_stock_save_option_key = 'molswc_cached_fragment'.'_option_save_bo_stock_'.$product_id; // Get key of option holding the currently saved variations
+	$currently_saved_variations_bo_stock = get_option($var_bo_stock_save_option_key); // Get the very option holding the currently saved variations
+	foreach($currently_saved_variations_bo_stock as $cs_var_id => $cs_var_bo_stock) { // Now, for each variation that was changed and so we save it
+		$prepared_data = molswc_get_peer_variations_prepare($cs_var_id); // prepare get_peer data ... 
+		$peer_vars = molswc_get_peer_variations($prepared_data['parent_id'], $prepared_data['attrib_to_use_for_peering'], $prepared_data['value_to_use_for_peering']);  //... and fetch its peer variations
+		foreach($peer_vars as $peer_var) { // Now, for each peer variation set a bo_stock value in an array from which we could pull the MINIMUM, the MAXIMUM or some other unique value later on
+			if( !isset($currently_saved_variations_bo_stock[$peer_var]) ) {
+				$peer_var_bo_stock[$peer_var] = $cs_var_bo_stock;
+			} else {
+				$peer_var_bo_stock[$peer_var] = $currently_saved_variations_bo_stock[$peer_var];
+			}
+		}
+		foreach($peer_vars as $peer_var) { // Ok, now that we have all the bo_stock values available let's iterate again through all peer_vars
+			update_post_meta( $peer_var, 'backorder_stock_level', min($peer_var_bo_stock) ); // First update the "backorder_stock_level", with the MINIMUM value,
+			$peer_var_true_stock_status = molswc_calculate_true_stock_status($peer_var)['true_stock_status']; // Then calculate its true status ...
+			if( $peer_var_true_stock_status == 1 ) { // ... and set it accordingly for the new "backorder_stock_level" that was set above
+				molswc_set_preorder_status($peer_var, 'yes');
+			} else {
+				molswc_set_preorder_status($peer_var, 'no');
+			}
+		}
+		unset($peer_var_bo_stock); // Now reset the bo_stock array so we can start evaluating the next set of peer_vars
+		molswc_delete_fragments('molswc_cached_fragment_prod_form_'.$prepared_data['parent_id']); // Also delete the cached fragment for parent product of currently_saved_variation
+	}
+	$empty = array(); update_option($var_bo_stock_save_option_key, $empty); // In the end just empty that option, making it ready to be used next time
+}
+// Sync the Stock Level of variations saved in Product Edit screen
+add_action( 'woocommerce_ajax_save_product_variations', 'molswc_main_stock_sync_on_product_save', 10, 1 );
+function molswc_main_stock_sync_on_product_save( $product_id ) {
+	$var_main_stock_save_option_key = 'molswc_cached_fragment'.'_option_save_main_stock_'.$product_id; // Get key of option holding the currently saved variations
+	$currently_saved_variations_main_stock = get_option($var_main_stock_save_option_key); // Get the very option holding the currently saved variations
+	foreach($currently_saved_variations_main_stock as $cs_var_id => $cs_var_main_stock) { // Now, for each variation that was changed and so we save it
+		$prepared_data = molswc_get_peer_variations_prepare($cs_var_id); // prepare get_peer data ... 
+		$peer_vars = molswc_get_peer_variations($prepared_data['parent_id'], $prepared_data['attrib_to_use_for_peering'], $prepared_data['value_to_use_for_peering']);  //... and fetch its peer variations
+		foreach($peer_vars as $peer_var) { // Now, for each peer variation set a main_stock value in an array from which we could pull the MINIMUM, the MAXIMUM or some other unique value later on
+			if( !isset($currently_saved_variations_main_stock[$peer_var]) ) {
+				$peer_var_main_stock[$peer_var] = $cs_var_main_stock;
+			} else {
+				$peer_var_main_stock[$peer_var] = $currently_saved_variations_main_stock[$peer_var];
+			}
+		}
+		foreach($peer_vars as $peer_var) { // Ok, now that we have all the main_stock values available let's iterate again through all peer_vars
+			$minimum_peer_var_main_stock = min($peer_var_main_stock);
+			wc_update_product_stock( $peer_var, $minimum_peer_var_main_stock, 'set' ); // finally update stock level of peer variation
+			$peer_var_true_stock_status = molswc_calculate_true_stock_status($peer_var)['true_stock_status']; // Then calculate its true status ...
+			if( $peer_var_true_stock_status == 1 ) { // ... and set it accordingly for the new "main_stock_level" that was set above
+				molswc_set_preorder_status($peer_var, 'yes');
+			} else {
+				molswc_set_preorder_status($peer_var, 'no');
+			}
+		}
+		unset($peer_var_main_stock); // Now reset the bo_stock array so we can start evaluating the next set of peer_vars
+		molswc_delete_fragments('molswc_cached_fragment_prod_form_'.$prepared_data['parent_id']); // Also delete the cached fragment for parent product of currently_saved_variation
+	}
+	$empty = array(); update_option($var_main_stock_save_option_key, $empty); // In the end just empty that option, making it ready to be used next time
+}
+// Store back order stock level in variation meta data, so it gets outputted in the variations_form
+add_filter( 'woocommerce_available_variation', 'molswc_store_variation_backorder_stock_level' );
+function molswc_store_variation_backorder_stock_level( $variations ) {
+    $variations['backorder_stock_level'] = get_post_meta( $variations[ 'variation_id' ], 'backorder_stock_level', true );
+    return $variations;
+}
+// Calculate true stock LEVEL by variation ID
+// Returns an array, check the items below to pick them
+// Use: $truelevel = molswc_calculate_true_stock_level($variation_id)['true_stock_level'];
+function molswc_calculate_true_stock_level($variation_id) {
+	$variation_instance = wc_get_product( $variation_id ); // Get an instance of the current variation object
+	$true_stock_data['woo_stock_level'] = $variation_instance->get_stock_quantity(); // Get the stock quantity of the current_var
+	$true_stock_data['backorder_stock_level'] = get_post_meta( $variation_id, 'backorder_stock_level', true ); // Get the backorder_stock_level of the current_var
+	$true_stock_data['true_stock_level'] = $true_stock_data['woo_stock_level'] + $true_stock_data['backorder_stock_level']; // Calculate true stock level
+	return $true_stock_data;
+}
+// Calculate true stock STATUS by variation ID
+// Returns an array, check the items below to pick them
+// Use: $truestatus = molswc_calculate_true_stock_status($variation_id)['true_stock_status'];
+// Get: 1 = 'true_preorder' OR 2 = 'true_backorder'; OR 3 = 'true_instock';
+function molswc_calculate_true_stock_status($variation_id) {
+	$true_stock_data = molswc_calculate_true_stock_level($variation_id);
+	if( $true_stock_data['woo_stock_level'] > 0 ) { // If woocommerce stock level is positive ...
+		$true_stock_data['true_stock_status'] = 3; // 'true_instock'; // ...then report 'true_in_stock'
+	} elseif ( $true_stock_data['woo_stock_level'] <= 0 && $true_stock_data['woo_stock_level'] > (0 - $true_stock_data['backorder_stock_level']) ) { // if woocommerce stock level is negative but above backorder
+		$true_stock_data['true_stock_status'] = 2; // 'true_backorder'; // ... report 'true_backorder'
+	} else { // otherwise ...
+		$true_stock_data['true_stock_status'] = 1; // 'true_preorder'; // ... just report 'true_preorder'.
+	}
+	return $true_stock_data;
+}
+// Set preorder status of variation, aka "_ywpo_preorder" product meta, to 'yes' or 'no'
+function molswc_set_preorder_status($variation_id, $is_preorder) {
+	if( $is_preorder == 'yes' || $is_preorder == 'no' ) {
+		update_post_meta( $variation_id, '_ywpo_preorder', $is_preorder );
+	}
+}
+// Set *and sync!* the right pre order status of variation at purchase
+add_action( 'woocommerce_reduce_order_stock', array('Wc_class_preorder_adjustments', 'molswc_adjust_preorder_status'));
+class Wc_class_preorder_adjustments {
+	public static function molswc_adjust_preorder_status($order) {
+		foreach ( $order->get_items() as $item_id => $item_values ) { // Iterating though each order items
+			$prepared_data = molswc_get_peer_variations_prepare($item_values['variation_id']);
+			$peer_vars = molswc_get_peer_variations($prepared_data['parent_id'], $prepared_data['attrib_to_use_for_peering'], $prepared_data['value_to_use_for_peering']); // Just get the peer variations
+			// Simplest plug in function below. Just add each variation ID to an array that we'll process later, as soon as this foreach loop finishes 
+			foreach($peer_vars as $peer_var) {
+				$peer_vars_working[] = $peer_var;
+			}
+		}
+		// Main plug in function below - could do anything to process data fetched above
+		// Now just process the $peer_vars_working array, applying the new "is_preorder" condition based on "true_stock_status"
+		foreach ( $peer_vars_working as $working_var ) {
+			$current_var_id_true_stock_status = molswc_calculate_true_stock_status($working_var)['true_stock_status']; 
+			if( $current_var_id_true_stock_status == 1 ) {
+				molswc_set_preorder_status($working_var, 'yes');
+			} else {
+				molswc_set_preorder_status($working_var, 'no');
+			}
+		}
+	}
+}
+
+// === Fragment cache functions below
+// A cache class used for product form content caching,
 // Based on https://github.com/pressjitsu/fragment-cache/blob/master/fragment-cache.php
 // Called in /Litheskateboards-Woocommerce-customizations/template/woocommerce/single-product/add-to-cart/variable.php, observe the parameters there
 // Could be called anywhere else if needed :-)
@@ -642,7 +814,7 @@ class Pj_Fragment_Cache {
 		return $cache;
 	}
 	private static function _set( $key, $args, $value ) {
-		$cache = add_option( $args['prefix'].$key, $value, $args['ttl'] );
+		$cache = add_option( $args['prefix'].$key, $value );
 		return true;
 	}
 	public static function store() {
@@ -680,123 +852,5 @@ function molswc_check_fragments( $fragment_partial_key ) {
     $result = $wpdb->query( "SELECT * FROM {$wpdb->options} WHERE option_name LIKE '%{$fragment_partial_key}%'" );
 	return $result;
 }
-
-// === True Stock Data functions below!
-// Add back order stock level number box to each variation in its edit screen
-add_action( 'woocommerce_variation_options_inventory', 'molswc_variation_backorder_stock_level', 10, 3 ); 
-function molswc_variation_backorder_stock_level( $loop, $variation_data, $variation ) {
-	woocommerce_wp_text_input( 
-		array( 
-			'id'          => 'backorder_stock_level[' . $variation->ID . ']', 
-			'value'       => get_post_meta( $variation->ID, 'backorder_stock_level', true ), // Use these line to get it wherever it might be needed
-			'type'        => 'number',
-			'style' 	  => 'width: 100%; vertical-align: middle; margin: 2px 0 0; padding: 5px;',
-			'label'       => __( 'Backorder stock level', 'woocommerce' ), 
-			'desc_tip'    => 'true',
-			'description' => __( 'How many back ordered boards are coming?', 'woocommerce' ),
-			'custom_attributes' => array(
-				'step' 	=> '1',
-				'min'	=> '0'
-			) 
-		)
-	);      
-}
-// Save back order stock level when saving the Product Edit screen or only the Variations
-add_action( 'woocommerce_save_product_variation', 'molswc_save_variation_backorder_stock_level', 10, 2 );
-function molswc_save_variation_backorder_stock_level( $post_id ) {
-	$number_field = $_POST['backorder_stock_level'][ $post_id ];
-	if( ! empty( $number_field ) ) {
-		update_post_meta( $post_id, 'backorder_stock_level', esc_attr( $number_field ) );
-	}
-}
-// Store back order stock level in variation meta data, so it gets outputted in the variations_form
-add_filter( 'woocommerce_available_variation', 'molswc_store_variation_backorder_stock_level' );
-function molswc_store_variation_backorder_stock_level( $variations ) {
-    $variations['backorder_stock_level'] = get_post_meta( $variations[ 'variation_id' ], 'backorder_stock_level', true );
-    return $variations;
-}
-// Calculate true stock LEVEL by variation ID
-// Returns an array, check the items below to pick them
-// Use: $truelevel = molswc_get_true_stock_level($variation_id)['true_stock_level'];
-function molswc_get_true_stock_level($variation_id) {
-	$variation_instance = wc_get_product( $variation_id ); // Get an instance of the current variation object
-	$true_stock_data['woo_stock_level'] = $variation_instance->get_stock_quantity(); // Get the stock quantity of the current_var
-	$true_stock_data['backorder_stock_level'] = get_post_meta( $variation_id, 'backorder_stock_level', true ); // Get the backorder_stock_level of the current_var
-	$true_stock_data['true_stock_level'] = $true_stock_data['woo_stock_level'] + $true_stock_data['backorder_stock_level']; // Calculate true stock level
-	return $true_stock_data;
-}
-// Calculate true stock STATUS by variation ID
-// Returns an array, check the items below to pick them
-// Use: $truestatus = molswc_get_true_stock_status($variation_id)['true_stock_status'];
-// Get: 1 = 'true_preorder' OR 2 = 'true_backorder'; OR 3 = 'true_instock';
-function molswc_get_true_stock_status($variation_id) {
-	$true_stock_data = molswc_get_true_stock_level($variation_id);
-	if( $true_stock_data['woo_stock_level'] > 0 ) { // If woocommerce stock level is positive ...
-		$true_stock_data['true_stock_status'] = 3; // 'true_instock'; // ...then report 'true_in_stock'
-	} elseif ( $true_stock_data['woo_stock_level'] <= 0 && $true_stock_data['woo_stock_level'] > (0 - $true_stock_data['backorder_stock_level']) ) { // if woocommerce stock level is negative but above backorder
-		$true_stock_data['true_stock_status'] = 2; // 'true_backorder'; // ... report 'true_backorder'
-	} else { // otherwise ...
-		$true_stock_data['true_stock_status'] = 1; // 'true_preorder'; // ... just report 'true_preorder'.
-	}
-	return $true_stock_data;
-}
-// Set preorder status of variation, aka "_ywpo_preorder" product meta, to 'yes' or 'no'
-function molswc_set_preorder_status($variation_id, $is_preorder) {
-	if( $is_preorder == 'yes' || $is_preorder == 'no' ) {
-		update_post_meta( $variation_id, '_ywpo_preorder', $is_preorder );
-	}
-}
-// Set *and sync!* the right pre order status of variation at purchase
-add_action( 'woocommerce_reduce_order_stock', array('Wc_class_preorder_adjustments', 'molswc_adjust_preorder_status'));
-class Wc_class_preorder_adjustments {
-	public static function molswc_adjust_preorder_status($order) {
-		foreach ( $order->get_items() as $item_id => $item_values ) { // Iterating though each order items
-			$item_id = $item_values->get_id(); // The item ID
-			$current_var_id = $item_values['variation_id']; // current variation ID 
-			$current_var = wc_get_product( $current_var_id ); // Get an instance of the current variation object
-			$parent_id = $current_var->get_parent_id(); // Get the ID of the parent product
-			$current_var_attribs = wc_get_formatted_variation( $current_var->get_variation_attributes(), true ); // Get the attributes of the current variation
-			parse_str(strtr($current_var_attribs, ":,", "=&"), $attribs_array); // parse the attributes object ...
-			$attrib_to_use_for_peering = molswc_check_if_custom_attrib_exists($attribs_array); // now check which attribute we may use for peering ...
-			$attrib_values = $current_var -> attributes; // ... then get all values of the attribute used for peering ...
-			$value_to_use_for_peering = $attrib_values[$attrib_to_use_for_peering]; // ... and get the exact value we need for peeting.
-			$peer_vars = molswc_get_peer_variations($parent_id, $attrib_to_use_for_peering, $value_to_use_for_peering); // Now, get all peer variations based on data we retrieved before
-			// Here we could plug a first function to bring more data - like stock changes for purchased variations - could use arrayWalk for that
-		}
-		// Main plug in function below - could do anything to process data fetched above
-		// Now just process the $peer_vars array, applying the new "is_preorder" condition based on "true_stock_status"
-		foreach ( $peer_vars as $working_var ) {
-			$current_var_id_true_stock_status = molswc_get_true_stock_status($working_var)['true_stock_status']; 
-			if( $current_var_id_true_stock_status == 1 ) {
-				molswc_set_preorder_status($working_var, 'yes');
-			} else {
-				molswc_set_preorder_status($working_var, 'no');
-			}
-		}
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ?>
