@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.2
+ * Version: 1.1.3
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -719,7 +719,9 @@ function molswc_store_variation_backorder_stock_level( $variations ) {
 function molswc_calculate_true_stock_level($variation_id) {
 	$variation_instance = wc_get_product( $variation_id ); // Get an instance of the current variation object
 	$true_stock_data['woo_stock_level'] = $variation_instance->get_stock_quantity(); // Get the stock quantity of the current_var
+	if(!is_numeric($true_stock_data['woo_stock_level'])) { $true_stock_data['woo_stock_level'] = 0; } // ... but set it to zero if it doesn't come out
 	$true_stock_data['backorder_stock_level'] = get_post_meta( $variation_id, 'backorder_stock_level', true ); // Get the backorder_stock_level of the current_var
+	if(!is_numeric($true_stock_data['backorder_stock_level'])) { $true_stock_data['backorder_stock_level'] = 0; } // ... but set it to zero if it doesn't come out
 	$true_stock_data['true_stock_level'] = $true_stock_data['woo_stock_level'] + $true_stock_data['backorder_stock_level']; // Calculate true stock level
 	return $true_stock_data;
 }
