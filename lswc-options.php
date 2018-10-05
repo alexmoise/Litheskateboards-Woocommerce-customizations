@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.0.37
+ * Version: 1.1.4
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -45,6 +45,7 @@ function molswc_register_settings() {
 		'molswc_notavailable_label_hover_color',
 		'molswc_notavailable_border_color',
 		'molswc_notavailable_border_hover_color',
+		'molswc_true_stock_level_admitted_in_filters',
 		'molswc_delete_options_uninstall',
 	);
 	/// Then register each of them
@@ -69,9 +70,9 @@ function molswc_admin_options_page_callback() { ?>
 	<p>Adjust the options of the <strong>Litheskateboards Woocommerce customizations</strong> plugin, then click on any <strong>Save Changes</strong> button to apply the changes.</p>
 	
 	<p><strong>How "True Stock Levels" are calculated:</strong><br>
-	<strong>In stock</strong>: stock is &gt; 0<br>
-	<strong>Backorder</strong>: stock is &lt;= 0 AND &gt; (0 - backorder_level)<br>
-	<strong>Preorder</strong>: otherwise<br>
+	<strong>In stock</strong> (3): stock is &gt; 0<br>
+	<strong>Backorder</strong> (2): stock is &lt;= 0 AND &gt; (0 - backorder_level)<br>
+	<strong>Preorder</strong> (1): otherwise<br>
 	</p>
 
 	<form method="post" action="options.php">
@@ -162,7 +163,7 @@ function molswc_admin_options_page_callback() { ?>
 	<table class="form-table">
 
 		<tr valign="top">
-			<th scope="row">IN STOCK button colors </th>
+			<th scope="row">IN STOCK button colors: </th>
 			<td> 
 				<span>Normal color:</span>
 				<input name="molswc_instock_label_color" type="text" id="molswc_instock_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_label_color" value="<?php echo strip_tags(get_option( 'molswc_instock_label_color' )); ?>" class="regular-text">
@@ -182,7 +183,7 @@ function molswc_admin_options_page_callback() { ?>
 		</tr>
 		
 		<tr valign="top">
-			<th scope="row">BACK ORDER button colors </th>
+			<th scope="row">BACK ORDER button colors: </th>
 			<td> 
 				<span>Normal color:</span>
 				<input name="molswc_backorder_label_color" type="text" id="molswc_backorder_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_label_color" value="<?php echo strip_tags(get_option( 'molswc_backorder_label_color' )); ?>" class="regular-text">
@@ -202,7 +203,7 @@ function molswc_admin_options_page_callback() { ?>
 		</tr>
 		
 		<tr valign="top">
-			<th scope="row">PRE ORDER button colors </th>
+			<th scope="row">PRE ORDER button colors: </th>
 			<td> 
 				<span>Normal color:</span>
 				<input name="molswc_preorder_label_color" type="text" id="molswc_preorder_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_label_color" value="<?php echo strip_tags(get_option( 'molswc_preorder_label_color' )); ?>" class="regular-text">
@@ -222,7 +223,7 @@ function molswc_admin_options_page_callback() { ?>
 		</tr>
 		
 		<tr valign="top">
-			<th scope="row">N/A button colors </th>
+			<th scope="row">N/A button colors: </th>
 			<td> 
 				<span>Normal color:</span>
 				<input name="molswc_notavailable_label_color" type="text" id="molswc_notavailable_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_label_color" value="<?php echo strip_tags(get_option( 'molswc_notavailable_label_color' )); ?>" class="regular-text">
@@ -267,6 +268,23 @@ function molswc_admin_options_page_callback() { ?>
 			<td> 
 				<input name="molswc_excluded_categories" type="text" id="molswc_excluded_categories" aria-describedby="molswc_excluded_categories" value="<?php echo strip_tags(get_option( 'molswc_excluded_categories' )); ?>" class="regular-text">
 				<span>(Comma separated list of <strong>slugs</strong>, pick them from <a target="_blank" href="/wp-admin/edit-tags.php?taxonomy=product_cat&post_type=product">Categories page</a>.)</span>
+			</td>
+		</tr>
+	</table>
+	
+	<h2>True Stock Level for boards filtering</h2>
+	<p>This is the True Stock Level at which boards appear in Boards Filter on the main shop page if the selected options combination is available.</p>
+	
+	<table class="form-table">
+		<tr valign="top">
+			<th scope="row">Minimum True Stock Level is: </th>
+			<td> 
+				<select name="molswc_true_stock_level_admitted_in_filters" id="molswc_true_stock_level_admitted_in_filters" style="padding: 0 25px 2px 5px;">
+					<option value="3" <?php if('3' == strip_tags(get_option( 'molswc_true_stock_level_admitted_in_filters' ))) { echo 'selected="selected"'; } ?>>Stock (3)</option>
+					<option value="2" <?php if('2' == strip_tags(get_option( 'molswc_true_stock_level_admitted_in_filters' ))) { echo 'selected="selected"'; } ?>>Backorder (2)</option>
+					<option value="1" <?php if('1' == strip_tags(get_option( 'molswc_true_stock_level_admitted_in_filters' ))) { echo 'selected="selected"'; } ?>>Preorder (1)</option>
+				</select>
+				<span>(All boards with the selected level <em>and levels above</em> will be shown for a particular selection of options)</span>
 			</td>
 		</tr>
 	</table>

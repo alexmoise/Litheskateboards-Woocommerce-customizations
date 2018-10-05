@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.3
+ * Version: 1.1.4
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -318,9 +318,8 @@ function molswc_layout_adjustments() {
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 ); // no more SKU and Cats on product page
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_price', 10 ); // remove price range after title in single product *but not in popup*
 	remove_action( 'woocommerce_product_tabs', 'woocommerce_default_product_tabs', 10 );
-
 }
-/// And some advanced, conditional layout adjustments
+// And some advanced, conditional layout adjustments
 add_action('wp', 'molswc_advanced_layout_adjustments');
 function molswc_advanced_layout_adjustments() {
 	if (is_product()) { // only in product page, otherwise breaks the boards list archive,
@@ -384,11 +383,12 @@ echo "
 function molswc_instock_variations() {
 	global $product; 
 	$variations1=$product->get_children();
-	foreach ($variations1 as $value) {
+	foreach ($variations1 as $value) { 
+		$var_true_stock_status = molswc_calculate_true_stock_status($value)['true_stock_status'];
+		$required_true_stock_status = strip_tags(get_option( 'molswc_true_stock_level_admitted_in_filters' ));
 		$single_variation=new WC_Product_Variation($value);
 		$var_is_purc = $single_variation->is_purchasable();
-		$var_has_stock = $single_variation->get_stock_quantity(); 
-		if ( $var_is_purc == 1 && $var_has_stock > 0) { 
+		if ( $var_is_purc == 1 && $var_true_stock_status >= $required_true_stock_status) { 
 			$var_model_and_size = array_values($single_variation->get_variation_attributes())[0];
 			$data_custom_attribs_list_all[] = $var_model_and_size; 
 		}

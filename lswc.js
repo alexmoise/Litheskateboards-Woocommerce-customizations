@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.0.30
+ * Version: 1.1.4
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -406,7 +406,7 @@ function molswcPaymentsButtonsReFit() {
 	// fade out has-been-disabled
 	jQuery('.table.variations .tbody .value.td div.tax.has-been-disabled').fadeOut(250);
 	jQuery('.table.variations .tbody .value.td div.tax.has-been-disabled span.attrib-description').fadeOut(250);
-	// count the not disabled ones and set variable depending on wcreen width:
+	// count the not disabled ones and set variable depending on screen width:
 	// var windwindth = jQuery(window).width(); console.log('WindWidth= '+windwindth);
 	if (jQuery(window).width() < 560) {
 		paymentsCnt = '1';

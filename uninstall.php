@@ -1,7 +1,7 @@
 <?php
 /**
  * Uninstall of Litheskateboards Woocommerce customizations plugin.
- * Version: 1.0.35
+ * Version: 1.1.4
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -48,6 +48,7 @@ if ( get_option( 'molswc_delete_options_uninstall' ) ) {
 		'molswc_notavailable_label_hover_color',
 		'molswc_notavailable_border_color',
 		'molswc_notavailable_border_hover_color',
+		'molswc_true_stock_level_admitted_in_filters',
 		'molswc_delete_options_uninstall',
 	);
 	// And finally delete each one
