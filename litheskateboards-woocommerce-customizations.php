@@ -634,9 +634,6 @@ function molswc_true_stock_data_hint( $loop, $variation_data, $variation ) {
 		array( 
 			'id' => 'true_stock_hint_['. $loop .']', 
 			'label' => __( 'True Stock Hint', 'woocommerce' ), 
-			//'placeholder' => 'maybe', 
-			//'desc_tip' => true, 'wrapper_class' => 'form-row form-row-first', 
-			//'description' => __( 'Enter the custom value here.', 'woocommerce' ),
 			'value' => $status_code.$truelevel,
 			'style' 	  => 'width: 100%; vertical-align: middle; margin: 2px 0 0; padding: 5px;'
 		) 
