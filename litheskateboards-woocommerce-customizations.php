@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.4
+ * Version: 1.1.5
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -620,6 +620,27 @@ function molswc_variation_backorder_stock_level( $loop, $variation_data, $variat
 			) 
 		)
 	);      
+}
+// Add True Stock Hint box in Variation Edit screen. No saving for it
+add_action( 'woocommerce_variation_options_inventory', 'molswc_true_stock_data_hint', 10, 3 ); 
+function molswc_true_stock_data_hint( $loop, $variation_data, $variation ) {
+	$variation_id = $variation->ID;
+	$truelevel = abs(molswc_calculate_true_stock_level($variation_id)['true_stock_level']);
+	$truestatus = molswc_calculate_true_stock_status($variation_id)['true_stock_status'];
+	if ($truestatus == 1) {$status_code = 'Po';}
+	if ($truestatus == 2) {$status_code = 'Bo';}
+	if ($truestatus == 3) {$status_code = 'St';}
+	woocommerce_wp_text_input( 
+		array( 
+			'id' => 'true_stock_hint_['. $loop .']', 
+			'label' => __( 'True Stock Hint', 'woocommerce' ), 
+			//'placeholder' => 'maybe', 
+			//'desc_tip' => true, 'wrapper_class' => 'form-row form-row-first', 
+			//'description' => __( 'Enter the custom value here.', 'woocommerce' ),
+			'value' => $status_code.$truelevel,
+			'style' 	  => 'width: 100%; vertical-align: middle; margin: 2px 0 0; padding: 5px;'
+		) 
+	);
 }
 // Store variation ID and other data in some Wp_Options, we'll use these to sync between variations at Variation Save, see below
 // Also save the "backorder_stock_level" at this moment
