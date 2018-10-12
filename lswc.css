@@ -1,8 +1,77 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.0.36
+ * Version: 1.1.6
  * (version above is equal with main plugin file version when this file was updated)
  */
+ 
+/* LSWC Header changes */
+/* (The class ".menu-shop-item" have to be set in Menus) */
+.menu-shop-item .avia-menu-text {
+    border-radius: 8px !important;
+	color: black !important;
+}
+@media only screen and (max-width: 767px) {
+	.responsive #top #header_main > .container .main_menu .av-main-nav > li > a {
+		padding: 0 10px 0 10px;
+	}
+	.responsive #top .av-main-nav .menu-item {
+		display: list-item;
+	}
+	.responsive #top #header .main_menu .social_bookmarks {
+		display: none;
+	}
+	li.av-burger-menu-main.menu-item-avia-special.av-small-burger-icon {
+		display: none !important;
+	}
+	.avia-menu.av-main-nav-wrap.av_menu_icon_beside {
+		border: none;
+	}
+	#wrap_all > #header {
+		position: fixed !important;
+	}
+	body:not(.home) > #wrap_all > #main {
+		margin-top: 160px !important;
+	}
+	main.template-shop.content {
+		padding-top: 20px;
+	}
+	.template-shop .page-title {
+		padding: 32px 0 0 0 !important;
+	}
+}
+@media only screen and (max-width: 860px) {
+	.main_menu a.cart_dropdown_link {
+		padding: 0 10px !important;
+	}
+}
+@media only screen and (max-width: 520px) {
+	body.home #layerslider_10 {
+		margin-top: 80px !important;
+	}
+	#header_main nav.main_menu {
+		display: block !important;
+		position: relative !important;
+	}
+	.responsive #top .logo {
+		width: 100%;
+	}
+	.responsive .logo img {
+		margin: 0 auto !important;
+	}
+	.main_menu #menu-item-shop {
+		float: right;
+	}
+	/* Class that's scrolling the logo over the top at first scroll */
+	/* please see the JS for the function that's adding/removing the class */
+	#header.scrolled .logo {
+		margin-top: -80px;
+		transition-duration: .3s;
+	}
+	#header:not(.scrolled) .logo {
+		margin-top: 0px;
+		transition-duration: .3s;
+	}
+}
 
 /* shop default page */
 div#main {
@@ -13,7 +82,7 @@ div#main {
 }
 .template-shop .page-title {
   display: block;
-  margin: 40px 0 0 0;
+  padding: 40px 0 0 0;
 }
 .template-shop .inner_product_header {
   min-height: fit-content !important;
