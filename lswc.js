@@ -1,9 +1,41 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.1.6
+ * Version: 1.1.7
  * (version above is equal with main plugin file version when this file was updated)
  */
 
+// === Add and remove a class to the "Header" element when scrolling down or returning ===
+// Used with 2 CSS rules to throw the logo over the top when scrolling - see the CSS file for that
+var $header = jQuery( ".header_color" );         
+var appScroll = appScrollForward;
+var appScrollPosition = 0;
+var appScrollInterval = 70;
+var appClassToAdd = "scrolled";
+var scheduledAnimationFrame = false;
+function appScrollReverse() {
+	scheduledAnimationFrame = false;
+	if ( appScrollPosition > appScrollInterval )
+		return;
+	$header.removeClass( appClassToAdd );
+	appScroll = appScrollForward;
+}
+function appScrollForward() {
+	scheduledAnimationFrame = false;
+	if ( appScrollPosition < appScrollInterval )
+		return;
+	$header.addClass( appClassToAdd );
+	appScroll = appScrollReverse;
+}
+function appScrollHandler() {
+	appScrollPosition = window.pageYOffset;
+	if ( scheduledAnimationFrame )
+		return;
+	scheduledAnimationFrame = true;
+	requestAnimationFrame( appScroll );
+}
+jQuery( window ).scroll( appScrollHandler );
+
+// ===  Now let's deal with product display functions  ===
 // === I. Product display functions -> XOO POPUP ONLY: ===
 // Initialize the special event needed for detecting XOO Popup removal
 (function($){ $.event.special.destroyed = { remove: function(o) { if (o.handler) { o.handler() } } } })(jQuery)
@@ -126,37 +158,6 @@ jQuery( document ).delegate( 'body #main .container .product .table.variations',
 jQuery('body #main .container .product .reset_variations').click(function(){
 	if (jQuery(window).width() < 768) { jQuery('html,body').animate({scrollTop: jQuery(".product_title").offset().top - 20}); } // scroll back to product title when clicking on Reset Variations
 });
-
-// === Add and remove a class to the "Header" element when scrolling down or returning ===
-// Used with 2 CSS rules to throw the logo over the top when scrolling - see the CSS file for that
-var $header = jQuery( ".header_color" );         
-var appScroll = appScrollForward;
-var appScrollPosition = 0;
-var appScrollInterval = 80;
-var appClassToAdd = "scrolled";
-var scheduledAnimationFrame = false;
-function appScrollReverse() {
-	scheduledAnimationFrame = false;
-	if ( appScrollPosition > appScrollInterval )
-		return;
-	$header.removeClass( appClassToAdd );
-	appScroll = appScrollForward;
-}
-function appScrollForward() {
-	scheduledAnimationFrame = false;
-	if ( appScrollPosition < appScrollInterval )
-		return;
-	$header.addClass( appClassToAdd );
-	appScroll = appScrollReverse;
-}
-function appScrollHandler() {
-	appScrollPosition = window.pageYOffset;
-	if ( scheduledAnimationFrame )
-		return;
-	scheduledAnimationFrame = true;
-	requestAnimationFrame( appScroll );
-}
-jQuery( window ).scroll( appScrollHandler );
 
 // === Adjust boards thumbs brightness based on mouse position ===
 jQuery(document).on('mouseenter', '.xoo-qv-button', function($) {

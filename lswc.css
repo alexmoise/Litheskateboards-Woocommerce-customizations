@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.1.6
+ * Version: 1.1.7
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -10,7 +10,27 @@
     border-radius: 8px !important;
 	color: black !important;
 }
+body:not(.single-product) #wrap_all {
+    background-color: #212121 !important;
+}
+body.single-product #wrap_all {
+    background-color: #252525 !important;
+}
+body.single-product p+h1 {
+    margin-top: 20px;
+}
 @media only screen and (max-width: 767px) {
+	.responsive #top #header_main #menu-item-shop .cart_dropdown_link {
+		line-height: 70px;
+	}
+	.responsive #top #menu-item-shop.cart_dropdown {
+		padding: 0 5px !important;
+	}
+	.responsive #top #header_main > .container .main_menu .av-main-nav > li > a, 
+	.responsive #top #wrap_all .av-logo-container {
+		height: 70px;
+		line-height: 70px;
+	}
 	.responsive #top #header_main > .container .main_menu .av-main-nav > li > a {
 		padding: 0 10px 0 10px;
 	}
@@ -19,6 +39,14 @@
 	}
 	.responsive #top #header .main_menu .social_bookmarks {
 		display: none;
+	}
+	.responsive #top #wrap_all .main_menu, 
+	.responsive #top .logo {
+		height: 70px !important;
+		width: fit-content;
+	}
+	.responsive .logo img {
+		max-width: fit-content !important;
 	}
 	li.av-burger-menu-main.menu-item-avia-special.av-small-burger-icon {
 		display: none !important;
@@ -30,7 +58,7 @@
 		position: fixed !important;
 	}
 	body:not(.home) > #wrap_all > #main {
-		margin-top: 160px !important;
+		margin-top: 70px !important;
 	}
 	main.template-shop.content {
 		padding-top: 20px;
@@ -41,12 +69,15 @@
 }
 @media only screen and (max-width: 860px) {
 	.main_menu a.cart_dropdown_link {
-		padding: 0 10px !important;
+		padding: 0 !important;
 	}
 }
 @media only screen and (max-width: 520px) {
 	body.home #layerslider_10 {
-		margin-top: 80px !important;
+		margin-top: 70px !important;
+	}
+	body:not(.home) > #wrap_all > #main {
+		margin-top: 140px !important;
 	}
 	#header_main nav.main_menu {
 		display: block !important;
@@ -61,15 +92,20 @@
 	.main_menu #menu-item-shop {
 		float: right;
 	}
+	.responsive #top #wrap_all .main_menu {
+		width: auto;
+	}
 	/* Class that's scrolling the logo over the top at first scroll */
 	/* please see the JS for the function that's adding/removing the class */
 	#header.scrolled .logo {
-		margin-top: -80px;
-		transition-duration: .3s;
+		margin-top: -70px;
 	}
 	#header:not(.scrolled) .logo {
 		margin-top: 0px;
-		transition-duration: .3s;
+	}
+	#header .logo {
+		transition-duration: .5s;
+		transition-timing-function: cubic-bezier(0.8, 0, 0.3, 1);
 	}
 }
 
