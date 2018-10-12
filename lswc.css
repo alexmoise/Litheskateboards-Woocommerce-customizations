@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.1.7
+ * Version: 1.1.8
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -19,7 +19,17 @@ body.single-product #wrap_all {
 body.single-product p+h1 {
     margin-top: 20px;
 }
+.main_menu a.cart_dropdown_link {
+	padding: 0 20px !important;
+}
 @media only screen and (max-width: 767px) {
+	.main_menu .avia-menu-text {
+		letter-spacing: 0.06em;
+	}
+	#header_main .container {
+		width: 95% !important;
+		max-width: 95% !important;
+	}
 	.responsive #top #header_main #menu-item-shop .cart_dropdown_link {
 		line-height: 70px;
 	}
@@ -32,7 +42,7 @@ body.single-product p+h1 {
 		line-height: 70px;
 	}
 	.responsive #top #header_main > .container .main_menu .av-main-nav > li > a {
-		padding: 0 10px 0 10px;
+		padding: 0 8px 0 8px;
 	}
 	.responsive #top .av-main-nav .menu-item {
 		display: list-item;
@@ -70,6 +80,9 @@ body.single-product p+h1 {
 @media only screen and (max-width: 860px) {
 	.main_menu a.cart_dropdown_link {
 		padding: 0 !important;
+	}
+	.responsive .main_menu ul:first-child > li > a {
+		padding: 0 6px;
 	}
 }
 @media only screen and (max-width: 520px) {
