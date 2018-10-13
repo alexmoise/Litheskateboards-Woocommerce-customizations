@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.1.8
+ * Version: 1.1.9
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -22,6 +22,17 @@ body.single-product p+h1 {
 .main_menu a.cart_dropdown_link {
 	padding: 0 20px !important;
 }
+@media only screen and (max-width: 860px) {
+	.main_menu a.cart_dropdown_link {
+		padding: 0 !important;
+	}
+	.responsive .main_menu ul:first-child > li > a {
+		padding: 0 6px;
+	}
+	#header_main nav.main_menu .avia-menu {
+		padding-right: 15px;
+	}
+}
 @media only screen and (max-width: 767px) {
 	.main_menu .avia-menu-text {
 		letter-spacing: 0.06em;
@@ -34,7 +45,7 @@ body.single-product p+h1 {
 		line-height: 70px;
 	}
 	.responsive #top #menu-item-shop.cart_dropdown {
-		padding: 0 5px !important;
+		padding: 0 8px !important;
 	}
 	.responsive #top #header_main > .container .main_menu .av-main-nav > li > a, 
 	.responsive #top #wrap_all .av-logo-container {
@@ -54,6 +65,7 @@ body.single-product p+h1 {
 	.responsive #top .logo {
 		height: 70px !important;
 		width: fit-content;
+		width: -moz-fit-content;
 	}
 	.responsive .logo img {
 		max-width: fit-content !important;
@@ -77,14 +89,6 @@ body.single-product p+h1 {
 		padding: 32px 0 0 0 !important;
 	}
 }
-@media only screen and (max-width: 860px) {
-	.main_menu a.cart_dropdown_link {
-		padding: 0 !important;
-	}
-	.responsive .main_menu ul:first-child > li > a {
-		padding: 0 6px;
-	}
-}
 @media only screen and (max-width: 520px) {
 	body.home #layerslider_10 {
 		margin-top: 70px !important;
@@ -96,6 +100,10 @@ body.single-product p+h1 {
 		display: block !important;
 		position: relative !important;
 	}
+	#header_main nav.main_menu .avia-menu {
+		margin-right: 0;
+		padding-right: 0;
+	}
 	.responsive #top .logo {
 		width: 100%;
 	}
@@ -106,7 +114,14 @@ body.single-product p+h1 {
 		float: right;
 	}
 	.responsive #top #wrap_all .main_menu {
-		width: auto;
+		margin: 0 auto;
+	}
+	.responsive #top #menu-item-shop.cart_dropdown {
+		float: left;
+		margin-left: 0;
+	}
+	.responsive #top #header_main > .container .main_menu .av-main-nav > li > a {
+		padding: 0 6px 0 6px;
 	}
 	/* Class that's scrolling the logo over the top at first scroll */
 	/* please see the JS for the function that's adding/removing the class */
@@ -119,6 +134,131 @@ body.single-product p+h1 {
 	#header .logo {
 		transition-duration: .5s;
 		transition-timing-function: cubic-bezier(0.8, 0, 0.3, 1);
+	}
+}
+
+/* Various forms tweaking especially for mobiles */
+::placeholder { 
+    color: #444 !important;
+    opacity: 1;
+}
+:-ms-input-placeholder { 
+    color: #444;
+}
+::-ms-input-placeholder { 
+    color: #444;
+}
+.woocommerce-checkout h3 {
+    padding-left: 0 !important;
+}
+h3#ship-to-different-address {
+    margin-bottom: 11px;
+}
+.woocommerce input[type="text"], 
+.woocommerce input[type="password"], 
+.woocommerce input[type="tel"], 
+.woocommerce input[type="email"] {
+    padding: 12px 5px !important;
+    font-size: large !important;
+	color: white !important;
+}
+.woocommerce input[type="checkbox"] {
+    margin: 0 !important;
+}
+.woocommerce button {
+	font-size: large !important;
+}
+.woocommerce .login .button {
+    float: none;
+	margin: 10px 0;
+}
+.woocommerce .woocommerce-form__label-for-checkbox {
+    margin: 10px 0;
+}
+.woocommerce .woocommerce-form__label-for-checkbox > * {
+    vertical-align: middle;
+	color: #cbcbcb !important;
+}
+.woocommerce .login .lost_password {
+    left: 0;
+}
+.woocommerce .login .lost_password > a {
+    color: #cbcbcb;
+}
+.woocommerce .checkout_coupon .button {
+    margin: 0;
+	padding: 15px 8px;
+}
+.woocommerce .checkout .payment_methods li input {
+    margin: 20px 0 !important;
+}
+.woocommerce-checkout #payment .payment_method_stripe label[for=payment_method_stripe] {
+    padding-left: 20px;
+}
+#top #payment ul.payment_methods li img {
+    margin: 1px;
+    max-width: 48px;
+    float: none !important;
+}
+.woocommerce .selection .select2-selection {
+    height: 40px;
+    padding: 5px;
+}
+.woocommerce .selection .select2-selection .select2-selection__arrow {
+    height: 38px;
+}
+.woocommerce .showcoupon, 
+.woocommerce .showlogin {
+    color: #42d62c;
+}
+#top #payment div.payment_box {
+    width: 100%;
+    padding: 0px;
+}
+#top #payment .wc-credit-card-form > .form-row {
+    padding: 0;
+}
+#top #payment .wc-credit-card-form {
+    margin-bottom: 0;
+}
+#top #payment .wc-credit-card-form div#stripe-card-element, 
+#top #payment .wc-credit-card-form div#stripe-exp-element, 
+#top #payment .wc-credit-card-form div#stripe-cvc-element {
+    padding: 12px 2px;
+}
+.stripe-source-errors .woocommerce-error {
+    margin: 20px 0 0 0;
+    padding: 0;
+}
+.stripe-source-errors .woocommerce-error > li {
+    background-color: #E0F1B5 !important;
+    color: red;
+    font-size: large;
+    letter-spacing: 0;
+}
+@media only screen and (max-width: 860px) {
+	
+}
+@media only screen and (max-width: 767px) {
+	.responsive #top .col2-set .col-1, 
+	.responsive #top .col2-set .col-2 {
+		width: 100%;
+	}
+	.woocommerce .checkout_coupon .form-row {
+		width: 100%;
+	}
+}
+@media only screen and (max-width: 520px) {
+	.woocommerce .login .button, 
+	.woocommerce-form.login .form-row, 
+	.woocommerce-billing-fields .form-row, 
+	.woocommerce-shipping-fields .form-row, 
+	.woocommerce .checkout_coupon .button, 
+	.woocommerce-checkout-payment .button {
+		width: 100%;
+	}
+	#top #payment .wc-credit-card-form > .form-row {
+		width: 100%;
 	}
 }
 

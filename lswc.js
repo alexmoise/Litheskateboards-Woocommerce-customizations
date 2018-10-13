@@ -35,6 +35,13 @@ function appScrollHandler() {
 }
 jQuery( window ).scroll( appScrollHandler );
 
+// === Add a line break in before Cards Icons in checkout; wait a bit for that form
+jQuery(document).ready(function() { 
+	setTimeout(function() { 
+		jQuery('<br />').insertBefore('img.stripe-visa-icon.stripe-icon'); 
+	}, 1500);
+});
+
 // ===  Now let's deal with product display functions  ===
 // === I. Product display functions -> XOO POPUP ONLY: ===
 // Initialize the special event needed for detecting XOO Popup removal
