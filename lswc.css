@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.1.9
+ * Version: 1.1.10
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -870,7 +870,10 @@ width: 14px;
 #wwof_product_listing_filter {
   margin-bottom: 0;
 }
-
+#wwof_product_listing_table tr:nth-of-type(2n+1) {
+    background: initial !important;
+}
+ 
 /* Nicer Scrollbar (where available) */
 ::-webkit-scrollbar { width: 12px; } /* width */
 ::-webkit-scrollbar-track { box-shadow: inset 0 0 6px grey; border-radius: 6px; } /* Track */
