@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.10
+ * Version: 1.1.11
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -787,6 +787,42 @@ class Wc_class_preorder_adjustments {
 			}
 		}
 	}
+}
+
+// Save "true_stock_status" value in Cart Data then display it in cart, checkout and emails sent
+// Save true_stock_status value in cart item for now 
+add_filter( 'woocommerce_add_cart_item_data', 'molswc_save_true_stock_status_in_cart_object', 30, 3 );
+function molswc_save_true_stock_status_in_cart_object( $cart_item_data, $product_id, $variation_id ) {
+    // Get the correct Id first
+    $the_id = $variation_id > 0 ? $variation_id : $product_id;
+	// ... then get the True Status
+    $truestatus_numerical = molswc_calculate_true_stock_status($the_id)['true_stock_status'];
+	// ... then get the label set in the options, to stay consistent with front end 
+	if ($truestatus_numerical == 3) { $truestatus = get_option('molswc_instock_label'); }
+	if ($truestatus_numerical == 2) { $truestatus = get_option('molswc_backorder_label'); }
+	if ($truestatus_numerical == 1) { $truestatus = get_option('molswc_preorder_label'); }
+	// ... then add it to Cart Data
+	$cart_item_data['true_stock_status'] = sanitize_text_field( $truestatus );
+	// ... and finally return the Cart Data  
+    return $cart_item_data;
+}
+// Display true_stock_status on cart and checkout pages
+add_filter( 'woocommerce_get_item_data', 'molswc_display_true_stock_status_as_item_data', 20, 2 );
+function molswc_display_true_stock_status_as_item_data( $cart_data, $cart_item ) {
+    if( isset( $cart_item['true_stock_status'] ) ){
+        $cart_data[] = array(
+            'name' => __( 'Stock Status', 'woocommerce' ),
+            'value' => $cart_item['true_stock_status']
+        );
+    }
+    return $cart_data;
+}
+// Save true_stock_status value in order items meta data
+add_action( 'woocommerce_add_order_item_meta', 'molswc_add_true_stock_status_to_order_item_meta', 20, 3 );
+function molswc_add_true_stock_status_to_order_item_meta( $item_id, $values, $cart_item_key ) {
+
+    if( isset( $values['true_stock_status'] ) )
+        wc_add_order_item_meta( $item_id, __( 'Stock Status', 'woocommerce' ), $values['true_stock_status'] );
 }
 
 // === Fragment cache functions below
