@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.11
+ * Version: 1.1.12
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -824,6 +824,34 @@ function molswc_add_true_stock_status_to_order_item_meta( $item_id, $values, $ca
     if( isset( $values['true_stock_status'] ) )
         wc_add_order_item_meta( $item_id, __( 'Stock Status', 'woocommerce' ), $values['true_stock_status'] );
 }
+
+// Create a custom Order Status named "Pending Inventory", add it to WC Order Statuses list and assign it automatically for orders with products not in stock. 
+// How about orders with 2 products, one in stock and the other one not? Though very rare, these are still possible!
+// Create "Pending Inventory" status first, as a normal post status
+add_action( 'init', 'molswc_register_pending_inventory_order_status' );
+function molswc_register_pending_inventory_order_status() {
+    register_post_status( 'wc-pending-inventory', array(
+        'label'                     => 'Pending inventory',
+        'public'                    => true,
+        'exclude_from_search'       => false,
+        'show_in_admin_all_list'    => true,
+        'show_in_admin_status_list' => true,
+        'label_count'               => _n_noop( 'Pending inventory <span class="count">(%s)</span>', 'Pending inventory <span class="count">(%s)</span>' )
+    ) );
+}
+// Add "Pending Inventory" status to list of WC Order statuses
+function molswc_add_pending_inventory_to_order_statuses( $order_statuses ) {
+    $new_order_statuses = array();
+    // add new order status after processing
+    foreach ( $order_statuses as $key => $status ) {
+        $new_order_statuses[ $key ] = $status;
+        if ( 'wc-processing' === $key ) {
+            $new_order_statuses['wc-pending-inventory'] = 'Pending inventory';
+        }
+    }
+    return $new_order_statuses;
+}
+add_filter( 'wc_order_statuses', 'molswc_add_pending_inventory_to_order_statuses' );
 
 // === Fragment cache functions below
 // A cache class used for product form content caching,
