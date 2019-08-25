@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.13
+ * Version: 1.1.15
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -860,18 +860,28 @@ function molswc_auto_assign_pending_inventory_to_orders_if_true_stock_other_than
 	global $product;
 	$order = wc_get_order( $order_id );
 	// Extract all products in the order, at variation level
-	
-	// Check True Stock Status value (numeric) of each product extracted previously and switch the control variable to TRUE if at least one is different from 3
-	
-	// IF control variable set above is TRUE then assign Pending Inventory status
-	//$order->update_status( 'wc-pending-inventory' );
-	// Unset the control variable 
+	foreach ( $order->get_items() as $item_id => $item_values ) { // Iterating though each order items
+		$prepared_data = molswc_get_peer_variations_prepare($item_values['variation_id']);
+		$peer_vars = molswc_get_peer_variations($prepared_data['parent_id'], $prepared_data['attrib_to_use_for_peering'], $prepared_data['value_to_use_for_peering']); // Just get the peer variations
+		// Simplest plug in function below. Just add each variation ID to an array that we'll process later, as soon as this foreach loop finishes 
+		foreach($peer_vars as $peer_var) {
+			$peer_vars_working[] = $peer_var;
+		}
+	}
+	// Main plug in function below - could do anything to process data fetched above
+	// Now just process the $peer_vars_working array, applying the new "is_preorder" condition based on "true_stock_status"
+	foreach ( $peer_vars_working as $working_var ) {
+		$current_var_id_true_stock_status = molswc_calculate_true_stock_status($working_var)['true_stock_status']; 
+		if( $current_var_id_true_stock_status !== 3 ) {
+			// ... and switch the control variable to TRUE if at least one is different from 3
+			$pending_inventory_control_variable = TRUE;
+		}
+	}
+	// Now, IF control variable set above is TRUE then assign Pending Inventory status
+	if ( $pending_inventory_control_variable ) { $order->update_status( 'wc-pending-inventory' ); }
+	// In the end just unset the control variable 
+	unset($pending_inventory_control_variable);
 }
-
-
-
-
-
 
 // === Fragment cache functions below
 // A cache class used for product form content caching,
