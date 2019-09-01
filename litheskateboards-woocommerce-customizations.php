@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.16
+ * Version: 1.1.18
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -852,7 +852,7 @@ function molswc_add_pending_inventory_to_order_statuses( $order_statuses ) {
     return $new_order_statuses;
 }
 // Automatically assign Pending Inventory status to orders containing a product with True Stock Level other than "3", In_Stock
-add_action('woocommerce_order_status_changed', 'molswc_auto_assign_pending_inventory_to_orders_if_true_stock_other_than_three');
+add_action('woocommerce_thankyou', 'molswc_auto_assign_pending_inventory_to_orders_if_true_stock_other_than_three');
 function molswc_auto_assign_pending_inventory_to_orders_if_true_stock_other_than_three($order_id) {
 	if ( ! $order_id ) {
 		return;
