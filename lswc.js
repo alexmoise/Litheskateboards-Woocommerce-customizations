@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.1.19
+ * Version: 1.1.20
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -342,9 +342,11 @@ jQuery(document).ready(function() {
 });
 // Reset filters and bring in all boards again
 jQuery(document).on('click', '#reset-product-filters', function() {
+	jQuery( 'select[name="Models"] > option' ).removeAttr('selected', 'disabled', 'hidden'); // remove all attributes from Models
+	jQuery( 'select[name="Widths"] > option' ).removeAttr('selected', 'disabled', 'hidden'); // remove all attributes from Widths
+	jQuery:document.getElementById('product-filters').reset(); // then reset the 'product-filters'
 	jQuery('.product-filters select option').attr('disabled', 'disabled'); // disable all drop down options ...
 	enableOnlyAvailableModelsAndWidths(); // ...then enable back only those that are available!
-	jQuery:document.getElementById('product-filters').reset(); // also reset the 'product-filters'
 	jQuery ('ul.products li').fadeIn(); // ...and fade in all boards again!
 });
 // Fire the "take-out-unavailable-boards" function at each Model/Width chose
@@ -359,7 +361,7 @@ jQuery(document).delegate( 'select[name="Models"]', 'change', function() {
 jQuery(document).delegate( 'select[name="Widths"]', 'change', function() {
 	disableImpossibleModels();
 });
-// FUNCTION to take out not available boards IN SGOP PAGE (out of "the rack" actually)
+// FUNCTION to take out not available boards IN SHOP PAGE (out of "the rack" actually)
 function takeOutUnavailableBoards() {
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
 	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
