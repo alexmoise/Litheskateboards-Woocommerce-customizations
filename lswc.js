@@ -336,6 +336,9 @@ jQuery(document).ready(function() {
 	enableOnlyAvailableModelsAndWidths();
 	// Then take out unavailable boards in case model/width comes preselected via GET variables
 	takeOutUnavailableBoards();
+	// Then arrange the filters to match availability of board combinations - again in case model/width comes preselected via GET variables
+	disableImpossibleWitdhs();
+	disableImpossibleModels();
 });
 // Reset filters and bring in all boards again
 jQuery(document).on('click', '#reset-product-filters', function() {
@@ -348,7 +351,14 @@ jQuery(document).on('click', '#reset-product-filters', function() {
 jQuery(document).delegate( '.product-filters', 'change', function() {
 	takeOutUnavailableBoards();
 });
-
+// Disable WIDTHS that are not possible at any MODEL change
+jQuery(document).delegate( 'select[name="Models"]', 'change', function() {
+	disableImpossibleWitdhs();
+});
+// Disable MODELS that are not possible at any WIDTH change
+jQuery(document).delegate( 'select[name="Widths"]', 'change', function() {
+	disableImpossibleModels();
+});
 // FUNCTION to take out not available boards IN SGOP PAGE (out of "the rack" actually)
 function takeOutUnavailableBoards() {
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
@@ -367,9 +377,8 @@ function takeOutUnavailableBoards() {
 		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filtercomplete+'"]').fadeOut(); 
 	}
 }
-
-// Disable WIDTHS that are not possible in boards filters drop downs
-jQuery(document).delegate( 'select[name="Models"]', 'change', function() {
+// FUNCTION to disable WIDTHS that are not possible in boards filters drop downs
+function disableImpossibleWitdhs() {
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
 	jQuery( 'select[name="Widths"] > option' ).each( function( index, element ){
 		var checkingwidth = jQuery( this ).val();
@@ -381,9 +390,9 @@ jQuery(document).delegate( 'select[name="Models"]', 'change', function() {
 			jQuery( this ).removeAttr('disabled');
 		}
 	});
-});
-// Disable MODELS that are not possible in boards filters drop downs
-jQuery(document).delegate( 'select[name="Widths"]', 'change', function() {
+}
+// FUNCTION to disable MODELS that are not possible in boards filters drop downs
+function disableImpossibleModels() {
 	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
 	jQuery( 'select[name="Models"] > option' ).each( function( index, element ){
 		var checkingmodel = jQuery( this ).val();
@@ -395,7 +404,7 @@ jQuery(document).delegate( 'select[name="Widths"]', 'change', function() {
 			jQuery( this ).removeAttr('disabled');
 		}
 	});
-});
+}
 // FUNCTION to loop through all Models and Widths IN SELECTORS and enable only available ones
 function enableOnlyAvailableModelsAndWidths() {
 	// Loop through all Widths and disable those not existing in *any* data-custom-attribs-list
