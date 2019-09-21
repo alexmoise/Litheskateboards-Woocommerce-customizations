@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.1.20
+ * Version: 1.1.23
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -334,11 +334,13 @@ function initAttribVariables() {
 jQuery(document).ready(function() {
 	// First *enable* only available Models and Widths (they come out initially "disabled"):
 	enableOnlyAvailableModelsAndWidths();
-	// Then take out unavailable boards in case model/width comes preselected via GET variables
+	// Then take out unavailable boards - in case model/width comes preselected via GET variables
 	takeOutUnavailableBoards();
 	// Then arrange the filters to match availability of board combinations - again in case model/width comes preselected via GET variables
 	disableImpossibleWitdhs();
 	disableImpossibleModels();
+	// Do something when preselected filters combination is not possible
+	bothFiltersDisabled();
 });
 // Reset filters and bring in all boards again
 jQuery(document).on('click', '#reset-product-filters', function() {
@@ -361,6 +363,13 @@ jQuery(document).delegate( 'select[name="Models"]', 'change', function() {
 jQuery(document).delegate( 'select[name="Widths"]', 'change', function() {
 	disableImpossibleModels();
 });
+// FUNCTION to check if pre-selected MODEL and WIDTH are both disabled
+function bothFiltersDisabled() {
+	if ( jQuery('.product-filters select[name="Models"] :selected').is('[disabled=disabled]') && jQuery('.product-filters select[name="Widths"] :selected').is('[disabled=disabled]') ) {
+		// for the moment console.log a message; will insert a DOM element later, with an image sign showing "No boards found" and maybe a reset link
+		console.log('Invalid Selection!');
+	} 
+}
 // FUNCTION to take out not available boards IN SHOP PAGE (out of "the rack" actually)
 function takeOutUnavailableBoards() {
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
