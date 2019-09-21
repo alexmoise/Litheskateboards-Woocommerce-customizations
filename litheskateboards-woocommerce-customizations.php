@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.20
+ * Version: 1.1.22
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -861,8 +861,8 @@ function molswc_add_pending_inventory_to_order_statuses( $order_statuses ) {
 }
 // Automatically assign Pending Inventory status to orders containing a product with True Stock Level other than "3", In_Stock
 // Assigning this status at woocomemrce_thankyou - although the order should be splitted first then status applied only to non-3 ones ...
-add_action('woocommerce_thankyou', 'molswc_auto_assign_pending_inventory_to_orders_if_true_stock_other_than_three');
-function molswc_auto_assign_pending_inventory_to_orders_if_true_stock_other_than_three($order_id) {
+add_action('woocommerce_thankyou', 'molswc_auto_assign_pending_inventory_to_orders_based_on_stock_level');
+function molswc_auto_assign_pending_inventory_to_orders_based_on_stock_level($order_id) {
 	if ( ! $order_id ) {
 		return;
 	}
@@ -871,9 +871,9 @@ function molswc_auto_assign_pending_inventory_to_orders_if_true_stock_other_than
 	// Extract all products in the order, at variation level
 	foreach ( $order->get_items() as $item_id => $item_values ) { // Iterating though each order items
 		$working_var = $item_values['variation_id']; // getting the variation ID
-		$current_var_id_true_stock_status = molswc_calculate_true_stock_status($working_var)['true_stock_status']; // Get the True Stock status
-		if( $current_var_id_true_stock_status !== 3 ) { // Check if True Stock status is 3 ...
-			$pending_inventory_control_variable = TRUE; // ... and switch the control variable to TRUE if it's different than 3
+		$current_var_id_true_stock_level = molswc_calculate_true_stock_level($working_var)['woo_stock_level']; // Get the stock level as set in WooCommerce
+		if( $current_var_id_true_stock_level < 0 ) { // Check if stock level is lower than 0 ...
+			$pending_inventory_control_variable = TRUE; // ... and switch the control variable to TRUE if stock is lower than 0
 		}
 	}
 	// Now, IF control variable set above is TRUE then assign Pending Inventory status
