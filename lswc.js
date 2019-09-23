@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.1.23
+ * Version: 1.1.24
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -330,44 +330,36 @@ function initAttribVariables() {
 }
 
 // === Boards filtering functions
-// Run some functions to show the boards rack prepared at shop display
-jQuery(document).ready(function() {
-	// First *enable* only available Models and Widths (they come out initially "disabled"):
-	enableOnlyAvailableModelsAndWidths();
-	// Then take out unavailable boards - in case model/width comes preselected via GET variables
-	takeOutUnavailableBoards();
-	// Then arrange the filters to match availability of board combinations - again in case model/width comes preselected via GET variables
-	disableImpossibleWitdhs();
+// *** Function callers below:
+jQuery(document).ready(function() { rackFiltersInit(); }); // Run some functions to show the boards rack prepared at shop display
+jQuery(document).on('click', '#reset-product-filters', function() { rackFiltersReset(); }); // Reset filters and bring in all boards again
+jQuery(document).delegate( '.product-filters', 'change', function() { takeOutUnavailableBoards(); }); // Fire the "take-out-unavailable-boards" function at each Model/Width chose
+jQuery(document).delegate( 'select[name="Models"]', 'change', function() { disableImpossibleWitdhs(); }); // Disable WIDTHS that are not possible at any MODEL change
+jQuery(document).delegate( 'select[name="Widths"]', 'change', function() { disableImpossibleModels(); }); // Disable MODELS that are not possible at any WIDTH change
+// *** Functions definitions below:
+// FUNCTIONS collection to initialize rack filters at 1st display
+function rackFiltersInit() {
+	enableOnlyAvailableModelsAndWidths(); // First *enable* only available Models and Widths (they come out initially "disabled")
+	takeOutUnavailableBoards(); // Then take out unavailable boards - in case model/width comes preselected via GET variables
+	disableImpossibleWitdhs(); // Then arrange the filters to match availability of board combinations - again in case model/width comes preselected via GET variables
 	disableImpossibleModels();
-	// Do something when preselected filters combination is not possible
-	bothFiltersDisabled();
-});
-// Reset filters and bring in all boards again
-jQuery(document).on('click', '#reset-product-filters', function() {
+	bothFiltersDisabled(); // Do something when preselected filters combination is not possible
+}
+// FUNCTION to reset rack filters
+function rackFiltersReset() {
 	jQuery( 'select[name="Models"] > option' ).removeAttr('selected', 'disabled', 'hidden'); // remove all attributes from Models
 	jQuery( 'select[name="Widths"] > option' ).removeAttr('selected', 'disabled', 'hidden'); // remove all attributes from Widths
 	jQuery:document.getElementById('product-filters').reset(); // then reset the 'product-filters'
 	jQuery('.product-filters select option').attr('disabled', 'disabled'); // disable all drop down options ...
 	enableOnlyAvailableModelsAndWidths(); // ...then enable back only those that are available!
 	jQuery ('ul.products li').fadeIn(); // ...and fade in all boards again!
-});
-// Fire the "take-out-unavailable-boards" function at each Model/Width chose
-jQuery(document).delegate( '.product-filters', 'change', function() {
-	takeOutUnavailableBoards();
-});
-// Disable WIDTHS that are not possible at any MODEL change
-jQuery(document).delegate( 'select[name="Models"]', 'change', function() {
-	disableImpossibleWitdhs();
-});
-// Disable MODELS that are not possible at any WIDTH change
-jQuery(document).delegate( 'select[name="Widths"]', 'change', function() {
-	disableImpossibleModels();
-});
+}
 // FUNCTION to check if pre-selected MODEL and WIDTH are both disabled
 function bothFiltersDisabled() {
 	if ( jQuery('.product-filters select[name="Models"] :selected').is('[disabled=disabled]') && jQuery('.product-filters select[name="Widths"] :selected').is('[disabled=disabled]') ) {
 		// for the moment console.log a message; will insert a DOM element later, with an image sign showing "No boards found" and maybe a reset link
-		console.log('Invalid Selection!');
+		// console.log('Invalid Selection!');
+		rackFiltersReset();
 	} 
 }
 // FUNCTION to take out not available boards IN SHOP PAGE (out of "the rack" actually)
