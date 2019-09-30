@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.24
+ * Version: 1.1.25
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -34,10 +34,11 @@ function molswc_plugin_action_links( $molswclinks ) {
 	), $molswclinks );
 	return $molswclinks;
 }
-// Adding mobile app capability meta
+// Adding mobile app capability and theme color metas
 add_action( 'wp_head', 'molswc_webapp_meta' ); 
 function molswc_webapp_meta() {
     echo '<meta name="mobile-web-app-capable" content="yes">';
+	echo '<meta name="theme-color" content="#000000" />';
 }
 // Debug variable to file; call it wherever it's needed along with the variable to be outputted and with a label for better understanding
 function molswc_debug_to_file($output_label, $something_to_output) {
