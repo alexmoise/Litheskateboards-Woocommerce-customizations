@@ -1,15 +1,10 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.1.25
+ * Version: 1.1.26
  * (version above is equal with main plugin file version when this file was updated)
  */
  
 /* LSWC Header changes */
-/* (The class ".menu-shop-item" have to be set in Menus) */
-.menu-shop-item .avia-menu-text {
-    border-radius: 8px !important;
-	color: black !important;
-}
 body:not(.single-product) #wrap_all {
     background-color: #212121 !important;
 }
