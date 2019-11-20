@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.27
+ * Version: 1.1.29
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -886,7 +886,7 @@ function molswc_auto_assign_pending_inventory_to_orders_based_on_stock_level($or
 // === Putting order on hold with a properly formatted link (that would be used in email templates)
 // a correct link would be: ...account/orders?nonce=NTQ4MzUy - the "nonce" value being a base64_encode of an existing order ID from the shop
 add_action( 'woocommerce_before_customer_login_form', 'molswc_order_status_link_mgmt' ); // this will kick in if user isn't logged in
-add_action( 'woocommerce_before_account_orders', 'molswc_order_status_link_mgmt' ); // otherwise this one will get triggered, above the orders list
+add_action( 'woocommerce_before_account_orders', 'molswc_order_status_link_mgmt' ); // otherwise this one will get triggered, above the orders list table
 function molswc_order_status_link_mgmt(){
 	// first make it work only in Orders section of Account page ... using strip_tags in an attempt to avoid malicious code in URL
 	if ( strpos(strip_tags($_SERVER['REQUEST_URI']), 'account/orders') ) {
@@ -898,20 +898,32 @@ function molswc_order_status_link_mgmt(){
 			$order = new WC_Order($decoded_order_ID);
 			// record the status as we found it
 			$ini_status = $order->get_status();
-			// change the staus, yey! (hardcoded to "on-hold" below, but we could make it variable so statuses can be managed by links alone)
-			$order->update_status('on-hold', 'Put on hold by email link'); 
-			// record the status as it is after the change (did the change worked? we can compare statuses)
-			$new_status = $order->get_status();
-			// now it's the time to notify the user that something happened, and what exactly
-			echo 'Status of order #'.$decoded_order_ID.' is now: '.$new_status.' (was: '.$ini_status.')<br>';
-			// then what? Let's invite the user to edit ... if (s)he's authenticated; else let's invite (s)he to log in
-			if (is_user_logged_in()) { 
-				echo 'You can view the complete order details by clicking "View" button in the table below:'; 
-			} else {
-				echo 'Please log in using the form below to view the complete order details:<br>';
+			// not all statuses should be convertible, so check it below
+			if ($ini_status == 'processing' || $ini_status == 'pending-inventory') {
+				// change the staus, yey! (hardcoded to "on-hold" below, but we could make it variable so statuses can be managed by links alone)
+				$order->update_status('on-hold', 'Put on hold by email link'); 
+				// record the status as it is after the change (did the change worked? we can compare statuses)
+				$new_status = $order->get_status();
+				// now it's the time to notify the user that something happened, and what exactly
+				echo 'Status of order #'.$decoded_order_ID.' is now: '.$new_status.' (was: '.$ini_status.')<br>';
+				// then what? Let's invite the user to edit ... if (s)he's authenticated; else let's invite (s)he to log in
+				if (is_user_logged_in()) { 
+					echo 'You can view the complete order details by clicking "View" button in the table below:'; 
+				} else {
+					echo 'Please log in using the form below to view the complete order details:<br>';
+				}
 			}
 		}
 	}
+}
+// now let's send the On Hold email when status changes
+add_action( 'woocommerce_order_status_processing_to_on-hold', 'molswc_enable_processing_to_on_hold_notification', 10, 2 ); // add the sending email action when changing Processing orders
+add_action( 'woocommerce_order_status_pending-inventory_to_on-hold', 'molswc_enable_processing_to_on_hold_notification', 10, 2 ); // ... also add that action when changing Pending Inventory orders
+function molswc_enable_processing_to_on_hold_notification( $order_id, $order ){
+    // Getting all WC_emails array objects
+    $mailer = WC()->mailer()->get_emails();
+    // Finally send the "On Hold" notification
+    $mailer['WC_Email_Customer_On_Hold_Order']->trigger( $order_id );
 }
 
 // === Fragment cache functions below
