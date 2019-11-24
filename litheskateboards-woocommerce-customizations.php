@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.30
+ * Version: 1.1.31
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -931,7 +931,7 @@ function molswc_order_status_link_mgmt(){
 						// ... and highlight that box with yellow, for an easy to regocnise action (will add this piece of style below in form anyway) 
 						$reason_border = ' border-color:#ffff00;';
 					}
-					// not the time came to display the actual form
+					// now the time came to display the actual form
 					echo '
 					<form method="get" style="margin-bottom:40px;">
 						<input type="hidden" name="nonce" value="'.strip_tags($_GET['nonce']).'">
@@ -948,8 +948,9 @@ function molswc_order_status_link_mgmt(){
 					  <input type="submit" value="Submit" class="button" style="float:none;">
 					</form>
 					';
+					// ... and again, if (s)he isn't logged in, show a quick invitation to login (login form is displayed afterwards anyway)
 					if (!is_user_logged_in()) { 
-						echo '<p>You could also login to see the full order details:</p>';
+						echo '<p>You could also log in using the form below to view the complete order details:</p>';
 					}
 				}
 			}
