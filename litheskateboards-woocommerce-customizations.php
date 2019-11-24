@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.29
+ * Version: 1.1.30
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -900,17 +900,57 @@ function molswc_order_status_link_mgmt(){
 			$ini_status = $order->get_status();
 			// not all statuses should be convertible, so check it below
 			if ($ini_status == 'processing' || $ini_status == 'pending-inventory') {
-				// change the staus, yey! (hardcoded to "on-hold" below, but we could make it variable so statuses can be managed by links alone)
-				$order->update_status('on-hold', 'Put on hold by email link'); 
-				// record the status as it is after the change (did the change worked? we can compare statuses)
-				$new_status = $order->get_status();
-				// now it's the time to notify the user that something happened, and what exactly
-				echo 'Status of order #'.$decoded_order_ID.' is now: '.$new_status.' (was: '.$ini_status.')<br>';
-				// then what? Let's invite the user to edit ... if (s)he's authenticated; else let's invite (s)he to log in
-				if (is_user_logged_in()) { 
-					echo 'You can view the complete order details by clicking "View" button in the table below:'; 
+				// if ohr1 (aka Reason for status change) is defined, then proceed with status change
+				if (strip_tags($_GET['ohr1']) !== '') {
+					// let's compose the status change note in the first place
+					$note = __("Status changed by using emailed link. Reason for on-hold: ".strip_tags($_GET['ohr1']).". Details: ".strip_tags($_GET['ohr2']));
+					// change the staus, yey! (hardcoded to "on-hold" below, but we could make it variable so statuses can be managed by links alone)
+					$order->update_status('on-hold', $note); 
+					// record the status as resulted after the change (did the change worked? we can compare statuses)
+					$new_status = $order->get_status();
+					// now it's the time to notify the user that something happened, and what exactly
+					echo '
+					<h2>Order Hold</h2>
+					<p>Order #'.$decoded_order_ID.' has been placed '.$new_status.' (was: '.$ini_status.').</p>
+					<p>Reason for '.$new_status.': '.strip_tags($_GET["ohr1"]).'; <br>Details: '.strip_tags($_GET["ohr2"]).'</p>
+					';
+					// ... and if (s)he isn't logged in, show a quick invitation to login (login form is displayed afterwards anyway)
+					if (!is_user_logged_in()) {
+						echo '<p>You could also log in using the form below to view the complete order details:</p>';
+					}
+				// if ohr1 (aka Reason for status change) is NOT defined then go on and display the form
 				} else {
-					echo 'Please log in using the form below to view the complete order details:<br>';
+					// Echo title and summary first
+					echo '
+					<h2>Order Hold</h2>
+					<p>You are requesting to place order #'.$decoded_order_ID.' on hold. Orders that have already shipped cannot be placed on hold.</p>
+					';
+					// then check if form has been submitted, that means reason hasn't been provided, so we kindly ask for a reason
+					if (strip_tags($_GET['submit']) == '1') {
+						echo '<p style="color:yellow;">Please choose a reason for placing the order on hold.</p>';
+						// ... and highlight that box with yellow, for an easy to regocnise action (will add this piece of style below in form anyway) 
+						$reason_border = ' border-color:#ffff00;';
+					}
+					// not the time came to display the actual form
+					echo '
+					<form method="get" style="margin-bottom:40px;">
+						<input type="hidden" name="nonce" value="'.strip_tags($_GET['nonce']).'">
+						<input type="hidden" name="submit" value="1">
+						<p style="margin-bottom: 2px;">Reason for hold:</p>
+						<select name="ohr1" style="width: 100%; '.$reason_border.'">
+							<option value="">Please select a reason</option>
+							<option value="Address_correction">Address correction</option>
+							<option value="Product_change">Product change</option>
+							<option value="Cancel_order">Cancel order</option>
+						</select>
+						<p style="margin-bottom: 2px;">Details (optional):</p>
+						<textarea rows="4" cols="50" name="ohr2">'.strip_tags($_GET['ohr2']).'</textarea>
+					  <input type="submit" value="Submit" class="button" style="float:none;">
+					</form>
+					';
+					if (!is_user_logged_in()) { 
+						echo '<p>You could also login to see the full order details:</p>';
+					}
 				}
 			}
 		}
