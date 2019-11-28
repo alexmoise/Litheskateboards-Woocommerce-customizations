@@ -78,17 +78,20 @@ if ( !Pj_Fragment_Cache::output( $fragm_cache_key, $fragm_cache_args ) ) { // co
 									}
 								} else {
 									$chosen_attribs = molswc_designated_options(); // defined in main PHP file of the plugin
-									foreach ( $chosen_attribs as $chosen_attrib ) { 
-										$each_attribs = array_filter($options, function($var) use ($chosen_attrib) { return preg_match("/\b$chosen_attrib\b/i", $var); });
-										echo '<div class="each-attrib chosen-attrib-'.$chosen_attrib.'">'; // open the div wrapper for each attribute list
-										echo '<div class="label td"><label for="'.$chosen_attrib.'">'.$chosen_attrib.'</label></div>'; // adding attribute list label / title
-										echo '<div class="value-buttons td">'; // adding values / radio -> buttons wrapper
-										foreach ( $each_attribs as $each_attrib ) { 
-											$attrib_label = str_replace($chosen_attrib." ", "", $each_attrib); 
-											print_attribute_radio_attrib( $checked_value, $each_attrib, $attrib_label, $sanitized_name );
+									$all_attribs_string = implode("&",array_map(function($a) {return implode(" ",$a);},$attributes)); // create a string from all atributes multidimensional array
+									foreach ( $chosen_attribs as $chosen_attrib ) { // iterate through all "designated options"
+										if (strpos($all_attribs_string, $chosen_attrib) !== false) { // check if the current "designated option" is part of the current product variations, so we don't display empty lists
+											$each_attribs = array_filter($options, function($var) use ($chosen_attrib) { return preg_match("/\b$chosen_attrib\b/i", $var); });
+											echo '<div class="each-attrib chosen-attrib-'.$chosen_attrib.'">'; // open the div wrapper for each attribute list
+											echo '<div class="label td"><label for="'.$chosen_attrib.'">'.$chosen_attrib.'</label></div>'; // adding attribute list label / title
+											echo '<div class="value-buttons td">'; // adding values / radio -> buttons wrapper
+											foreach ( $each_attribs as $each_attrib ) { 
+												$attrib_label = str_replace($chosen_attrib." ", "", $each_attrib); 
+												print_attribute_radio_attrib( $checked_value, $each_attrib, $attrib_label, $sanitized_name );
+											}
+											echo '</div>'; //closing the div wrapper for values / radio -> buttons wrapper
+											echo '</div>'; //closing the div wrapper for each attribute list
 										}
-										echo '</div>'; //closing the div wrapper for values / radio -> buttons wrapper
-										echo '</div>'; //closing the div wrapper for each attribute list
 									}
 								}
 							}

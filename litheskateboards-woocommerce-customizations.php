@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.1.33
+ * Version: 1.1.34
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -341,6 +341,12 @@ function molswc_mobile_scroll_hint () {
 			<div><span class="unu"></span><span class="doi"></span><span class="trei"></span></div></div>
 		';
 	}
+}
+// Increse number of products per SHop high enough to make sure no pagination occurs
+add_filter( 'loop_shop_per_page', 'molswc_products_per_page', 20 );
+function molswc_products_per_page( $cols ) {
+  $cols = 100;
+  return $cols;
 }
 // Rack bottom and Rack top images in main shop page
 // Adding Rack Top:

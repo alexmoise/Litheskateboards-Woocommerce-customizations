@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.1.26
+ * Version: 1.1.34
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -649,7 +649,7 @@ body.single-product .container .product_title.entry-title {
 .table.variations .tbody .value.td .each-attrib .value-buttons.td {
 	width: 100%;
 }
-.table.variations .tbody .value.td .each-attrib:last-child {
+.table.variations .tbody .value.td .each-attrib:not(:first-child) {
     border-left: 1px solid #606060;
 }
 .table.variations .tbody .tr:not(:last-child) > .value.td {
