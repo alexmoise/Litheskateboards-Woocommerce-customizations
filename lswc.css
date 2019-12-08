@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.1.34
+ * Version: 1.2.1
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -378,20 +378,19 @@ ul.products {
 	max-width: 850px;
 }
 .xoo-qv-container .xoo-qv-main {
-  background-color: #262626;
-  position: relative;
-  padding: 10px 20px;
-  height:  auto;
-  max-height: 90vh;
-  border-radius: 8px !important;
-  border: 1px solid #cbcbcb;
-  box-shadow: 0 0 1px 0px #cbcbcb inset, 0 0 1px 0px #cbcbcb;
+	position: relative;
+	padding: 0;
+	height:  auto;
+	max-height: 90vh;
+	border-radius: 8px !important;
+	border: 1px solid #cbcbcb;
+	box-shadow: 0 0 1px 0px #cbcbcb inset, 0 0 1px 0px #cbcbcb;
 }
 .xoo-qv-container h1.product_title {
-  color: white;
+	color: white;
 }
 .xoo-qv-container .price del .amount {
-  text-decoration: line-through !important;
+	text-decoration: line-through !important;
 }
 .xoo-qv-container .value.td label.attrib, 
 .xoo-qv-container .value.td label.tax {
@@ -400,13 +399,13 @@ ul.products {
     padding: 1px;
 }
 .xoo-qv-container .custom_attrib.tr:after {
-  content: ' ';
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 99999;
+	content: ' ';
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 99999;
 }
 .xoo-qv-container .custom_attrib.tr.after-removed:after {
   z-index: 1;
@@ -422,6 +421,8 @@ ul.products {
 .xoo-qv-container .xoo-qv-main > div.product.type-product {
     display: block;
     overflow: auto;
+	padding: 10px 20px;
+	/* background-color: #262626; */
 }
 .xoo-qv-container .xoo-qv-main .xoo-qv-plink {
 	background-color: transparent;

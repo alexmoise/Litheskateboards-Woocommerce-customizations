@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.2.0
+ * Version: 1.2.1
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -117,7 +117,7 @@ function molswc_custom_boards_query( $q ) {
 // Output buttons colors styles as defined in Options Admin page
 add_action( 'wp_head', 'molswc_styles_for_buttons_colors', 99999 );
 function molswc_styles_for_buttons_colors() {
-	$molswc_buttons_colors_css = "<style type='text/css'>
+	$molswc_buttons_colors_css = "	<style type='text/css'>
 		/* In Stock */
 		.table.variations .tbody .value.td div.attrib.var_stock_instock,
 		.table.variations .tbody .value.td div.attrib.var_stock_instock .inner-attrib {
@@ -163,7 +163,47 @@ function molswc_styles_for_buttons_colors() {
 			border-color: ".strip_tags(get_option( 'molswc_notavailable_border_hover_color' ))." !important;
 		}
 	</style>";
-	echo "\n<!-- Buttons Colors START -->\n".$molswc_buttons_colors_css."\n<!-- Buttons Colors END -->\n" ;
+	echo "\n	<!-- Buttons Colors START -->\n".$molswc_buttons_colors_css."\n	<!-- Buttons Colors END -->\n" ;
+}
+// Output popup background colors styles as defined in Product Edit screen
+add_action( 'wp_head', 'molswc_styles_for_product_backgrounds', 99999 );
+function molswc_styles_for_product_backgrounds() {
+	// Get the main query first
+	global $wp_query;
+	// Pluck the list of all IDs of all displayed products on the current page in a variable
+	$displayed_ids = wp_list_pluck( $wp_query->posts, "ID" );
+	// start outputting the <style> block
+	echo '	<!-- Pop up backgrounds colors START -->
+	<style type="text/css">
+	'; 
+	// now take each displayed product one by one
+	foreach ($displayed_ids as $displayed_id) {
+		// first let's see if custom colors is selected for the current product; skip everything otherwise, it's more efficient this way ;-)  
+		$molswc_use_custom_button_colors_value = get_post_meta( $displayed_id, 'molswc_use_custom_button_colors' )[0];
+		// then, based on the above, decide if we should extract and use the custom background color
+		if ( $molswc_use_custom_button_colors_value == 1 ) {
+			// now check if custom background color is defined
+			if ( get_post_meta ($displayed_id, 'molswc_product_background_color')[0] ) { 
+				// if that custom background color is defined just get it from post_meta and store it in a variable
+				$curr_prod_background_color = get_post_meta ($displayed_id, 'molswc_product_background_color')[0];
+			} else {
+				// otherwise fall back to default background color - and store that in a variable
+				$curr_prod_background_color = strip_tags(get_option( 'molswc_product_background_color' ));
+			}
+		} else {
+			// if custom color option is not set, again fall back to default background color - and store that in a variable
+			$curr_prod_background_color = strip_tags(get_option( 'molswc_product_background_color' ));
+		}
+		// finally echo the CSS style for the current product background color based on the stored variable and current product ID
+		echo '.xoo-qv-container .xoo-qv-main > div.product.post-'.$displayed_id.'.type-product { 
+			background-color: '.$curr_prod_background_color.'; 
+		}
+		';
+	}
+	// in the end just close the </style> block
+	echo '</style>
+	<!-- Pop up backgrounds colors END -->
+	';
 }
 
 // === Wholesale checks and actions
@@ -1014,8 +1054,8 @@ function molswc_custom_buttons_colors_content() {
 		</tr>
 		<tr valign="top">
 			<th scope="row">Background color: </th>
-			<td> 
-				<input name="molswc_product_background_color" type="text" id="molswc_product_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_product_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_product_background_color" )[0].'" class="regular-text">
+			<td colspan="4"> 
+				<input name="molswc_product_background_color" type="text" id="molswc_product_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_product_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_product_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_product_background_color" )).'" class="regular-text">
 			</td>
 		</tr>
 		<tr valign="top">
