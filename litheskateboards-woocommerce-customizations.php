@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.2.1
+ * Version: 1.2.2
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -117,92 +117,118 @@ function molswc_custom_boards_query( $q ) {
 // Output buttons colors styles as defined in Options Admin page
 add_action( 'wp_head', 'molswc_styles_for_buttons_colors', 99999 );
 function molswc_styles_for_buttons_colors() {
-	$molswc_buttons_colors_css = "	<style type='text/css'>
-		/* In Stock */
-		.table.variations .tbody .value.td div.attrib.var_stock_instock,
-		.table.variations .tbody .value.td div.attrib.var_stock_instock .inner-attrib {
-			color: ".strip_tags(get_option( 'molswc_instock_label_color' ))." !important;
-			border-color: ".strip_tags(get_option( 'molswc_instock_border_color' ))." !important;
-		}
-		.table.variations .tbody .value.td div.attrib.var_stock_instock:hover,
-		.table.variations .tbody .value.td div.attrib.var_stock_instock:hover .inner-attrib {
-			color: ".strip_tags(get_option( 'molswc_instock_label_hover_color' ))." !important;
-			border-color: ".strip_tags(get_option( 'molswc_instock_border_hover_color' ))." !important;
-		}
-		/* Back Order */
-		.table.variations .tbody .value.td div.attrib.var_stock_backorder,
-		.table.variations .tbody .value.td div.attrib.var_stock_backorder .inner-attrib {
-			color: ".strip_tags(get_option( 'molswc_backorder_label_color' ))." !important;
-			border-color: ".strip_tags(get_option( 'molswc_backorder_border_color' ))." !important;
-		}
-		.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover,
-		.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover .inner-attrib {
-			color: ".strip_tags(get_option( 'molswc_backorder_label_hover_color' ))." !important;
-			border-color: ".strip_tags(get_option( 'molswc_backorder_border_hover_color' ))." !important;
-		}
-		/* Pre Order */
-		.table.variations .tbody .value.td div.attrib.var_stock_preorder,
-		.table.variations .tbody .value.td div.attrib.var_stock_preorder .inner-attrib {
-			color: ".strip_tags(get_option( 'molswc_preorder_label_color' ))." !important;
-			border-color: ".strip_tags(get_option( 'molswc_preorder_border_color' ))." !important;
-		}
-		.table.variations .tbody .value.td div.attrib.var_stock_preorder:hover,
-		.table.variations .tbody .value.td div.attrib.var_stock_preorder:hover .inner-attrib {
-			color: ".strip_tags(get_option( 'molswc_preorder_label_hover_color' ))." !important;
-			border-color: ".strip_tags(get_option( 'molswc_preorder_border_hover_color' ))." !important;
-		}
-		/* Not Available */
-		.table.variations .tbody .value.td div.attrib.var_stock_not_available,
-		.table.variations .tbody .value.td div.attrib.var_stock_not_available .inner-attrib {
-			color: ".strip_tags(get_option( 'molswc_notavailable_label_color' ))." !important;
-			border-color: ".strip_tags(get_option( 'molswc_notavailable_border_color' ))." !important;
-		}
-		.table.variations .tbody .value.td div.attrib.var_stock_not_available:hover,
-		.table.variations .tbody .value.td div.attrib.var_stock_not_available:hover .inner-attrib {
-			color: ".strip_tags(get_option( 'molswc_notavailable_label_hover_color' ))." !important;
-			border-color: ".strip_tags(get_option( 'molswc_notavailable_border_hover_color' ))." !important;
-		}
-	</style>";
-	echo "\n	<!-- Buttons Colors START -->\n".$molswc_buttons_colors_css."\n	<!-- Buttons Colors END -->\n" ;
+	if ( is_product() ) {
+		$molswc_buttons_colors_css = "
+		<style type='text/css'>
+			/* In Stock */
+			.table.variations .tbody .value.td div.attrib.var_stock_instock { border-color: ".strip_tags(get_option( 'molswc_instock_border_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_instock .inner-attrib { color: ".strip_tags(get_option( 'molswc_instock_label_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_instock:hover { border-color: ".strip_tags(get_option( 'molswc_instock_border_hover_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_instock:hover .inner-attrib { color: ".strip_tags(get_option( 'molswc_instock_label_hover_color' ))." !important; }
+			/* Back Order */
+			.table.variations .tbody .value.td div.attrib.var_stock_backorder { border-color: ".strip_tags(get_option( 'molswc_backorder_border_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_backorder .inner-attrib { color: ".strip_tags(get_option( 'molswc_backorder_label_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover { border-color: ".strip_tags(get_option( 'molswc_backorder_border_hover_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_backorder:hover .inner-attrib { color: ".strip_tags(get_option( 'molswc_backorder_label_hover_color' ))." !important; }
+			/* Pre Order */
+			.table.variations .tbody .value.td div.attrib.var_stock_preorder { border-color: ".strip_tags(get_option( 'molswc_preorder_border_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_preorder .inner-attrib { color: ".strip_tags(get_option( 'molswc_preorder_label_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_preorder:hover { border-color: ".strip_tags(get_option( 'molswc_preorder_border_hover_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_preorder:hover .inner-attrib { color: ".strip_tags(get_option( 'molswc_preorder_label_hover_color' ))." !important; }
+			/* Not Available */
+			.table.variations .tbody .value.td div.attrib.var_stock_not_available { border-color: ".strip_tags(get_option( 'molswc_notavailable_border_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_not_available .inner-attrib { color: ".strip_tags(get_option( 'molswc_notavailable_label_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_not_available:hover { border-color: ".strip_tags(get_option( 'molswc_notavailable_border_hover_color' ))." !important; }
+			.table.variations .tbody .value.td div.attrib.var_stock_not_available:hover .inner-attrib { color: ".strip_tags(get_option( 'molswc_notavailable_label_hover_color' ))." !important; }
+		</style>
+		";
+		echo "\n	<!-- Buttons Colors START -->".$molswc_buttons_colors_css."	<!-- Buttons Colors END -->\n" ;
+	}
 }
-// Output popup background colors styles as defined in Product Edit screen
-add_action( 'wp_head', 'molswc_styles_for_product_backgrounds', 99999 );
-function molswc_styles_for_product_backgrounds() {
+// Output custom product colors styles as defined in Product Edit screen
+add_action( 'wp_head', 'molswc_styles_for_custom_product_colors', 99999 );
+function molswc_styles_for_custom_product_colors() {
 	// Get the main query first
 	global $wp_query;
 	// Pluck the list of all IDs of all displayed products on the current page in a variable
 	$displayed_ids = wp_list_pluck( $wp_query->posts, "ID" );
-	// start outputting the <style> block
-	echo '	<!-- Pop up backgrounds colors START -->
-	<style type="text/css">
-	'; 
-	// now take each displayed product one by one
+	// Start outputting the <style> block
+	echo '
+	<!-- Pop up custom product colors START -->
+	<style type="text/css">'; 
+	// Now take each displayed product one by one
 	foreach ($displayed_ids as $displayed_id) {
 		// first let's see if custom colors is selected for the current product; skip everything otherwise, it's more efficient this way ;-)  
 		$molswc_use_custom_button_colors_value = get_post_meta( $displayed_id, 'molswc_use_custom_button_colors' )[0];
-		// then, based on the above, decide if we should extract and use the custom background color
+		// then, based on the above, decide if we should extract and use the custom colors - for each type of stock type and each style individually
 		if ( $molswc_use_custom_button_colors_value == 1 ) {
-			// now check if custom background color is defined
-			if ( get_post_meta ($displayed_id, 'molswc_product_background_color')[0] ) { 
-				// if that custom background color is defined just get it from post_meta and store it in a variable
-				$curr_prod_background_color = get_post_meta ($displayed_id, 'molswc_product_background_color')[0];
-			} else {
-				// otherwise fall back to default background color - and store that in a variable
-				$curr_prod_background_color = strip_tags(get_option( 'molswc_product_background_color' ));
-			}
+			if ( get_post_meta ($displayed_id, 'molswc_product_background_color')[0] ) { $curr_prod_background_color = get_post_meta ($displayed_id, 'molswc_product_background_color')[0]; } else { $curr_prod_background_color = strip_tags(get_option( 'molswc_product_background_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_instock_border_color')[0] ) { $molswc_instock_border_color = get_post_meta ($displayed_id, 'molswc_instock_border_color')[0]; } else { $molswc_instock_border_color = strip_tags(get_option( 'molswc_instock_border_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_instock_label_color')[0] ) { $molswc_instock_label_color = get_post_meta ($displayed_id, 'molswc_instock_label_color')[0]; } else { $molswc_instock_label_color = strip_tags(get_option( 'molswc_instock_label_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_instock_border_hover_color')[0] ) { $molswc_instock_border_hover_color = get_post_meta ($displayed_id, 'molswc_instock_border_hover_color')[0]; } else { $molswc_instock_border_hover_color = strip_tags(get_option( 'molswc_instock_border_hover_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_instock_label_hover_color')[0] ) { $molswc_instock_label_hover_color = get_post_meta ($displayed_id, 'molswc_instock_label_hover_color')[0]; } else { $molswc_instock_label_hover_color = strip_tags(get_option( 'molswc_instock_label_hover_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_backorder_border_color')[0] ) { $molswc_backorder_border_color = get_post_meta ($displayed_id, 'molswc_backorder_border_color')[0]; } else { $molswc_backorder_border_color = strip_tags(get_option( 'molswc_backorder_border_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_backorder_label_color')[0] ) { $molswc_backorder_label_color = get_post_meta ($displayed_id, 'molswc_backorder_label_color')[0]; } else { $molswc_backorder_label_color = strip_tags(get_option( 'molswc_backorder_label_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_backorder_border_hover_color')[0] ) { $molswc_backorder_border_hover_color = get_post_meta ($displayed_id, 'molswc_backorder_border_hover_color')[0]; } else { $molswc_backorder_border_hover_color = strip_tags(get_option( 'molswc_backorder_border_hover_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_backorder_label_hover_color')[0] ) { $molswc_backorder_label_hover_color = get_post_meta ($displayed_id, 'molswc_backorder_label_hover_color')[0]; } else { $molswc_backorder_label_hover_color = strip_tags(get_option( 'molswc_backorder_label_hover_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_preorder_border_color')[0] ) { $molswc_preorder_border_color = get_post_meta ($displayed_id, 'molswc_preorder_border_color')[0]; } else { $molswc_preorder_border_color = strip_tags(get_option( 'molswc_preorder_border_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_preorder_label_color')[0] ) { $molswc_preorder_label_color = get_post_meta ($displayed_id, 'molswc_preorder_label_color')[0]; } else { $molswc_preorder_label_color = strip_tags(get_option( 'molswc_preorder_label_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_preorder_border_hover_color')[0] ) { $molswc_preorder_border_hover_color = get_post_meta ($displayed_id, 'molswc_preorder_border_hover_color')[0]; } else { $molswc_preorder_border_hover_color = strip_tags(get_option( 'molswc_preorder_border_hover_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_preorder_label_hover_color')[0] ) { $molswc_preorder_label_hover_color = get_post_meta ($displayed_id, 'molswc_preorder_label_hover_color')[0]; } else { $molswc_preorder_label_hover_color = strip_tags(get_option( 'molswc_preorder_label_hover_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_notavailable_border_color')[0] ) { $molswc_notavailable_border_color = get_post_meta ($displayed_id, 'molswc_notavailable_border_color')[0]; } else { $molswc_notavailable_border_color = strip_tags(get_option( 'molswc_notavailable_border_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_notavailable_label_color')[0] ) { $molswc_notavailable_label_color = get_post_meta ($displayed_id, 'molswc_notavailable_label_color')[0]; } else { $molswc_notavailable_label_color = strip_tags(get_option( 'molswc_notavailable_label_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_notavailable_border_hover_color')[0] ) { $molswc_notavailable_border_hover_color = get_post_meta ($displayed_id, 'molswc_notavailable_border_hover_color')[0]; } else { $molswc_notavailable_border_hover_color = strip_tags(get_option( 'molswc_notavailable_border_hover_color' )); } 
+			if ( get_post_meta ($displayed_id, 'molswc_notavailable_label_hover_color')[0] ) { $molswc_notavailable_label_hover_color = get_post_meta ($displayed_id, 'molswc_notavailable_label_hover_color')[0]; } else { $molswc_notavailable_label_hover_color = strip_tags(get_option( 'molswc_notavailable_label_hover_color' )); }
 		} else {
-			// if custom color option is not set, again fall back to default background color - and store that in a variable
+			// if the custom colors checkbox is not checked fall back on the defaults
 			$curr_prod_background_color = strip_tags(get_option( 'molswc_product_background_color' ));
+			$molswc_instock_border_color = strip_tags(get_option( 'molswc_instock_border_color' ));
+			$molswc_instock_label_color = strip_tags(get_option( 'molswc_instock_label_color' ));
+			$molswc_instock_border_hover_color = strip_tags(get_option( 'molswc_instock_border_hover_color' ));
+			$molswc_instock_label_hover_color = strip_tags(get_option( 'molswc_instock_label_hover_color' ));
+			$molswc_backorder_border_color = strip_tags(get_option( 'molswc_backorder_border_color' ));
+			$molswc_backorder_label_color = strip_tags(get_option( 'molswc_backorder_label_color' ));
+			$molswc_backorder_border_hover_color = strip_tags(get_option( 'molswc_backorder_border_hover_color' ));
+			$molswc_backorder_label_hover_color = strip_tags(get_option( 'molswc_backorder_label_hover_color' ));
+			$molswc_preorder_border_color = strip_tags(get_option( 'molswc_preorder_border_color' ));
+			$molswc_preorder_label_color = strip_tags(get_option( 'molswc_preorder_label_color' ));
+			$molswc_preorder_border_hover_color = strip_tags(get_option( 'molswc_preorder_border_hover_color' ));
+			$molswc_preorder_label_hover_color = strip_tags(get_option( 'molswc_preorder_label_hover_color' ));
+			$molswc_notavailable_border_color = strip_tags(get_option( 'molswc_notavailable_border_color' ));
+			$molswc_notavailable_label_color = strip_tags(get_option( 'molswc_notavailable_label_color' ));
+			$molswc_notavailable_border_hover_color = strip_tags(get_option( 'molswc_notavailable_border_hover_color' ));
+			$molswc_notavailable_label_hover_color = strip_tags(get_option( 'molswc_notavailable_label_hover_color' ));
 		}
-		// finally echo the CSS style for the current product background color based on the stored variable and current product ID
-		echo '.xoo-qv-container .xoo-qv-main > div.product.post-'.$displayed_id.'.type-product { 
-			background-color: '.$curr_prod_background_color.'; 
-		}
-		';
+		// finally echo the CSS styles for the current product custom colors based on the stored variables and current product ID
+		echo "
+		/* Product: ".$displayed_id." */
+		/* The background */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product { background-color: ".$curr_prod_background_color."; }
+		/* In Stock */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock { border-color: ".$molswc_instock_border_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock .inner-attrib { color: ".$molswc_instock_label_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock:hover { border-color: ".$molswc_instock_border_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock:hover .inner-attrib { color: ".$molswc_instock_label_hover_color." !important; }
+		/* Back Order */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder { border-color: ".$molswc_backorder_border_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder .inner-attrib { color: ".$molswc_backorder_label_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder:hover { border-color: ".$molswc_backorder_border_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder:hover .inner-attrib { color: ".$molswc_backorder_label_hover_color." !important; }
+		/* Pre Order */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder { border-color: ".$molswc_preorder_border_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder .inner-attrib { color: ".$molswc_preorder_label_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder:hover { border-color: ".$molswc_preorder_border_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder:hover .inner-attrib { color: ".$molswc_preorder_label_hover_color." !important; }
+		/* Not Available */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available { border-color: ".$molswc_notavailable_border_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available .inner-attrib { color: ".$molswc_notavailable_label_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available:hover { border-color: ".$molswc_notavailable_border_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available:hover .inner-attrib { color: ".$molswc_notavailable_label_hover_color." !important; }
+		";
 	}
 	// in the end just close the </style> block
 	echo '</style>
-	<!-- Pop up backgrounds colors END -->
+	<!-- Pop up custom product colors END -->
 	';
 }
 
