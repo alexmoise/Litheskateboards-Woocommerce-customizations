@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.2.1
+ * Version: 1.2.3
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -48,8 +48,20 @@ function molswc_register_settings() {
 		'molswc_true_stock_level_admitted_in_filters',
 		'molswc_delete_options_uninstall',
 		'molswc_product_background_color',
+		'molswc_selected_button_label_color',
+		'molswc_selected_button_border_color',
+		'molswc_payment_button_title_color',
+		'molswc_payment_button_text_color',
+		'molswc_payment_button_border_color',
+		'molswc_clear_button_label_color',
+		'molswc_clear_button_border_color',
+		'molswc_learnmore_button_label_color',
+		'molswc_learnmore_button_border_color',
+		'molswc_product_name_color',
+		'molswc_column_title_color',
+		'molswc_column_divider_color',
 	);
-	/// Then register each of them
+	// Then register each of them
 	foreach ( $molswc_settings_array as $molswc_setting ) {
 		register_setting( 'molswc-settings-group', $molswc_setting );
 	}
@@ -158,8 +170,8 @@ function molswc_admin_options_page_callback() { ?>
 	
 	<?php submit_button(); ?>
 	
-		<h2>Buttons colors based on True Stock Status</h2>
-	<p>Fill in the colors for the buttons. Use HEX value (like ) or "transparent". Things like "blue" or "green" may also work.</p>
+	<h2>Buttons colors based on True Stock Status</h2>
+	<p>Fill in the colors for the buttons. Use HEX value (like "#fdfdfd") or "transparent". Things like "blue" or "green" may also work.</p>
 		
 		<table class="form-table">
 	
@@ -247,6 +259,98 @@ function molswc_admin_options_page_callback() { ?>
 			<td> 
 				<span style="display: block;">Hover border color:</span>
 				<input name="molswc_notavailable_border_hover_color" type="text" id="molswc_notavailable_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_border_hover_color" value="<?php echo strip_tags(get_option( 'molswc_notavailable_border_hover_color' )); ?>" class="regular-text">
+			</td>
+		</tr>
+		
+		<tr valign="top">
+			<th scope="row">Selected button colors: </th>
+			<td> 
+				<span style="display: block;">Label color:</span>
+				<input name="molswc_selected_button_label_color" type="text" id="molswc_selected_button_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_selected_button_label_color" value="<?php echo strip_tags(get_option( 'molswc_selected_button_label_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Border color:</span>
+				<input name="molswc_selected_button_border_color" type="text" id="molswc_selected_button_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_selected_button_border_color" value="<?php echo strip_tags(get_option( 'molswc_selected_button_border_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+		</tr>
+
+		<tr valign="top">
+			<th scope="row">Payment button colors: </th>
+			<td> 
+				<span style="display: block;">Title color:</span>
+				<input name="molswc_payment_button_title_color" type="text" id="molswc_payment_button_title_color" style="display: inline-block; width: auto;" aria-describedby="molswc_payment_button_title_color" value="<?php echo strip_tags(get_option( 'molswc_payment_button_title_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Text color:</span>
+				<input name="molswc_payment_button_text_color" type="text" id="molswc_payment_button_text_color" style="display: inline-block; width: auto;" aria-describedby="molswc_payment_button_text_color" value="<?php echo strip_tags(get_option( 'molswc_payment_button_text_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Border color:</span>
+				<input name="molswc_payment_button_border_color" type="text" id="molswc_payment_button_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_payment_button_border_color" value="<?php echo strip_tags(get_option( 'molswc_payment_button_border_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+		</tr>
+
+		<tr valign="top">
+			<th scope="row">Clear little button colors: </th>
+			<td> 
+				<span style="display: block;">Label color:</span>
+				<input name="molswc_clear_button_label_color" type="text" id="molswc_clear_button_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_clear_button_label_color" value="<?php echo strip_tags(get_option( 'molswc_clear_button_label_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Border color:</span>
+				<input name="molswc_clear_button_border_color" type="text" id="molswc_clear_button_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_clear_button_border_color" value="<?php echo strip_tags(get_option( 'molswc_clear_button_border_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+		</tr>
+
+		<tr valign="top">
+			<th scope="row">Learn More button colors: </th>
+			<td> 
+				<span style="display: block;">Label color:</span>
+				<input name="molswc_learnmore_button_label_color" type="text" id="molswc_learnmore_button_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_learnmore_button_label_color" value="<?php echo strip_tags(get_option( 'molswc_learnmore_button_label_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Border color:</span>
+				<input name="molswc_learnmore_button_border_color" type="text" id="molswc_learnmore_button_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_learnmore_button_border_color" value="<?php echo strip_tags(get_option( 'molswc_learnmore_button_border_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+		</tr>
+		
+		<tr valign="top">
+			<th scope="row">Extra pop up colors: </th>
+			<td> 
+				<span style="display: block;">Product name color:</span>
+				<input name="molswc_product_name_color" type="text" id="molswc_product_name_color" style="display: inline-block; width: auto;" aria-describedby="molswc_product_name_color" value="<?php echo strip_tags(get_option( 'molswc_product_name_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Column title color:</span>
+				<input name="molswc_column_title_color" type="text" id="molswc_column_title_color" style="display: inline-block; width: auto;" aria-describedby="molswc_column_title_color" value="<?php echo strip_tags(get_option( 'molswc_column_title_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Column divider color:</span>
+				<input name="molswc_column_divider_color" type="text" id="molswc_column_divider_color" style="display: inline-block; width: auto;" aria-describedby="molswc_column_divider_color" value="<?php echo strip_tags(get_option( 'molswc_column_divider_color' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
 			</td>
 		</tr>
 

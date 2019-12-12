@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.2.2
+ * Version: 1.2.3
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -387,7 +387,7 @@ ul.products {
 	box-shadow: 0 0 1px 0px #cbcbcb inset, 0 0 1px 0px #cbcbcb;
 }
 .xoo-qv-container h1.product_title {
-	color: white;
+	/* color: white; */
 }
 .xoo-qv-container .price del .amount {
 	text-decoration: line-through !important;
@@ -426,7 +426,7 @@ ul.products {
 }
 .xoo-qv-container .xoo-qv-main .xoo-qv-plink {
 	background-color: transparent;
-    border: 1px solid #cbcbcb;
+    border: 1px solid;
     border-radius: 4px;
     padding: 0;
     display: block;
@@ -482,12 +482,12 @@ ul.products {
 }
 /* The Clear Variations link made button, affects both popup and product page */
 a.reset_variations {
-    color: #cbcbcb;
+    /* color: #cbcbcb; */
     font-size: 14px;
     bottom: -15px;
     right: 12px;
     padding: 10px;
-    border: 1px solid #444;
+    border: 1px solid;
     border-radius: 5px;
     line-height: 1px;
 }
@@ -510,18 +510,18 @@ a.reset_variations {
     font-size: 1.2em;
 }
 .table.variations .tbody .tr .label.td label {
-	color: #42d62c;
+	/* color: #42d62c; */
 	font-size: 16px !important;
 }
 .table.variations span.attrib-description {
 	white-space: normal;
 	padding: 0 5px !important;
-	color: #cbcbcb;
+	/* color: #cbcbcb; */
 	font-size: 14px;
 }
 .table.variations .tbody .tr:last-child .value.td > div > label {
 	font-size: 16px !important;
-	color: #42d62c;
+	/* color: #42d62c; */
 }
 .table.variations .tbody .tr:last-child .value.td > div {
 	padding: 0 4px;
@@ -548,11 +548,10 @@ a.reset_variations {
 }
 /* style checked radio buttons */
 #table-variations .radio-checked {
-	border: 1px solid #42d62c !important;
-	color: #42d62c !important;
+	border: 1px solid;
 }
 #table-variations .radio-checked label.attrib .inner-attrib {
-	color: #42d62c !important;
+	/* color: #42d62c; */
 }
 /* Hide Term Description when there's only one Term available */
 .hide-because-is-single {
@@ -590,7 +589,7 @@ body.single-product .container .product_title.entry-title {
 
 /* == MAKE BUTTONS - ALL == */
 .table.variations .tbody .value.td > div.tax {
-	border-color: white !important;
+	/* border-color: white !important; */
 }
 .table.variations .tbody .value.td > div.tax, 
 .table.variations .tbody .value-buttons.td > div.attrib {
@@ -630,7 +629,7 @@ body.single-product .container .product_title.entry-title {
     padding: 0;
     margin: 5px 0;
     border: 0;
-	border-bottom: 1px solid #606060;
+	border-bottom: 1px solid;
 }
 .table.variations .tbody .value.td .each-attrib, 
 .table.variations .tbody .value.td .each-attrib:hover {
@@ -651,7 +650,7 @@ body.single-product .container .product_title.entry-title {
 	width: 100%;
 }
 .table.variations .tbody .value.td .each-attrib:not(:first-child) {
-    border-left: 1px solid #606060;
+    border-left: 1px solid;
 }
 .table.variations .tbody .tr:not(:last-child) > .value.td {
   display: flex;
@@ -662,7 +661,7 @@ body.single-product .container .product_title.entry-title {
 .table.variations span.attribPrice, 
 .table.variations span.attribStockStatus {
   display: block;
-  color: #cbcbcb;
+  /* color: #cbcbcb; */
 }
 .table.variations span.attribPreorderStatus {
   display: block;

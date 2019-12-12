@@ -1,7 +1,7 @@
 <?php
 /**
  * Uninstall of Litheskateboards Woocommerce customizations plugin.
- * Version: 1.2.1
+ * Version: 1.2.3
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -51,6 +51,18 @@ if ( get_option( 'molswc_delete_options_uninstall' ) ) {
 		'molswc_true_stock_level_admitted_in_filters',
 		'molswc_delete_options_uninstall',
 		'molswc_product_background_color',
+		'molswc_selected_button_label_color',
+		'molswc_selected_button_border_color',
+		'molswc_payment_button_title_color',
+		'molswc_payment_button_text_color',
+		'molswc_payment_button_border_color',
+		'molswc_clear_button_label_color',
+		'molswc_clear_button_border_color',
+		'molswc_learnmore_button_label_color',
+		'molswc_learnmore_button_border_color',
+		'molswc_product_name_color',
+		'molswc_column_title_color',
+		'molswc_column_divider_color',
 	);
 	// And finally delete each one
 	foreach ( $molswc_settings_array as $molswc_setting ) {

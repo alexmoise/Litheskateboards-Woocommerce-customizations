@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.2.2
+ * Version: 1.2.3
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -114,7 +114,9 @@ function molswc_custom_boards_query( $q ) {
     );
     $q->set( 'tax_query', $tax_query );
 }
-// Output buttons colors styles as defined in Options Admin page
+
+// === Define and use custom dynamic colors in product page and product popup
+// Output buttons colors styles *in Single Product Page* as defined in Plugin Options Admin page
 add_action( 'wp_head', 'molswc_styles_for_buttons_colors', 99999 );
 function molswc_styles_for_buttons_colors() {
 	if ( is_product() ) {
@@ -145,7 +147,259 @@ function molswc_styles_for_buttons_colors() {
 		echo "\n	<!-- Buttons Colors START -->".$molswc_buttons_colors_css."	<!-- Buttons Colors END -->\n" ;
 	}
 }
-// Output custom product colors styles as defined in Product Edit screen
+// Register a product meta-box for defining custom buttons colors at product level
+add_action( 'add_meta_boxes', 'my_custom_field_checkboxes' );
+function my_custom_field_checkboxes() {
+    add_meta_box(
+        'molswc_custom_buttons_colors',          // this is HTML id of the box on edit screen
+        'Custom Buttons colors',    // title of the box
+        'molswc_custom_buttons_colors_content',   // function to be called to display the checkboxes, see the function below
+        'product',        // on which edit screen the box should appear
+        'normal',      // part of page where the box should appear
+        'default'      // priority of the box
+    );
+}
+// Display the previously registered metabox in Product Edit Screen
+function molswc_custom_buttons_colors_content() {
+    // nonce field for security check later on save
+    wp_nonce_field( plugin_basename( __FILE__ ), 'mTdW34lFdE65' );
+	// get the post and the current editing product ID
+	global $post;
+	$curr_prod_id = $post->ID;
+	// get the Use Custom Colors condition out of the database
+	$molswc_use_custom_button_colors_value = get_post_meta( $curr_prod_id, 'molswc_use_custom_button_colors' )[0];
+	if ( $molswc_use_custom_button_colors_value == 1 ) { $molswc_use_custom_button_colors_checked = 'checked'; } else { $molswc_use_custom_button_colors_checked = ''; }
+	// output the colors definig form (almost the same as in main/default plugin settings screen)
+    echo '
+	<p>
+	<strong>How this works:</strong></br>
+	Set the preferred colors in the boxes below. If colors are not set then the ones defined in the main plugin settings will be used and displayed as placeholders.</br>
+	Check the "Use custom colors ..." option to use the colors defined below; otherwise the default colors will be used; still the values defined here will be preserved even if option is un-checked, maybe for later use.
+	</p>
+	<table class="form-table">
+		<tr valign="top">
+			<th scope="row">Use custom colors in this product: </th>
+			<td colspan="4"> 
+				<input type="checkbox" name="molswc_use_custom_button_colors" value="1" '.$molswc_use_custom_button_colors_checked.'/>
+				<span>(check this to use colors below; otherwise defaults will be applied)</span>
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">Background color: </th>
+			<td colspan="4"> 
+				<input name="molswc_product_background_color" type="text" id="molswc_product_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_product_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_product_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_product_background_color" )).'" class="regular-text">
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">IN STOCK button colors: </th>
+			<td> 
+				<span>Normal color:</span>
+				<input name="molswc_instock_label_color" type="text" id="molswc_instock_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_label_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover color:</span>
+				<input name="molswc_instock_label_hover_color" type="text" id="molswc_instock_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_label_hover_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal border color:</span>
+				<input name="molswc_instock_border_color" type="text" id="molswc_instock_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_border_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover border color:</span>
+				<input name="molswc_instock_border_hover_color" type="text" id="molswc_instock_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_border_hover_color" )).'" class="regular-text">
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">BACK ORDER button colors: </th>
+			<td> 
+				<span>Normal color:</span>
+				<input name="molswc_backorder_label_color" type="text" id="molswc_backorder_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_label_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover color:</span>
+				<input name="molswc_backorder_label_hover_color" type="text" id="molswc_backorder_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_label_hover_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal border color:</span>
+				<input name="molswc_backorder_border_color" type="text" id="molswc_backorder_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_border_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover border color:</span>
+				<input name="molswc_backorder_border_hover_color" type="text" id="molswc_backorder_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_border_hover_color" )).'" class="regular-text">
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">PRE ORDER button colors: </th>
+			<td> 
+				<span>Normal color:</span>
+				<input name="molswc_preorder_label_color" type="text" id="molswc_preorder_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_label_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover color:</span>
+				<input name="molswc_preorder_label_hover_color" type="text" id="molswc_preorder_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_label_hover_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal border color:</span>
+				<input name="molswc_preorder_border_color" type="text" id="molswc_preorder_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_border_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover border color:</span>
+				<input name="molswc_preorder_border_hover_color" type="text" id="molswc_preorder_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_border_hover_color" )).'" class="regular-text">
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">N/A button colors: </th>
+			<td> 
+				<span>Normal color:</span>
+				<input name="molswc_notavailable_label_color" type="text" id="molswc_notavailable_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_label_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover color:</span>
+				<input name="molswc_notavailable_label_hover_color" type="text" id="molswc_notavailable_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_label_hover_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal border color:</span>
+				<input name="molswc_notavailable_border_color" type="text" id="molswc_notavailable_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_border_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover border color:</span>
+				<input name="molswc_notavailable_border_hover_color" type="text" id="molswc_notavailable_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_border_hover_color" )).'" class="regular-text">
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">Selected button colors: </th>
+			<td> 
+				<span style="display: block;">Label color:</span>
+				<input name="molswc_selected_button_label_color" type="text" id="molswc_selected_button_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_selected_button_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_selected_button_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_selected_button_label_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Border color:</span>
+				<input name="molswc_selected_button_border_color" type="text" id="molswc_selected_button_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_selected_button_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_selected_button_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_selected_button_border_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">Payment button colors: </th>
+			<td> 
+				<span style="display: block;">Title color:</span>
+				<input name="molswc_payment_button_title_color" type="text" id="molswc_payment_button_title_color" style="display: inline-block; width: auto;" aria-describedby="molswc_payment_button_title_color" value="'.get_post_meta( $curr_prod_id, "molswc_payment_button_title_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_payment_button_title_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Text color:</span>
+				<input name="molswc_payment_button_text_color" type="text" id="molswc_payment_button_text_color" style="display: inline-block; width: auto;" aria-describedby="molswc_payment_button_text_color" value="'.get_post_meta( $curr_prod_id, "molswc_payment_button_text_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_payment_button_text_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Border color:</span>
+				<input name="molswc_payment_button_border_color" type="text" id="molswc_payment_button_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_payment_button_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_payment_button_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_payment_button_border_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">Clear little button colors: </th>
+			<td> 
+				<span style="display: block;">Label color:</span>
+				<input name="molswc_clear_button_label_color" type="text" id="molswc_clear_button_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_clear_button_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_clear_button_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_clear_button_label_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Border color:</span>
+				<input name="molswc_clear_button_border_color" type="text" id="molswc_clear_button_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_clear_button_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_clear_button_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_clear_button_border_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">Learn More button colors: </th>
+			<td> 
+				<span style="display: block;">Label color:</span>
+				<input name="molswc_learnmore_button_label_color" type="text" id="molswc_learnmore_button_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_learnmore_button_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_learnmore_button_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_learnmore_button_label_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Border color:</span>
+				<input name="molswc_learnmore_button_border_color" type="text" id="molswc_learnmore_button_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_learnmore_button_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_learnmore_button_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_learnmore_button_border_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">Extra pop up colors: </th>
+			<td> 
+				<span style="display: block;">Product name color:</span>
+				<input name="molswc_product_name_color" type="text" id="molswc_product_name_color" style="display: inline-block; width: auto;" aria-describedby="molswc_product_name_color" value="'.get_post_meta( $curr_prod_id, "molswc_product_name_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_product_name_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Column title color:</span>
+				<input name="molswc_column_title_color" type="text" id="molswc_column_title_color" style="display: inline-block; width: auto;" aria-describedby="molswc_column_title_color" value="'.get_post_meta( $curr_prod_id, "molswc_column_title_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_column_title_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Column divider color:</span>
+				<input name="molswc_column_divider_color" type="text" id="molswc_column_divider_color" style="display: inline-block; width: auto;" aria-describedby="molswc_column_divider_color" value="'.get_post_meta( $curr_prod_id, "molswc_column_divider_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_column_divider_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+		</tr>
+	</table>
+	';
+}
+// Save metabox data at product update
+add_action( 'woocommerce_update_product', 'molswc_custom_field_data' );
+function molswc_custom_field_data($curr_prod_id) {
+    // check some conditions before just saving the fields
+	if ( !current_user_can('manage_woocommerce') ) { return; }
+    if ( !wp_verify_nonce( $_POST['mTdW34lFdE65'], plugin_basename( __FILE__ ) ) ) { return; }
+	// first store checkbox state
+	if ( isset( $_POST['molswc_use_custom_button_colors'] ) ) {
+        update_post_meta( $curr_prod_id, 'molswc_use_custom_button_colors', 1 );
+    } else {
+        update_post_meta( $curr_prod_id, 'molswc_use_custom_button_colors', 0 );
+	}
+    // now store colors data in custom post meta based on field values 
+    if ( isset( $_POST['molswc_product_background_color'] ) ) {  update_post_meta( $curr_prod_id, 'molswc_product_background_color', strip_tags($_POST['molswc_product_background_color']) ); }
+	if ( isset( $_POST['molswc_instock_label_color'] ) ) {  update_post_meta( $curr_prod_id, 'molswc_instock_label_color', strip_tags($_POST['molswc_instock_label_color']) ); }
+	if ( isset( $_POST['molswc_instock_label_hover_color'] ) ) {  update_post_meta( $curr_prod_id, 'molswc_instock_label_hover_color', strip_tags($_POST['molswc_instock_label_hover_color']) ); }
+	if ( isset( $_POST['molswc_instock_border_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_instock_border_color', strip_tags($_POST['molswc_instock_border_color']) ); }
+	if ( isset( $_POST['molswc_instock_border_hover_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_instock_border_hover_color', strip_tags($_POST['molswc_instock_border_hover_color']) ); }
+	if ( isset( $_POST['molswc_backorder_label_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_backorder_label_color', strip_tags($_POST['molswc_backorder_label_color']) ); }
+	if ( isset( $_POST['molswc_backorder_label_hover_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_backorder_label_hover_color', strip_tags($_POST['molswc_backorder_label_hover_color']) ); }
+	if ( isset( $_POST['molswc_backorder_border_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_backorder_border_color', strip_tags($_POST['molswc_backorder_border_color']) ); }
+	if ( isset( $_POST['molswc_backorder_border_hover_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_backorder_border_hover_color', strip_tags($_POST['molswc_backorder_border_hover_color']) ); }
+	if ( isset( $_POST['molswc_preorder_label_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_preorder_label_color', strip_tags($_POST['molswc_preorder_label_color']) ); }
+	if ( isset( $_POST['molswc_preorder_label_hover_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_preorder_label_hover_color', strip_tags($_POST['molswc_preorder_label_hover_color']) ); }
+	if ( isset( $_POST['molswc_preorder_border_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_preorder_border_color', strip_tags($_POST['molswc_preorder_border_color']) ); }
+	if ( isset( $_POST['molswc_preorder_border_hover_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_preorder_border_hover_color', strip_tags($_POST['molswc_preorder_border_hover_color']) ); }
+	if ( isset( $_POST['molswc_notavailable_label_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_notavailable_label_color', strip_tags($_POST['molswc_notavailable_label_color']) ); }
+	if ( isset( $_POST['molswc_notavailable_label_hover_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_notavailable_label_hover_color', strip_tags($_POST['molswc_notavailable_label_hover_color']) ); }
+	if ( isset( $_POST['molswc_notavailable_border_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_notavailable_border_color', strip_tags($_POST['molswc_notavailable_border_color']) ); }
+	if ( isset( $_POST['molswc_notavailable_border_hover_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_notavailable_border_hover_color', strip_tags($_POST['molswc_notavailable_border_hover_color']) ); }
+	if ( isset( $_POST['molswc_selected_button_label_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_selected_button_label_color', strip_tags($_POST['molswc_selected_button_label_color']) ); }
+	if ( isset( $_POST['molswc_selected_button_border_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_selected_button_border_color', strip_tags($_POST['molswc_selected_button_border_color']) ); }
+	if ( isset( $_POST['molswc_payment_button_title_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_payment_button_title_color', strip_tags($_POST['molswc_payment_button_title_color']) ); }
+	if ( isset( $_POST['molswc_payment_button_text_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_payment_button_text_color', strip_tags($_POST['molswc_payment_button_text_color']) ); }
+	if ( isset( $_POST['molswc_payment_button_border_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_payment_button_border_color', strip_tags($_POST['molswc_payment_button_border_color']) ); }
+	if ( isset( $_POST['molswc_clear_button_label_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_clear_button_label_color', strip_tags($_POST['molswc_clear_button_label_color']) ); }
+	if ( isset( $_POST['molswc_clear_button_border_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_clear_button_border_color', strip_tags($_POST['molswc_clear_button_border_color']) ); }
+	if ( isset( $_POST['molswc_learnmore_button_label_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_learnmore_button_label_color', strip_tags($_POST['molswc_learnmore_button_label_color']) ); }
+	if ( isset( $_POST['molswc_learnmore_button_border_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_learnmore_button_border_color', strip_tags($_POST['molswc_learnmore_button_border_color']) ); }
+	if ( isset( $_POST['molswc_product_name_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_product_name_color', strip_tags($_POST['molswc_product_name_color']) ); }
+	if ( isset( $_POST['molswc_column_title_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_column_title_color', strip_tags($_POST['molswc_column_title_color']) ); }
+	if ( isset( $_POST['molswc_column_divider_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_column_divider_color', strip_tags($_POST['molswc_column_divider_color']) ); }
+}
+// Output custom product colors styles as defined in Product Edit screen *or* Plugin Options page, depending on the individual product option
 add_action( 'wp_head', 'molswc_styles_for_custom_product_colors', 99999 );
 function molswc_styles_for_custom_product_colors() {
 	// Get the main query first
@@ -179,6 +433,18 @@ function molswc_styles_for_custom_product_colors() {
 			if ( get_post_meta ($displayed_id, 'molswc_notavailable_label_color')[0] ) { $molswc_notavailable_label_color = get_post_meta ($displayed_id, 'molswc_notavailable_label_color')[0]; } else { $molswc_notavailable_label_color = strip_tags(get_option( 'molswc_notavailable_label_color' )); } 
 			if ( get_post_meta ($displayed_id, 'molswc_notavailable_border_hover_color')[0] ) { $molswc_notavailable_border_hover_color = get_post_meta ($displayed_id, 'molswc_notavailable_border_hover_color')[0]; } else { $molswc_notavailable_border_hover_color = strip_tags(get_option( 'molswc_notavailable_border_hover_color' )); } 
 			if ( get_post_meta ($displayed_id, 'molswc_notavailable_label_hover_color')[0] ) { $molswc_notavailable_label_hover_color = get_post_meta ($displayed_id, 'molswc_notavailable_label_hover_color')[0]; } else { $molswc_notavailable_label_hover_color = strip_tags(get_option( 'molswc_notavailable_label_hover_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_selected_button_label_color')[0] ) { $molswc_selected_button_label_color = get_post_meta ($displayed_id, 'molswc_selected_button_label_color')[0]; } else { $molswc_selected_button_label_color = strip_tags(get_option( 'molswc_selected_button_label_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_selected_button_border_color')[0] ) { $molswc_selected_button_border_color = get_post_meta ($displayed_id, 'molswc_selected_button_border_color')[0]; } else { $molswc_selected_button_border_color = strip_tags(get_option( 'molswc_selected_button_border_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_payment_button_title_color')[0] ) { $molswc_payment_button_title_color = get_post_meta ($displayed_id, 'molswc_payment_button_title_color')[0]; } else { $molswc_payment_button_title_color = strip_tags(get_option( 'molswc_payment_button_title_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_payment_button_text_color')[0] ) { $molswc_payment_button_text_color = get_post_meta ($displayed_id, 'molswc_payment_button_text_color')[0]; } else { $molswc_payment_button_text_color = strip_tags(get_option( 'molswc_payment_button_text_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_payment_button_border_color')[0] ) { $molswc_payment_button_border_color = get_post_meta ($displayed_id, 'molswc_payment_button_border_color')[0]; } else { $molswc_payment_button_border_color = strip_tags(get_option( 'molswc_payment_button_border_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_clear_button_label_color')[0] ) { $molswc_clear_button_label_color = get_post_meta ($displayed_id, 'molswc_clear_button_label_color')[0]; } else { $molswc_clear_button_label_color = strip_tags(get_option( 'molswc_clear_button_label_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_clear_button_border_color')[0] ) { $molswc_clear_button_border_color = get_post_meta ($displayed_id, 'molswc_clear_button_border_color')[0]; } else { $molswc_clear_button_border_color = strip_tags(get_option( 'molswc_clear_button_border_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_learnmore_button_label_color')[0] ) { $molswc_learnmore_button_label_color = get_post_meta ($displayed_id, 'molswc_learnmore_button_label_color')[0]; } else { $molswc_learnmore_button_label_color = strip_tags(get_option( 'molswc_learnmore_button_label_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_learnmore_button_border_color')[0] ) { $molswc_learnmore_button_border_color = get_post_meta ($displayed_id, 'molswc_learnmore_button_border_color')[0]; } else { $molswc_learnmore_button_border_color = strip_tags(get_option( 'molswc_learnmore_button_border_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_product_name_color')[0] ) { $molswc_product_name_color = get_post_meta ($displayed_id, 'molswc_product_name_color')[0]; } else { $molswc_product_name_color = strip_tags(get_option( 'molswc_product_name_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_column_title_color')[0] ) { $molswc_column_title_color = get_post_meta ($displayed_id, 'molswc_column_title_color')[0]; } else { $molswc_column_title_color = strip_tags(get_option( 'molswc_column_title_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_column_divider_color')[0] ) { $molswc_column_divider_color = get_post_meta ($displayed_id, 'molswc_column_divider_color')[0]; } else { $molswc_column_divider_color = strip_tags(get_option( 'molswc_column_divider_color' )); }
 		} else {
 			// if the custom colors checkbox is not checked fall back on the defaults
 			$curr_prod_background_color = strip_tags(get_option( 'molswc_product_background_color' ));
@@ -198,32 +464,68 @@ function molswc_styles_for_custom_product_colors() {
 			$molswc_notavailable_label_color = strip_tags(get_option( 'molswc_notavailable_label_color' ));
 			$molswc_notavailable_border_hover_color = strip_tags(get_option( 'molswc_notavailable_border_hover_color' ));
 			$molswc_notavailable_label_hover_color = strip_tags(get_option( 'molswc_notavailable_label_hover_color' ));
+			$molswc_selected_button_label_color = strip_tags(get_option( 'molswc_selected_button_label_color' ));
+			$molswc_selected_button_border_color = strip_tags(get_option( 'molswc_selected_button_border_color' ));
+			$molswc_payment_button_title_color = strip_tags(get_option( 'molswc_payment_button_title_color' ));
+			$molswc_payment_button_text_color = strip_tags(get_option( 'molswc_payment_button_text_color' ));
+			$molswc_payment_button_border_color = strip_tags(get_option( 'molswc_payment_button_border_color' ));
+			$molswc_clear_button_label_color = strip_tags(get_option( 'molswc_clear_button_label_color' ));
+			$molswc_clear_button_border_color = strip_tags(get_option( 'molswc_clear_button_border_color' ));
+			$molswc_learnmore_button_label_color = strip_tags(get_option( 'molswc_learnmore_button_label_color' ));
+			$molswc_learnmore_button_border_color = strip_tags(get_option( 'molswc_learnmore_button_border_color' ));
+			$molswc_product_name_color = strip_tags(get_option( 'molswc_product_name_color' ));
+			$molswc_column_title_color = strip_tags(get_option( 'molswc_column_title_color' ));
+			$molswc_column_divider_color = strip_tags(get_option( 'molswc_column_divider_color' ));
 		}
 		// finally echo the CSS styles for the current product custom colors based on the stored variables and current product ID
 		echo "
-		/* Product: ".$displayed_id." */
+		/* Product: ".$displayed_id.", custom option: ".$molswc_use_custom_button_colors_value." */
 		/* The background */
 		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product { background-color: ".$curr_prod_background_color."; }
 		/* In Stock */
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock { border-color: ".$molswc_instock_border_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock .inner-attrib { color: ".$molswc_instock_label_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock:hover { border-color: ".$molswc_instock_border_hover_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock:hover .inner-attrib { color: ".$molswc_instock_label_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked) { border-color: ".$molswc_instock_border_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked) .inner-attrib { color: ".$molswc_instock_label_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked):hover { border-color: ".$molswc_instock_border_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked):hover .inner-attrib { color: ".$molswc_instock_label_hover_color." !important; }
 		/* Back Order */
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder { border-color: ".$molswc_backorder_border_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder .inner-attrib { color: ".$molswc_backorder_label_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder:hover { border-color: ".$molswc_backorder_border_hover_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder:hover .inner-attrib { color: ".$molswc_backorder_label_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked) { border-color: ".$molswc_backorder_border_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked) .inner-attrib { color: ".$molswc_backorder_label_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked):hover { border-color: ".$molswc_backorder_border_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked):hover .inner-attrib { color: ".$molswc_backorder_label_hover_color." !important; }
 		/* Pre Order */
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder { border-color: ".$molswc_preorder_border_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder .inner-attrib { color: ".$molswc_preorder_label_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder:hover { border-color: ".$molswc_preorder_border_hover_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder:hover .inner-attrib { color: ".$molswc_preorder_label_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked) { border-color: ".$molswc_preorder_border_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked) .inner-attrib { color: ".$molswc_preorder_label_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked):hover { border-color: ".$molswc_preorder_border_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked):hover .inner-attrib { color: ".$molswc_preorder_label_hover_color." !important; }
 		/* Not Available */
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available { border-color: ".$molswc_notavailable_border_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available .inner-attrib { color: ".$molswc_notavailable_label_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available:hover { border-color: ".$molswc_notavailable_border_hover_color." !important; }
-		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available:hover .inner-attrib { color: ".$molswc_notavailable_label_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked) { border-color: ".$molswc_notavailable_border_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked) .inner-attrib { color: ".$molswc_notavailable_label_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked):hover { border-color: ".$molswc_notavailable_border_hover_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked):hover .inner-attrib { color: ".$molswc_notavailable_label_hover_color." !important; }
+		/* Selected */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.radio-checked { border-color: ".$molswc_selected_button_border_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.radio-checked .inner-attrib { color: ".$molswc_selected_button_label_color." !important; }
+		/* Payment buttons */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax > label { color: ".$molswc_payment_button_title_color." !important; } /* Title */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax > span.attribPrice { color: ".$molswc_payment_button_text_color." !important; } /* Price */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax > span.attribStockStatus { color: ".$molswc_payment_button_text_color." !important; } /* Stock */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax > span.attrib-description { color: ".$molswc_payment_button_text_color." !important; } /* Description */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax { border-color: ".$molswc_payment_button_border_color." !important; } /* Border */
+		/* Clear little button */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product a.reset_variations { color: ".$molswc_clear_button_label_color." !important; } 
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product a.reset_variations:active { color: ".$molswc_clear_button_label_color." !important; } 
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product a.reset_variations { border-color: ".$molswc_clear_button_border_color." !important; } 
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product a.reset_variations:active { border-color: ".$molswc_clear_button_border_color." !important; } 
+		/* Learn More */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .xoo-qv-plink a { color: ".$molswc_learnmore_button_label_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .xoo-qv-plink { border-color: ".$molswc_learnmore_button_border_color." !important; }
+		/* Product name (title) */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product h1.product_title { color: ".$molswc_product_name_color." !important; }
+		/* Column titles */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .tr .each-attrib .label.td label { color: ".$molswc_column_title_color." !important; }
+		/* column dividers */
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td .each-attrib:not(:first-child) { border-left-color: ".$molswc_column_divider_color." !important; }
+		.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td .each-attrib .label.td { border-bottom-color: ".$molswc_column_divider_color." !important; }
 		";
 	}
 	// in the end just close the </style> block
@@ -1038,194 +1340,6 @@ function molswc_enable_processing_to_on_hold_notification( $order_id, $order ){
     $mailer = WC()->mailer()->get_emails();
     // Finally send the "On Hold" notification
     $mailer['WC_Email_Customer_On_Hold_Order']->trigger( $order_id );
-}
-
-// === Product meta-box for defining custom buttons colors at product level
-// register the meta box
-add_action( 'add_meta_boxes', 'my_custom_field_checkboxes' );
-function my_custom_field_checkboxes() {
-    add_meta_box(
-        'molswc_custom_buttons_colors',          // this is HTML id of the box on edit screen
-        'Custom Buttons colors',    // title of the box
-        'molswc_custom_buttons_colors_content',   // function to be called to display the checkboxes, see the function below
-        'product',        // on which edit screen the box should appear
-        'normal',      // part of page where the box should appear
-        'default'      // priority of the box
-    );
-}
-// display the metabox
-function molswc_custom_buttons_colors_content() {
-    // nonce field for security check later on save
-    wp_nonce_field( plugin_basename( __FILE__ ), 'mTdW34lFdE65' );
-	// get the post and the current editing product ID
-	global $post;
-	$curr_prod_id = $post->ID;
-	// get the Use Custom Colors condition out of the database
-	$molswc_use_custom_button_colors_value = get_post_meta( $curr_prod_id, 'molswc_use_custom_button_colors' )[0];
-	if ( $molswc_use_custom_button_colors_value == 1 ) { $molswc_use_custom_button_colors_checked = 'checked'; } else { $molswc_use_custom_button_colors_checked = ''; }
-	// output the colors definig form (almost the same as in main/default plugin settings screen)
-    echo '
-	<p>
-	<strong>How this works:</strong></br>
-	Set the preferred colors in the boxes below. If colors are not set then the ones defined in the main plugin settings will be used and displayed as placeholders.</br>
-	Check the "Use custom colors ..." option to use the colors defined below; otherwise the default colors will be used; still the values defined here will be preserved even if option is un-checked, maybe for later use.
-	</p>
-	<table class="form-table">
-		<tr valign="top">
-			<th scope="row">Use custom colors in this product: </th>
-			<td colspan="4"> 
-				<input type="checkbox" name="molswc_use_custom_button_colors" value="1" '.$molswc_use_custom_button_colors_checked.'/>
-				<span>(check this to use colors below; otherwise defaults will be applied)</span>
-			</td>
-		</tr>
-		<tr valign="top">
-			<th scope="row">Background color: </th>
-			<td colspan="4"> 
-				<input name="molswc_product_background_color" type="text" id="molswc_product_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_product_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_product_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_product_background_color" )).'" class="regular-text">
-			</td>
-		</tr>
-		<tr valign="top">
-			<th scope="row">IN STOCK button colors: </th>
-			<td> 
-				<span>Normal color:</span>
-				<input name="molswc_instock_label_color" type="text" id="molswc_instock_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_label_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Hover color:</span>
-				<input name="molswc_instock_label_hover_color" type="text" id="molswc_instock_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_label_hover_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Normal border color:</span>
-				<input name="molswc_instock_border_color" type="text" id="molswc_instock_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_border_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Hover border color:</span>
-				<input name="molswc_instock_border_hover_color" type="text" id="molswc_instock_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_border_hover_color" )).'" class="regular-text">
-			</td>
-		</tr>
-		<tr valign="top">
-			<th scope="row">BACK ORDER button colors: </th>
-			<td> 
-				<span>Normal color:</span>
-				<input name="molswc_backorder_label_color" type="text" id="molswc_backorder_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_label_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Hover color:</span>
-				<input name="molswc_backorder_label_hover_color" type="text" id="molswc_backorder_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_label_hover_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Normal border color:</span>
-				<input name="molswc_backorder_border_color" type="text" id="molswc_backorder_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_border_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Hover border color:</span>
-				<input name="molswc_backorder_border_hover_color" type="text" id="molswc_backorder_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_border_hover_color" )).'" class="regular-text">
-			</td>
-		</tr>
-		<tr valign="top">
-			<th scope="row">PRE ORDER button colors: </th>
-			<td> 
-				<span>Normal color:</span>
-				<input name="molswc_preorder_label_color" type="text" id="molswc_preorder_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_label_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Hover color:</span>
-				<input name="molswc_preorder_label_hover_color" type="text" id="molswc_preorder_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_label_hover_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Normal border color:</span>
-				<input name="molswc_preorder_border_color" type="text" id="molswc_preorder_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_border_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Hover border color:</span>
-				<input name="molswc_preorder_border_hover_color" type="text" id="molswc_preorder_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_border_hover_color" )).'" class="regular-text">
-			</td>
-		</tr>
-		<tr valign="top">
-			<th scope="row">N/A button colors: </th>
-			<td> 
-				<span>Normal color:</span>
-				<input name="molswc_notavailable_label_color" type="text" id="molswc_notavailable_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_label_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Hover color:</span>
-				<input name="molswc_notavailable_label_hover_color" type="text" id="molswc_notavailable_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_label_hover_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Normal border color:</span>
-				<input name="molswc_notavailable_border_color" type="text" id="molswc_notavailable_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_border_color" )).'" class="regular-text">
-			</td>
-			<td> 
-				<span>Hover border color:</span>
-				<input name="molswc_notavailable_border_hover_color" type="text" id="molswc_notavailable_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_border_hover_color" )).'" class="regular-text">
-			</td>
-		</tr>
-	</table>
-	';
-}
-// save data from checkboxes
-add_action( 'woocommerce_update_product', 'molswc_custom_field_data' );
-function molswc_custom_field_data($curr_prod_id) {
-    // check some conditions before just saving the fields
-	if ( !current_user_can('manage_woocommerce') ) { return; }
-    if ( !wp_verify_nonce( $_POST['mTdW34lFdE65'], plugin_basename( __FILE__ ) ) ) { return; }
-	// first store checkbox state
-	if ( isset( $_POST['molswc_use_custom_button_colors'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_use_custom_button_colors', 1 );
-    } else {
-        update_post_meta( $curr_prod_id, 'molswc_use_custom_button_colors', 0 );
-	}
-    // now store buttons colors data in custom post meta based on field values 
-    if ( isset( $_POST['molswc_product_background_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_product_background_color', strip_tags($_POST['molswc_product_background_color']) );
-	}if ( isset( $_POST['molswc_instock_label_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_instock_label_color', strip_tags($_POST['molswc_instock_label_color']) );
-	}
-	if ( isset( $_POST['molswc_instock_label_hover_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_instock_label_hover_color', strip_tags($_POST['molswc_instock_label_hover_color']) );
-	}
-	if ( isset( $_POST['molswc_instock_border_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_instock_border_color', strip_tags($_POST['molswc_instock_border_color']) );
-	}
-	if ( isset( $_POST['molswc_instock_border_hover_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_instock_border_hover_color', strip_tags($_POST['molswc_instock_border_hover_color']) );
-	}
-	if ( isset( $_POST['molswc_backorder_label_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_backorder_label_color', strip_tags($_POST['molswc_backorder_label_color']) );
-	}
-	if ( isset( $_POST['molswc_backorder_label_hover_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_backorder_label_hover_color', strip_tags($_POST['molswc_backorder_label_hover_color']) );
-	}
-	if ( isset( $_POST['molswc_backorder_border_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_backorder_border_color', strip_tags($_POST['molswc_backorder_border_color']) );
-	}
-	if ( isset( $_POST['molswc_backorder_border_hover_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_backorder_border_hover_color', strip_tags($_POST['molswc_backorder_border_hover_color']) );
-	}
-	if ( isset( $_POST['molswc_preorder_label_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_preorder_label_color', strip_tags($_POST['molswc_preorder_label_color']) );
-	}
-	if ( isset( $_POST['molswc_preorder_label_hover_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_preorder_label_hover_color', strip_tags($_POST['molswc_preorder_label_hover_color']) );
-	}
-	if ( isset( $_POST['molswc_preorder_border_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_preorder_border_color', strip_tags($_POST['molswc_preorder_border_color']) );
-	}
-	if ( isset( $_POST['molswc_preorder_border_hover_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_preorder_border_hover_color', strip_tags($_POST['molswc_preorder_border_hover_color']) );
-	}
-	if ( isset( $_POST['molswc_notavailable_label_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_notavailable_label_color', strip_tags($_POST['molswc_notavailable_label_color']) );
-	}
-	if ( isset( $_POST['molswc_notavailable_label_hover_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_notavailable_label_hover_color', strip_tags($_POST['molswc_notavailable_label_hover_color']) );
-	}
-	if ( isset( $_POST['molswc_notavailable_border_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_notavailable_border_color', strip_tags($_POST['molswc_notavailable_border_color']) );
-	}
-	if ( isset( $_POST['molswc_notavailable_border_hover_color'] ) ) {
-        update_post_meta( $curr_prod_id, 'molswc_notavailable_border_hover_color', strip_tags($_POST['molswc_notavailable_border_hover_color']) );
-	}
 }
 
 // === Fragment cache functions below
