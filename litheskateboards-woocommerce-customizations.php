@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.2.4
+ * Version: 1.2.5
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -143,7 +143,8 @@ function molswc_custom_buttons_colors_content() {
 	<p>
 	<strong>How this works:</strong></br>
 	Set the preferred colors in the boxes below. If colors are not set then the ones defined in the main plugin settings will be used (and displayed as placeholders).</br>
-	Check the "Use custom colors ..." option to use the colors defined below; otherwise the default colors will be used; still the values defined here will be preserved even if option is un-checked, maybe for later use.
+	Check the "Use custom colors ..." option to use the colors defined below; otherwise the default colors will be used; still the values defined here will be preserved even if option is un-checked, maybe for later use.</br>
+	For the single product page to be styled please add the class ".lithe_board_section" to the product section in Avia builder on this page (and any other page that needs custom colors).
 	</p>
 	<table class="form-table">
 		<tr valign="top">
