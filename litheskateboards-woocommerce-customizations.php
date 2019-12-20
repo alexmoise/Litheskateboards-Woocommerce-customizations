@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.2.5
+ * Version: 1.2.6
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -757,6 +757,17 @@ function molswc_rack_bottom_image() {
 	<div class="rack_bottom">
 		<img class="rack_bottom_image" src="'.$bottom_image_file_url.'" alt="Lithe Skateboards Rack Bottom">
 	</div>';
+}
+// Wrap woocommerce loop with a div, for the purpose of adding the "rack-type" trigger class to it later
+// Start the wrapping div
+add_action( 'woocommerce_before_shop_loop', 'molswc_start_lithe_rack_type_display', -999999 );
+function molswc_start_lithe_rack_type_display() {
+	echo '<div class="lithe_rack_type_display">';
+}
+// End the wrapping div
+add_action( 'woocommerce_after_shop_loop', 'molswc_stop_lithe_rack_type_display', 999999 );
+function molswc_stop_lithe_rack_type_display() {
+	echo '</div>';
 }
 
 // === Outputting JS variables in HTML, for using them later in JS file

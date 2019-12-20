@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.2.4
+ * Version: 1.2.6
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -261,90 +261,90 @@ h3#ship-to-different-address {
 div#main {
     background-color: #212121;
 }
-.shop_columns_2 .products .product {
+.lithe_rack_type_display .products .product {
   width: 100%;
 }
-.template-shop .page-title {
+.lithe_rack_type_display .page-title {
   display: block;
   padding: 40px 0 0 0;
 }
-.template-shop .inner_product_header {
+.lithe_rack_type_display .inner_product_header {
   min-height: fit-content !important;
   padding: 0 !important;
   border-top: 0 !important;
 }
-.template-shop .inner_product .avia_cart_buttons {
+.lithe_rack_type_display .inner_product .avia_cart_buttons {
   display: none;
 }
-.template-shop a.xoo-qv-button {
+.lithe_rack_type_display a.xoo-qv-button {
   white-space:  nowrap;
   color: transparent;
 }
-.template-shop .inner_product {
+.lithe_rack_type_display .inner_product {
   position:  relative;
   border: 0;
 }
-.inner_product_header .avia-arrow {
+.lithe_rack_type_display .inner_product_header .avia-arrow {
   display: none;
 }
-.product a.brighter-board .thumbnail_container img {
+.lithe_rack_type_display .product a.brighter-board .thumbnail_container img {
   filter: brightness(125%);
 }
-ul.products li.product {
+.lithe_rack_type_display ul.products li.product {
   margin: 0 0 -4.5% 0;
 }
 @media only screen and (max-width: 767px) {
-	ul.products li.product {
+	.lithe_rack_type_display ul.products li.product {
 		margin: 0 0 -4.5% 0 !important;
 		width: 100% !important;
 	}
 }
-li.product .inner_product {
+.lithe_rack_type_display li.product .inner_product {
   background: transparent;
 }
-li.product .inner_product_header {
+.lithe_rack_type_display li.product .inner_product_header {
     min-height: 0px !important;
 }
 @media (min-width: 561px) {
-  form.product-filters select {
+  .lithe_rack_type_display form.product-filters select {
 	width: calc(50% - 2px) !important;
 	display: inline-block !important;
   }
 }
 @media (max-width: 560px) {
-  form.product-filters select {
+  .lithe_rack_type_display form.product-filters select {
 	width: 100% !important;
   }
 }
-form.product-filters select {
+.lithe_rack_type_display form.product-filters select {
   color: #cbcbcb !important;
   margin: 5px 0 !important;
   border-radius: 4px !important;
 }
-a#reset-product-filters {
+.lithe_rack_type_display a#reset-product-filters {
   margin: 10px 0;
   float: right;
   color: #12ff1e;
   text-decoration: none;
 }
-.woocommerce-page img.rack_top_image {
+.lithe_rack_type_display img.rack_top_image {
     display: block;
     width: 100%;
 }
-.woocommerce-page img.rack_bottom_image {
+.lithe_rack_type_display img.rack_bottom_image {
     width: 100%;
 	margin-bottom: -9px;
 }
-ul.products:after {
+.lithe_rack_type_display ul.products:after {
     content: ' ';
     display: block;
     margin-bottom: 4.5%;
 	clear: both;
 }
-ul.products {
+.lithe_rack_type_display ul.products {
    margin: -1.4vw 0 0 0;
 }
-.archive.woocommerce main.template-shop.content {
+.lithe_rack_type_display main.template-shop.content {
     padding-bottom: 0;
 }
 
