@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.2.6
+ * Version: 1.3.1
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -100,19 +100,21 @@ function molswc_designated_options() {
 	array_walk($designated_options, 'molswc_trim_value'); // remove possible white space at the beginning or the end of each array element (using previously defined trim function)
 	return $designated_options; // finally return the array to wherever is needed
 }
-// Exclude the products in these categories from displaying on the shop page
+// Exclude the products in these categories from displaying *on the shop page only*
 add_action( 'woocommerce_product_query', 'molswc_custom_boards_query' );
 function molswc_custom_boards_query( $q ) {
-	$raw_excluded_categories = strip_tags(get_option( 'molswc_excluded_categories' )); // get raw options as defined in options DB table
-	$excluded_categories = explode(',', $raw_excluded_categories); // create an array with options
-    $tax_query = (array) $q->get( 'tax_query' );
-    $tax_query[] = array(
-           'taxonomy' => 'product_cat',
-           'field' => 'slug',
-           'terms' => $excluded_categories, 
-           'operator' => 'NOT IN'
-    );
-    $q->set( 'tax_query', $tax_query );
+	if ( is_shop() ) {
+		$raw_excluded_categories = strip_tags(get_option( 'molswc_excluded_categories' )); // get raw options as defined in options DB table
+		$excluded_categories = explode(',', $raw_excluded_categories); // create an array with options
+		$tax_query = (array) $q->get( 'tax_query' );
+		$tax_query[] = array(
+			   'taxonomy' => 'product_cat',
+			   'field' => 'slug',
+			   'terms' => $excluded_categories, 
+			   'operator' => 'NOT IN'
+		);
+		$q->set( 'tax_query', $tax_query );
+	}
 }
 
 // === Define and use custom dynamic colors in product page and product popup
@@ -448,8 +450,57 @@ function molswc_styles_for_custom_product_colors() {
 			$molswc_column_divider_color = strip_tags(get_option( 'molswc_column_divider_color' ));
 		}
 		// finally echo the CSS styles for the current product custom colors based on the stored variables and current product ID
-		// if it's not product then the xoo popup needs styling ...
-		if ( !is_product() ) {
+		// if IT IS PRODUCT then we'll style the product section - that needs to have ".lithe_board_section" class added, otherwise ... no styling (so we can preserve original/other styles for non-board products)
+		if ( is_product() ) {
+			echo "
+			/* Product: ".$displayed_id.", custom option: ".$molswc_use_custom_button_colors_value." */
+			/* The background */
+			body.postid-".$displayed_id." .lithe_board_section { background-color: ".$curr_prod_background_color."; }
+			/* In Stock */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked) { border-color: ".$molswc_instock_border_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked) .inner-attrib { color: ".$molswc_instock_label_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked):hover { border-color: ".$molswc_instock_border_hover_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked):hover .inner-attrib { color: ".$molswc_instock_label_hover_color." !important; }
+			/* Back Order */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked) { border-color: ".$molswc_backorder_border_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked) .inner-attrib { color: ".$molswc_backorder_label_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked):hover { border-color: ".$molswc_backorder_border_hover_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked):hover .inner-attrib { color: ".$molswc_backorder_label_hover_color." !important; }
+			/* Pre Order */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked) { border-color: ".$molswc_preorder_border_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked) .inner-attrib { color: ".$molswc_preorder_label_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked):hover { border-color: ".$molswc_preorder_border_hover_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked):hover .inner-attrib { color: ".$molswc_preorder_label_hover_color." !important; }
+			/* Not Available */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked) { border-color: ".$molswc_notavailable_border_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked) .inner-attrib { color: ".$molswc_notavailable_label_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked):hover { border-color: ".$molswc_notavailable_border_hover_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked):hover .inner-attrib { color: ".$molswc_notavailable_label_hover_color." !important; }
+			/* Selected */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.radio-checked { border-color: ".$molswc_selected_button_border_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.radio-checked .inner-attrib { color: ".$molswc_selected_button_label_color." !important; }
+			/* Payment buttons */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > label { color: ".$molswc_payment_button_title_color." !important; } /* Title */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > span.attribPrice { color: ".$molswc_payment_button_text_color." !important; } /* Price */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > span.attribStockStatus { color: ".$molswc_payment_button_text_color." !important; } /* Stock */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > span.attrib-description { color: ".$molswc_payment_button_text_color." !important; } /* Description */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax { border-color: ".$molswc_payment_button_border_color." !important; } /* Border */
+			/* Clear little button */
+			body.postid-".$displayed_id." .lithe_board_section a.reset_variations { color: ".$molswc_clear_button_label_color." !important; } 
+			body.postid-".$displayed_id." .lithe_board_section a.reset_variations:active { color: ".$molswc_clear_button_label_color." !important; } 
+			body.postid-".$displayed_id." .lithe_board_section a.reset_variations { border-color: ".$molswc_clear_button_border_color." !important; } 
+			body.postid-".$displayed_id." .lithe_board_section a.reset_variations:active { border-color: ".$molswc_clear_button_border_color." !important; } 
+			/* Product name (title) */
+			body.postid-".$displayed_id." .lithe_board_section h1 { color: ".$molswc_product_name_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section h2 { color: ".$molswc_product_name_color." !important; }
+			/* Column titles */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .tr .each-attrib .label.td label { color: ".$molswc_column_title_color." !important; }
+			/* column dividers */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td .each-attrib:not(:first-child) { border-left-color: ".$molswc_column_divider_color." !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td .each-attrib .label.td { border-bottom-color: ".$molswc_column_divider_color." !important; }
+			";
+		} else {
+			// but IF IT'S NOT PRODUCT then only the xoo popup needs styling ...
 			echo "
 			/* Product: ".$displayed_id.", custom option: ".$molswc_use_custom_button_colors_value." */
 			/* The background */
@@ -498,56 +549,6 @@ function molswc_styles_for_custom_product_colors() {
 			/* column dividers */
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td .each-attrib:not(:first-child) { border-left-color: ".$molswc_column_divider_color." !important; }
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td .each-attrib .label.td { border-bottom-color: ".$molswc_column_divider_color." !important; }
-			";
-		}
-		// ... but if it IS product then we'll style the product section - that needs to have ".lithe_board_section" class added, otherwise ... no styling (so we can preserve original/other styles for non-board products)
-		if ( is_product() ) {
-			echo "
-			/* Product: ".$displayed_id.", custom option: ".$molswc_use_custom_button_colors_value." */
-			/* The background */
-			body.postid-".$displayed_id." .lithe_board_section { background-color: ".$curr_prod_background_color."; }
-			/* In Stock */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked) { border-color: ".$molswc_instock_border_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked) .inner-attrib { color: ".$molswc_instock_label_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked):hover { border-color: ".$molswc_instock_border_hover_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked):hover .inner-attrib { color: ".$molswc_instock_label_hover_color." !important; }
-			/* Back Order */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked) { border-color: ".$molswc_backorder_border_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked) .inner-attrib { color: ".$molswc_backorder_label_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked):hover { border-color: ".$molswc_backorder_border_hover_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_backorder:not(.radio-checked):hover .inner-attrib { color: ".$molswc_backorder_label_hover_color." !important; }
-			/* Pre Order */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked) { border-color: ".$molswc_preorder_border_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked) .inner-attrib { color: ".$molswc_preorder_label_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked):hover { border-color: ".$molswc_preorder_border_hover_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_preorder:not(.radio-checked):hover .inner-attrib { color: ".$molswc_preorder_label_hover_color." !important; }
-			/* Not Available */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked) { border-color: ".$molswc_notavailable_border_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked) .inner-attrib { color: ".$molswc_notavailable_label_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked):hover { border-color: ".$molswc_notavailable_border_hover_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_not_available:not(.radio-checked):hover .inner-attrib { color: ".$molswc_notavailable_label_hover_color." !important; }
-			/* Selected */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.radio-checked { border-color: ".$molswc_selected_button_border_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.radio-checked .inner-attrib { color: ".$molswc_selected_button_label_color." !important; }
-			/* Payment buttons */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > label { color: ".$molswc_payment_button_title_color." !important; } /* Title */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > span.attribPrice { color: ".$molswc_payment_button_text_color." !important; } /* Price */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > span.attribStockStatus { color: ".$molswc_payment_button_text_color." !important; } /* Stock */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > span.attrib-description { color: ".$molswc_payment_button_text_color." !important; } /* Description */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax { border-color: ".$molswc_payment_button_border_color." !important; } /* Border */
-			/* Clear little button */
-			body.postid-".$displayed_id." .lithe_board_section a.reset_variations { color: ".$molswc_clear_button_label_color." !important; } 
-			body.postid-".$displayed_id." .lithe_board_section a.reset_variations:active { color: ".$molswc_clear_button_label_color." !important; } 
-			body.postid-".$displayed_id." .lithe_board_section a.reset_variations { border-color: ".$molswc_clear_button_border_color." !important; } 
-			body.postid-".$displayed_id." .lithe_board_section a.reset_variations:active { border-color: ".$molswc_clear_button_border_color." !important; } 
-			/* Product name (title) */
-			body.postid-".$displayed_id." .lithe_board_section h1 { color: ".$molswc_product_name_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section h2 { color: ".$molswc_product_name_color." !important; }
-			/* Column titles */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .tr .each-attrib .label.td label { color: ".$molswc_column_title_color." !important; }
-			/* column dividers */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td .each-attrib:not(:first-child) { border-left-color: ".$molswc_column_divider_color." !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td .each-attrib .label.td { border-bottom-color: ".$molswc_column_divider_color." !important; }
 			";
 		}
 	}
@@ -739,9 +740,30 @@ function molswc_products_per_page( $cols ) {
   $cols = 100;
   return $cols;
 }
-// Rack bottom and Rack top images in main shop page
+// Replicating the WC product loop START, with the purpose to add a custom do_action, so we can hook custom stuff later on
+if ( ! function_exists( 'woocommerce_product_loop_start' ) ) {
+	function woocommerce_product_loop_start( $echo = true ) {
+		ob_start();
+		do_action( 'molswc_before_loop_start' );
+		wc_set_loop_prop( 'loop', 0 );
+		wc_get_template( 'loop/loop-start.php' );
+		$loop_start = apply_filters( 'woocommerce_product_loop_start', ob_get_clean() );
+		if ( $echo ) { echo $loop_start; } else { return $loop_start; }
+	}
+}
+// Replicating the WC product loop END, with the purpose to add a custom do_action, so we can hook custom stuff later on
+if ( ! function_exists( 'woocommerce_product_loop_end' ) ) {
+	function woocommerce_product_loop_end( $echo = true ) {
+		ob_start();
+		wc_get_template( 'loop/loop-end.php' );
+		do_action( 'molswc_after_loop_end' );
+		$loop_end = apply_filters( 'woocommerce_product_loop_end', ob_get_clean() );
+		if ( $echo ) { echo $loop_end; } else { return $loop_end; }
+	}
+}
+// Rack bottom and Rack top images before and after "the product loop" 
 // Adding Rack Top:
-add_action( 'woocommerce_before_shop_loop', 'molswc_rack_top_image', 40 );
+add_action( 'molswc_before_loop_start', 'molswc_rack_top_image', 100 );
 function molswc_rack_top_image() {
 	$top_image_file_url = plugins_url('images/Rack_Top.png', __FILE__);
 	echo '
@@ -750,7 +772,7 @@ function molswc_rack_top_image() {
 	</div>';
 }
 // Adding Rack Bottom:
-add_action( 'woocommerce_after_shop_loop', 'molswc_rack_bottom_image', 0 );
+add_action( 'molswc_after_loop_end', 'molswc_rack_bottom_image', 100 );
 function molswc_rack_bottom_image() {
 	$bottom_image_file_url = plugins_url('images/Rack_Bottom.png', __FILE__);
 	echo '
@@ -760,12 +782,12 @@ function molswc_rack_bottom_image() {
 }
 // Wrap woocommerce loop with a div, for the purpose of adding the "rack-type" trigger class to it later
 // Start the wrapping div
-add_action( 'woocommerce_before_shop_loop', 'molswc_start_lithe_rack_type_display', -999999 );
+add_action( 'molswc_before_loop_start', 'molswc_start_lithe_rack_type_display', 0 );
 function molswc_start_lithe_rack_type_display() {
 	echo '<div class="lithe_rack_type_display">';
 }
 // End the wrapping div
-add_action( 'woocommerce_after_shop_loop', 'molswc_stop_lithe_rack_type_display', 999999 );
+add_action( 'molswc_after_loop_end', 'molswc_stop_lithe_rack_type_display', 999999 );
 function molswc_stop_lithe_rack_type_display() {
 	echo '</div>';
 }
@@ -805,8 +827,8 @@ function molswc_instock_variations() {
 	if($data_custom_attribs_list_all) { $data_custom_attribs_list = array_unique($data_custom_attribs_list_all); }
 	return $data_custom_attribs_list;
 }
-// Adding product filter drop down lists
-add_action( 'woocommerce_before_shop_loop', 'molswc_product_filters', 30 );
+// Adding product filter drop down lists (priority 10 so we can add stuff around later; rack top has priority 100, it have to be before that)
+add_action( 'molswc_before_loop_start', 'molswc_product_filters', 10 );
 function molswc_product_filters() {
 	// querying all the boards in the "Decks" category:
 	$boards_IDs = new WP_Query( array(
