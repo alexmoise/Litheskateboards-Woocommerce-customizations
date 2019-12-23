@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.3.2
+ * Version: 1.3.3
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -374,10 +374,20 @@ function molswc_custom_field_data($curr_prod_id) {
 // Output custom product colors styles as defined in Product Edit screen *or* Plugin Options page, depending on the individual product option
 add_action( 'wp_head', 'molswc_styles_for_custom_product_colors', 99999 );
 function molswc_styles_for_custom_product_colors() {
-	// Get the main query first
-	global $wp_query;
-	// Pluck the list of all IDs of all displayed products on the current page in a variable
-	$displayed_ids = wp_list_pluck( $wp_query->posts, "ID" );
+	// Let's see where we are first (product or not)
+	if ( is_product() ) {
+		// In product we only need currently displayed product CSS, so get its ID and move on
+		global $post;
+		$displayed_ids[0] = $post->ID;		
+	} else {
+		// For the other pages we don't know what will be displayed, so get the complete products list 
+		$displayed_ids = get_posts( array(
+			'post_type' => 'product',
+			'numberposts' => -1,
+			'post_status' => 'publish',
+			'fields' => 'ids',
+		) );
+	}
 	// Start outputting the <style> block
 	echo '
 	<!-- Lithe custom product colors START -->
