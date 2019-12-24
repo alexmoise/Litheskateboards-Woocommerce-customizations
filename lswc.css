@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.3.1
+ * Version: 1.3.4
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -382,8 +382,20 @@ main.content { padding-bottom: 0 !important; }
 	height:  auto;
 	max-height: 90vh;
 	border-radius: 8px !important;
-	border: 1px solid #cbcbcb;
-	box-shadow: 0 0 1px 0px #cbcbcb inset, 0 0 1px 0px #cbcbcb;
+	border: none;
+	background-color: transparent;
+}
+.xoo-qv-container .xoo-qv-main:after {
+    content: '';
+    display: block;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    border-radius: 8px;
+    border: 1px solid #cbcbcb;
+	pointer-events: none;
 }
 .xoo-qv-container .price del .amount {
 	text-decoration: line-through !important;
@@ -450,7 +462,6 @@ main.content { padding-bottom: 0 !important; }
   .xoo-qv-container .xoo-qv-main {
     max-height: calc(96vh - 55px);
     overflow-y: auto;
-    padding: 10px 10px;
   }
   .xoo-qv-container .xoo-qv-summary h1 {
 	margin: 14px 0;
