@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.2.3
+ * Version: 1.3.6
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -60,6 +60,8 @@ function molswc_register_settings() {
 		'molswc_product_name_color',
 		'molswc_column_title_color',
 		'molswc_column_divider_color',
+		'molswc_product_container_width',
+		'molswc_product_container_width_units',
 	);
 	// Then register each of them
 	foreach ( $molswc_settings_array as $molswc_setting ) {
@@ -170,12 +172,29 @@ function molswc_admin_options_page_callback() { ?>
 	
 	<?php submit_button(); ?>
 	
-	<h2>Buttons colors based on True Stock Status</h2>
-	<p>Fill in the colors for the buttons. Use HEX value (like "#fdfdfd") or "transparent". Things like "blue" or "green" may also work.</p>
+	<h2>Product display attributes (colors are based on True Stock Status)</h2>
+	<p>
+	Fill in the <strong>colors for the buttons</strong>. Use HEX value (like "#fdfdfd") or "transparent". Things like "blue" or "green" may also work.<br>
+	For <strong>product container width</strong> fill in a number and choose between "px" or "%". <em>There's also a 50px theme padding left &amp; right so the actual width will be 100px narrower than this field</em>.
+	</p>
 		
-		<table class="form-table">
+	<table class="form-table">
 	
-			<tr valign="top">
+		<tr valign="top">
+			<th scope="row">Product container width: </th>
+			<td> 
+				<input name="molswc_product_container_width" type="number" id="molswc_product_container_width" style="display: inline-block; width: auto;" aria-describedby="molswc_product_container_width" value="<?php echo strip_tags(get_option( 'molswc_product_container_width' )); ?>" class="regular-text">
+			</td>
+			<td colspan="3"> 
+				<fieldset style="width:60px; display:inline-block;">
+					<label><input name="molswc_product_container_width_units" type="radio" value="px" <?php if( strip_tags(get_option( 'molswc_product_container_width_units' )) == 'px') { echo 'checked="checked"'; } ?> >px</label><br>
+					<label><input name="molswc_product_container_width_units" type="radio" value="%"  <?php if( strip_tags(get_option( 'molswc_product_container_width_units' )) == '%')  { echo 'checked="checked"'; } ?> >&percnt;</label>
+				</fieldset>
+				<span style="width:calc(100% - 65px); display:inline-block;">Both value and units must be set here; <br>These will be applied site-wide, except where <i>both</i> are set in products.</span>
+			</td>
+		</tr>
+		
+		<tr valign="top">
 			<th scope="row">Background color: </th>
 			<td colspan="4"> 
 				<input name="molswc_product_background_color" type="text" id="molswc_product_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_product_background_color" value="<?php echo strip_tags(get_option( 'molswc_product_background_color' )); ?>" class="regular-text">

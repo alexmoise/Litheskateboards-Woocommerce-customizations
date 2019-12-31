@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.3.5
+ * Version: 1.3.6
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -140,21 +140,41 @@ function molswc_custom_buttons_colors_content() {
 	// get the Use Custom Colors condition out of the database
 	$molswc_use_custom_button_colors_value = get_post_meta( $curr_prod_id, 'molswc_use_custom_button_colors' )[0];
 	if ( $molswc_use_custom_button_colors_value == 1 ) { $molswc_use_custom_button_colors_checked = 'checked'; } else { $molswc_use_custom_button_colors_checked = ''; }
-	// output the colors defining form (almost the same as in main/default plugin settings screen)
+	// get the product container width units from database and set the "checked" variable that will be used later in form
+	if( strip_tags(get_option( 'molswc_product_container_width_units' )) == 'px') { $molswc_product_container_width_default_units = '(default selected units is "px")'; }
+	if( strip_tags(get_option( 'molswc_product_container_width_units' )) == '%') { $molswc_product_container_width_default_units = '(default selected units is "%")'; }
+	// also set a message to display which one is default
+	if( get_post_meta( $curr_prod_id, "molswc_product_container_width_units" )[0] == 'px' ) { $molswc_product_container_width_units_px = 'checked="checked"'; }
+	if( get_post_meta( $curr_prod_id, "molswc_product_container_width_units" )[0] == '%' ) { $molswc_product_container_width_units_percent = 'checked="checked"'; }
+	// output the attributes defining form (almost the same as in main/default plugin settings screen)
     echo '
 	<p>
 	<strong>How this works:</strong></br>
-	Set the preferred colors in the boxes below. If colors are not set then the ones defined in the main plugin settings will be used (and displayed as placeholders).</br>
-	Check the "Use custom colors ..." option to use the colors defined below; otherwise the default colors will be used; still the values defined here will be preserved even if option is un-checked, maybe for later use.</br>
-	For the single product page to be styled please add the class ".lithe_board_section" to the product section in Avia builder on this page (and any other page that needs custom colors).
+	Set the preferred attributes in the boxes below. If attributes are not set then the ones defined in the main plugin settings will be used (and displayed as placeholders).</br>
+	Check the "Use custom attributes ..." option to use the attributes defined below; otherwise the default attributes will be used; still the values defined here will be preserved even if option is un-checked, maybe for later use.</br>
+	For the single product page to be styled please add the class ".lithe_board_section" to the product section in Avia builder on that page (and any other page that needs custom attributes).
 	</p>
 	<table class="form-table">
 		<tr valign="top">
-			<th scope="row">Use custom colors in this product: </th>
+			<th scope="row">Use custom attributes in this product: </th>
 			<td colspan="4"> 
 				<input type="checkbox" name="molswc_use_custom_button_colors" value="1" '.$molswc_use_custom_button_colors_checked.'/>
-				<span>(check this to use colors below; otherwise defaults will be applied)</span>
+				<span>(check this to use attributes below; otherwise defaults will be applied)</span>
 			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">Product container width: </th>
+			<td> 
+				<input name="molswc_product_container_width" type="number" id="molswc_product_container_width" style="display: inline-block; width: auto;" aria-describedby="molswc_product_container_width" value="'.get_post_meta( $curr_prod_id, "molswc_product_container_width" )[0].'" placeholder="'.strip_tags(get_option( "molswc_product_container_width" )).'" class="regular-text">
+			</td>
+			<td colspan="3"> 
+				<fieldset style="width:60px; display:inline-block;">
+					<label><input name="molswc_product_container_width_units" type="radio" value="px"'.$molswc_product_container_width_units_px.'>px</label><br>
+					<label><input name="molswc_product_container_width_units" type="radio" value="%"'.$molswc_product_container_width_units_percent.'>&percnt;</label>
+				</fieldset>
+				<span style="width:calc(100% - 65px); display:inline-block;">Both value and units must be set here; otherwise the defaults will be used instead.<br>'.$molswc_product_container_width_default_units.'</span>
+			</td>
+		
 		</tr>
 		<tr valign="top">
 			<th scope="row">Background color: </th>
@@ -370,6 +390,8 @@ function molswc_custom_field_data($curr_prod_id) {
 	if ( isset( $_POST['molswc_product_name_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_product_name_color', strip_tags($_POST['molswc_product_name_color']) ); }
 	if ( isset( $_POST['molswc_column_title_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_column_title_color', strip_tags($_POST['molswc_column_title_color']) ); }
 	if ( isset( $_POST['molswc_column_divider_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_column_divider_color', strip_tags($_POST['molswc_column_divider_color']) ); }
+	if ( isset( $_POST['molswc_product_container_width'] ) ) { update_post_meta( $curr_prod_id, 'molswc_product_container_width', strip_tags($_POST['molswc_product_container_width']) ); }
+	if ( isset( $_POST['molswc_product_container_width_units'] ) ) { update_post_meta( $curr_prod_id, 'molswc_product_container_width_units', strip_tags($_POST['molswc_product_container_width_units']) ); }
 }
 // Output custom product colors styles as defined in Product Edit screen *or* Plugin Options page, depending on the individual product option
 add_action( 'wp_head', 'molswc_styles_for_custom_product_colors', 99999 );
@@ -427,6 +449,15 @@ function molswc_styles_for_custom_product_colors() {
 			if ( get_post_meta ($displayed_id, 'molswc_product_name_color')[0] ) { $molswc_product_name_color = get_post_meta ($displayed_id, 'molswc_product_name_color')[0]; } else { $molswc_product_name_color = strip_tags(get_option( 'molswc_product_name_color' )); }
 			if ( get_post_meta ($displayed_id, 'molswc_column_title_color')[0] ) { $molswc_column_title_color = get_post_meta ($displayed_id, 'molswc_column_title_color')[0]; } else { $molswc_column_title_color = strip_tags(get_option( 'molswc_column_title_color' )); }
 			if ( get_post_meta ($displayed_id, 'molswc_column_divider_color')[0] ) { $molswc_column_divider_color = get_post_meta ($displayed_id, 'molswc_column_divider_color')[0]; } else { $molswc_column_divider_color = strip_tags(get_option( 'molswc_column_divider_color' )); }
+			// container width and its units are a special case: both value and units must be set, otherwise we'll use defaults - this is to avoid situations like having set 90% in defaults and overriding the percent with "px" locally, resulting in a 90 pixels wide container
+			// so we IF them both at once and set the values for both of them accordingly
+			if ( get_post_meta ($displayed_id, 'molswc_product_container_width')[0] && get_post_meta ($displayed_id, 'molswc_product_container_width_units')[0] ) { 
+				$molswc_product_container_width = get_post_meta ($displayed_id, 'molswc_product_container_width')[0]; 
+				$molswc_product_container_width_units = get_post_meta ($displayed_id, 'molswc_product_container_width_units')[0];
+			} else { 
+				$molswc_product_container_width = strip_tags(get_option( 'molswc_product_container_width' )); 
+				$molswc_product_container_width_units = strip_tags(get_option( 'molswc_product_container_width_units' ));
+			}
 		} else {
 			// if the custom colors checkbox is not checked fall back on the defaults
 			$curr_prod_background_color = strip_tags(get_option( 'molswc_product_background_color' ));
@@ -458,6 +489,8 @@ function molswc_styles_for_custom_product_colors() {
 			$molswc_product_name_color = strip_tags(get_option( 'molswc_product_name_color' ));
 			$molswc_column_title_color = strip_tags(get_option( 'molswc_column_title_color' ));
 			$molswc_column_divider_color = strip_tags(get_option( 'molswc_column_divider_color' ));
+			$molswc_product_container_width = strip_tags(get_option( 'molswc_product_container_width' ));
+			$molswc_product_container_width_units = strip_tags(get_option( 'molswc_product_container_width_units' ));
 		}
 		// finally echo the CSS styles for the current product custom colors based on the stored variables and current product ID
 		// if IT IS PRODUCT then we'll style the product section - that needs to have ".lithe_board_section" class added, otherwise ... no styling (so we can preserve original/other styles for non-board products)
@@ -508,6 +541,8 @@ function molswc_styles_for_custom_product_colors() {
 			/* column dividers */
 			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td .each-attrib:not(:first-child) { border-left-color: ".$molswc_column_divider_color." !important; }
 			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td .each-attrib .label.td { border-bottom-color: ".$molswc_column_divider_color." !important; }
+			/* container width */
+			body.postid-".$displayed_id." .lithe_board_section > .container { width: ".$molswc_product_container_width.$molswc_product_container_width_units." !important; }
 			";
 		} else {
 			// but IF IT'S NOT PRODUCT then only the xoo popup needs styling ...
