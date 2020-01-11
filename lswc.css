@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.3.5
+ * Version: 1.3.7
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -179,6 +179,18 @@ h3#ship-to-different-address {
 }
 .woocommerce .login .lost_password > a {
     color: #cbcbcb;
+}
+.lost_reset_password .woocommerce-form-row {
+    width: 100%;
+}
+.lost_reset_password label {
+    margin: 0 !important;
+}
+.lost_reset_password button.woocommerce-Button.button {
+    margin-bottom: 20px;
+}
+.woocommerce-account .woocommerce-MyAccount-navigation {
+    margin-bottom: 50px;
 }
 .woocommerce .checkout_coupon .button {
     margin: 0;
