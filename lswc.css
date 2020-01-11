@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.3.7
+ * Version: 1.3.8
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -16,6 +16,9 @@ body.single-product p+h1 {
 }
 .main_menu a.cart_dropdown_link {
 	padding: 0 20px !important;
+}
+div#footer.container_wrap {
+    margin-top: 20px;
 }
 @media only screen and (max-width: 860px) {
 	.main_menu a.cart_dropdown_link {
