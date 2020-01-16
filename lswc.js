@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.1
+ * Version: 1.4.3
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -356,11 +356,12 @@ function rackFiltersReset() {
 	jQuery ('ul.products li').fadeIn(); // ...and fade in all boards again!
 }
 // FUNCTION to check if pre-selected MODEL and WIDTH are both disabled
+// With multiple racks and shortcoded filters, can we still use this as it is?
 function bothFiltersDisabled() {
 	if ( jQuery('.product-filters select[name="Models"] :selected').is('[disabled=disabled]') && jQuery('.product-filters select[name="Widths"] :selected').is('[disabled=disabled]') ) {
 		// for the moment console.log a message; will insert a DOM element later, with an image sign showing "No boards found" and maybe a reset link
 		// console.log('Invalid Selection!');
-		rackFiltersReset();
+		// rackFiltersReset();
 	} 
 }
 // FUNCTION to take out not available boards IN SHOP PAGE (out of "the rack" actually)
@@ -469,6 +470,8 @@ function populateBoardFilters() {
 		if (jQuery.inArray( attSplit[0], allModelsUnique ) == -1) { allModelsUnique.push(attSplit[0]); }
 		if (jQuery.inArray( attSplit[1], allWidthsUnique ) == -1) { allWidthsUnique.push(attSplit[1]); }
 	});
+	// Sort the attributes arrays first
+	allModelsUnique.sort(); allWidthsUnique.sort();
 	// Finally add the options with names and values based on the arrays above
 	jQuery.each(allModelsUnique, function(modelID,modelName) { jQuery("#filterModels").append(new Option(modelName, modelName)); });
 	jQuery.each(allWidthsUnique, function(widthID,widthName) { jQuery("#filterWidths").append(new Option(widthName, widthName)); });
