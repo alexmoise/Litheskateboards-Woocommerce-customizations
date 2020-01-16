@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.4.0
+ * Version: 1.4.1
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -854,8 +854,8 @@ echo "
 ";
 }
 
-// === The product filter - pulling the attributes for adding them to product LI element. Used in "content-product.php" file in this plugin
-// add_action( 'woocommerce_before_shop_loop_item', molswc_instock_variations ); // "woocommerce_before_shop_loop_item" is just before each item (good for debug)
+// === The product filters
+// Function to pull the the variations with required stock status based on attributes, for adding them to product LI element. Used in "content-product.php" file in this plugin
 function molswc_instock_variations() {
 	global $product; 
 	$variations1=$product->get_children();
@@ -872,9 +872,9 @@ function molswc_instock_variations() {
 	if($data_custom_attribs_list_all) { $data_custom_attribs_list = array_unique($data_custom_attribs_list_all); }
 	return $data_custom_attribs_list;
 }
-// Adding product filter drop down lists (priority 10 so we can add stuff around later; rack top has priority 100, it have to be before that)
-// add_action( 'molswc_before_loop_start', 'molswc_product_filters', 10 );
-function molswc_product_filters() {
+// Creating a board filter drop down list that we'll display with a shortcode
+add_shortcode( 'board_filters', 'molswc_insert_filters_shortcode' );
+function molswc_insert_filters_shortcode(){
 	// pick possible model and width from URL
 	$preselect_model = strtolower(strip_tags($_GET["model"]));
 	$preselect_width = strip_tags($_GET["width"]);
@@ -884,17 +884,12 @@ function molswc_product_filters() {
 			<select id="filterModels" name="Models">
 			  <option value="" selected disabled hidden>All Shapes</option>
 			</select>
-			<select id="filterWidths" ame="Widths">
+			<select id="filterWidths" name="Widths">
 			  <option value="" selected disabled hidden>All Widths</option>
 			</select>
 			<a id="reset-product-filters" href="#/">Clear</a>
 		</form>
 	';
-}
-// Add the shortcode used to display the filters
-add_shortcode( 'board_filters', 'molswc_insert_filters_shortcode' );
-function molswc_insert_filters_shortcode(){
-	molswc_product_filters();
 }
 
 // === User subscription-able

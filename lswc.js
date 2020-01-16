@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.0
+ * Version: 1.4.1
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -339,9 +339,6 @@ jQuery(document).delegate( 'select[name="Widths"]', 'change', function() { disab
 // *** Functions definitions below:
 // FUNCTIONS collection to initialize rack filters at 1st display
 function rackFiltersInit() {
-	
-	console.log("JS v17 loaded");
-	
 	populateBoardFilters(); // Populate the filters drop-downs with options to match available boards in the page
 	enableOnlyAvailableModelsAndWidths(); // Then *enable* only available Models and Widths (they come out initially "disabled")
 	takeOutUnavailableBoards(); // Then take out unavailable boards - in case model/width comes preselected via GET variables
