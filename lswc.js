@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.1.24
+ * Version: 1.4.0
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -339,7 +339,11 @@ jQuery(document).delegate( 'select[name="Widths"]', 'change', function() { disab
 // *** Functions definitions below:
 // FUNCTIONS collection to initialize rack filters at 1st display
 function rackFiltersInit() {
-	enableOnlyAvailableModelsAndWidths(); // First *enable* only available Models and Widths (they come out initially "disabled")
+	
+	console.log("JS v17 loaded");
+	
+	populateBoardFilters(); // Populate the filters drop-downs with options to match available boards in the page
+	enableOnlyAvailableModelsAndWidths(); // Then *enable* only available Models and Widths (they come out initially "disabled")
 	takeOutUnavailableBoards(); // Then take out unavailable boards - in case model/width comes preselected via GET variables
 	disableImpossibleWitdhs(); // Then arrange the filters to match availability of board combinations - again in case model/width comes preselected via GET variables
 	disableImpossibleModels();
@@ -451,9 +455,28 @@ function getAllAttributes() {
 				allattributes.push(liattributesfulllist);
 			}
 		}
-	});
+	}); 
 	return allattributes;
 }
+// FUNCTION to populate the filters initially
+function populateBoardFilters() { 
+	var allModelsUnique = [];
+	var allWidthsUnique = [];
+	// Get all possible attributes first
+	var allAttribs = getAllAttributes();
+	// Loop through all attributes we got before
+	jQuery.each(allAttribs, function(attID,attComplete) {
+		// Split the attribute at space, so we get Model and Width (What happens if there will be a Model with 2 words? Need to catch that later)
+		var attSplit = attComplete.split(' ');
+		// If not there already, add Model and Width to their dedicated arrays
+		if (jQuery.inArray( attSplit[0], allModelsUnique ) == -1) { allModelsUnique.push(attSplit[0]); }
+		if (jQuery.inArray( attSplit[1], allWidthsUnique ) == -1) { allWidthsUnique.push(attSplit[1]); }
+		//jQuery("#filterWidths").append(new Option(attWidth, attWidth));
+	});
+	// Finally add the options with names and values based on the arrays above
+	jQuery.each(allModelsUnique, function(modelID,modelName) { jQuery("#filterModels").append(new Option(modelName, modelName)); });
+	jQuery.each(allWidthsUnique, function(widthID,widthName) { jQuery("#filterWidths").append(new Option(widthName, widthName)); });
+};
 
 // === Payment Plans buttons re-fit into their container (used in popup AND in single board page)
 // One refit function for all the cases:

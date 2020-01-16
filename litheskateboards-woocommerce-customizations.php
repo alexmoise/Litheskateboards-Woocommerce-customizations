@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.3.8
+ * Version: 1.4.0
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -873,81 +873,28 @@ function molswc_instock_variations() {
 	return $data_custom_attribs_list;
 }
 // Adding product filter drop down lists (priority 10 so we can add stuff around later; rack top has priority 100, it have to be before that)
-add_action( 'molswc_before_loop_start', 'molswc_product_filters', 10 );
+// add_action( 'molswc_before_loop_start', 'molswc_product_filters', 10 );
 function molswc_product_filters() {
-	// querying all the boards in the "Decks" category:
-	$boards_IDs = new WP_Query( array(
-	'post_type' => 'product',
-	'post_status' => 'publish',
-	'fields' => 'ids', 
-		'tax_query' => array(
-			array(
-				'taxonomy' => 'product_cat',
-				'field' => 'term_id',
-				'terms' => '7', // '7' is the "Decks" category
-				'operator' => 'IN',
-			)
-		)
-	) );
-	$all_boards = $boards_IDs->posts;
-	// pulling the variations of each board:
-	foreach ($all_boards as $single_board) {
-		$product = wc_get_product($single_board);
-		$board_variations = $product->get_children();
-		foreach ($board_variations as $board_variation) {
-			$single_variation=new WC_Product_Variation($board_variation);
-			$var_model_and_size = array_values($single_variation->get_variation_attributes())[0];
-			$all_model_and_sizes[] = $var_model_and_size; 
-		}
-		$unique_models_and_sizes[] = array_unique($all_model_and_sizes);
-	}
-	$flat_models_and_sizes_list = molswc_flat_array($unique_models_and_sizes);
-	$final_models_and_sizes_list = array_unique($flat_models_and_sizes_list); 
-	$chosen_attribs = molswc_designated_options();
-	foreach ( $chosen_attribs as $chosen_attrib ) { 
-		$only_widths[] = str_replace($chosen_attrib." ", "", $final_models_and_sizes_list);
-	}
-	$flat_only_widths = molswc_flat_array($only_widths);
-	foreach ( $chosen_attribs as $chosen_attrib ) { 
-		foreach ($flat_only_widths as $key => $width) {
-			if (strpos($width,$chosen_attrib) !== false) {
-				unset($flat_only_widths[$key]);
-			}
-		}
-	}
-	$unique_only_widths = array_unique($flat_only_widths);
-	sort($unique_only_widths);
 	// pick possible model and width from URL
 	$preselect_model = strtolower(strip_tags($_GET["model"]));
 	$preselect_width = strip_tags($_GET["width"]);
 	// now echo the selectors
 	echo '
 		<form id="product-filters" class="product-filters">
-			<select name="Models">
-			  <option value="" selected disabled hidden>All Shapes</option>';
-			  foreach ( $chosen_attribs as $chosen_attrib ) { 
-				echo '<option value="'.$chosen_attrib.'" disabled="disabled" '; 
-				if ( strtolower($chosen_attrib) == $preselect_model) {echo 'selected';} 
-				echo'>'.$chosen_attrib.'</option>';
-			  }
-	echo '  </select>
-			<select name="Widths">
-			  <option value="" selected disabled hidden>All Widths</option>';
-			  foreach ( $unique_only_widths as $width ) { 
-				echo '<option value="'.$width.'" disabled="disabled" '; 
-				if ($width == $preselect_width) {echo 'selected';}
-				echo'>'.$width.'</option>';
-			  }
-	echo '  </select>
+			<select id="filterModels" name="Models">
+			  <option value="" selected disabled hidden>All Shapes</option>
+			</select>
+			<select id="filterWidths" ame="Widths">
+			  <option value="" selected disabled hidden>All Widths</option>
+			</select>
 			<a id="reset-product-filters" href="#/">Clear</a>
 		</form>
 	';
 }
-// Flatten that array ... (used a couple of times in the function above)
-function molswc_flat_array(array $array) {
-    $return = array();
-    array_walk_recursive($array, function($a) use (&$return) { $return[] = $a; });
-    return $return;
+// Add the shortcode used to display the filters
+add_shortcode( 'board_filters', 'molswc_insert_filters_shortcode' );
+function molswc_insert_filters_shortcode(){
+	molswc_product_filters();
 }
 
 // === User subscription-able
