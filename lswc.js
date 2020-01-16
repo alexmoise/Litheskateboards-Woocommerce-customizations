@@ -468,7 +468,6 @@ function populateBoardFilters() {
 		// If not there already, add Model and Width to their dedicated arrays
 		if (jQuery.inArray( attSplit[0], allModelsUnique ) == -1) { allModelsUnique.push(attSplit[0]); }
 		if (jQuery.inArray( attSplit[1], allWidthsUnique ) == -1) { allWidthsUnique.push(attSplit[1]); }
-		//jQuery("#filterWidths").append(new Option(attWidth, attWidth));
 	});
 	// Finally add the options with names and values based on the arrays above
 	jQuery.each(allModelsUnique, function(modelID,modelName) { jQuery("#filterModels").append(new Option(modelName, modelName)); });
