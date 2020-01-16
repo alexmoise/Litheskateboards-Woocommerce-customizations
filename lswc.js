@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.3
+ * Version: 1.4.4
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -340,7 +340,8 @@ jQuery(document).delegate( 'select[name="Widths"]', 'change', function() { disab
 // FUNCTIONS collection to initialize rack filters at 1st display
 function rackFiltersInit() {
 	populateBoardFilters(); // Populate the filters drop-downs with options to match available boards in the page
-	enableOnlyAvailableModelsAndWidths(); // Then *enable* only available Models and Widths (they come out initially "disabled")
+	URLParametersPreSelectFilters(); // Then add Select attributes if we have GET parameters for this
+	// enableOnlyAvailableModelsAndWidths(); // Then *enable* only available Models and Widths (they come out initially "disabled")
 	takeOutUnavailableBoards(); // Then take out unavailable boards - in case model/width comes preselected via GET variables
 	disableImpossibleWitdhs(); // Then arrange the filters to match availability of board combinations - again in case model/width comes preselected via GET variables
 	disableImpossibleModels();
@@ -474,7 +475,20 @@ function populateBoardFilters() {
 	allModelsUnique.sort(); allWidthsUnique.sort();
 	// Finally add the options with names and values based on the arrays above
 	jQuery.each(allModelsUnique, function(modelID,modelName) { jQuery("#filterModels").append(new Option(modelName, modelName)); });
-	jQuery.each(allWidthsUnique, function(widthID,widthName) { jQuery("#filterWidths").append(new Option(widthName, widthName)); });
+	jQuery.each(allWidthsUnique, function(widthID,widthName) { jQuery("#filterWidths").append(new Option(widthName, widthName)); });	
+};
+
+// FUNCTION to get URL parameters, used to pre-set the filters afterwards
+function URLParametersPreSelectFilters(){
+	// Read the URL first
+    var urlString = window.location.href;
+	var url = new URL(urlString);
+	// Get the "model" and "width" parameters from URL
+	var urlModel = url.searchParams.get("model");
+	var urlWidth = url.searchParams.get("width");
+	// Add the "select" properties to these options if present & defined
+	if (urlModel !== null) { jQuery('#filterModels option[value="'+urlModel+'"]').prop("selected","selected"); }
+	if (urlWidth !== null) { jQuery('#filterWidths option[value="'+urlWidth+'"]').prop("selected","selected"); }
 };
 
 // === Payment Plans buttons re-fit into their container (used in popup AND in single board page)
