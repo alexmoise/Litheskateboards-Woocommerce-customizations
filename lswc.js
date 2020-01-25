@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.4
+ * Version: 1.4.5
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -345,7 +345,6 @@ function rackFiltersInit() {
 	takeOutUnavailableBoards(); // Then take out unavailable boards - in case model/width comes preselected via GET variables
 	disableImpossibleWitdhs(); // Then arrange the filters to match availability of board combinations - again in case model/width comes preselected via GET variables
 	disableImpossibleModels();
-	bothFiltersDisabled(); // Do something when preselected filters combination is not possible
 }
 // FUNCTION to reset rack filters
 function rackFiltersReset() {
@@ -356,16 +355,7 @@ function rackFiltersReset() {
 	enableOnlyAvailableModelsAndWidths(); // ...then enable back only those that are available!
 	jQuery ('ul.products li').fadeIn(); // ...and fade in all boards again!
 }
-// FUNCTION to check if pre-selected MODEL and WIDTH are both disabled
-// With multiple racks and shortcoded filters, can we still use this as it is?
-function bothFiltersDisabled() {
-	if ( jQuery('.product-filters select[name="Models"] :selected').is('[disabled=disabled]') && jQuery('.product-filters select[name="Widths"] :selected').is('[disabled=disabled]') ) {
-		// for the moment console.log a message; will insert a DOM element later, with an image sign showing "No boards found" and maybe a reset link
-		// console.log('Invalid Selection!');
-		// rackFiltersReset();
-	} 
-}
-// FUNCTION to take out not available boards IN SHOP PAGE (out of "the rack" actually)
+// FUNCTION to take out of "the rack" all not available boards
 function takeOutUnavailableBoards() {
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
 	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
@@ -478,7 +468,7 @@ function populateBoardFilters() {
 	jQuery.each(allWidthsUnique, function(widthID,widthName) { jQuery("#filterWidths").append(new Option(widthName, widthName)); });	
 };
 
-// FUNCTION to get URL parameters, used to pre-set the filters afterwards
+// FUNCTION to get URL parameters, and pre-set the filters afterwards
 function URLParametersPreSelectFilters(){
 	// Read the URL first
     var urlString = window.location.href;
@@ -486,9 +476,17 @@ function URLParametersPreSelectFilters(){
 	// Get the "model" and "width" parameters from URL
 	var urlModel = url.searchParams.get("model");
 	var urlWidth = url.searchParams.get("width");
-	// Add the "select" properties to these options if present & defined
-	if (urlModel !== null) { jQuery('#filterModels option[value="'+urlModel+'"]').prop("selected","selected"); }
-	if (urlWidth !== null) { jQuery('#filterWidths option[value="'+urlWidth+'"]').prop("selected","selected"); }
+	// Check if pre-selected option would be possible to select
+	var optionPossible = checkIfModelWidthExists( urlModel, urlWidth, getAllAttributes() );
+	//Then, based on the result of the above:
+	if (optionPossible) {
+		// Add the "select" properties to these options if present & defined
+		if (urlModel !== null) { jQuery('#filterModels option[value="'+urlModel+'"]').prop("selected","selected"); }
+		if (urlWidth !== null) { jQuery('#filterWidths option[value="'+urlWidth+'"]').prop("selected","selected"); }
+	} else { 
+		// Do something else (TBD what):
+		console.log('Pre-selected options are not possible or invalid.'); 
+	}
 };
 
 // === Payment Plans buttons re-fit into their container (used in popup AND in single board page)
