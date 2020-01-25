@@ -1,12 +1,13 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.5
+ * Version: 1.4.6
  * (version above is equal with main plugin file version when this file was updated)
  */
 
 // === Add and remove a class to the "Header" element when scrolling down or returning ===
 // Used with 2 CSS rules to throw the logo over the top when scrolling - see the CSS file for that
-var $header = jQuery( ".header_color" );         
+var $header = jQuery( ".header_color" );  
+var $sticky = jQuery( ".sticky_column" );         
 var appScroll = appScrollForward;
 var appScrollPosition = 0;
 var appScrollInterval = 70;
@@ -17,6 +18,7 @@ function appScrollReverse() {
 	if ( appScrollPosition > appScrollInterval )
 		return;
 	$header.removeClass( appClassToAdd );
+	$sticky.removeClass( appClassToAdd );
 	appScroll = appScrollForward;
 }
 function appScrollForward() {
@@ -24,6 +26,7 @@ function appScrollForward() {
 	if ( appScrollPosition < appScrollInterval )
 		return;
 	$header.addClass( appClassToAdd );
+	$sticky.addClass( appClassToAdd );
 	appScroll = appScrollReverse;
 }
 function appScrollHandler() {

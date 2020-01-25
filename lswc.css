@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.2
+ * Version: 1.4.6
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -365,6 +365,33 @@ form#product-filters option {
 }
 form#product-filters option:disabled {
     color: #444;
+}
+/* set a "sticky_column" class to use wherever is needed */
+/* Apply the stickyness only when scrolled */
+.sticky_column {
+    transition-duration: .5s;
+}
+@media (max-width: 560px) {
+	.sticky_column.scrolled {
+		position: fixed !important;
+		z-index: 999 !important;
+		width: auto !important;
+		right: 20px !important;
+		left: 20px !important;
+		bottom: 100px;
+		margin-bottom: 0 !important;
+		transform: translate(0, 100px);
+	}
+	/* Set first wrapper above footer */
+	.container_wrap_first {
+		z-index: 99 !important;
+	}
+	/* Put the Clear link above, only for sticky, only when scrolled */
+	.sticky_column.scrolled a#reset-product-filters {
+		position: absolute;
+		top: -24px;
+		right: 5px;
+	}
 }
 
 /* xoo Product Popup styling */
