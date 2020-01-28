@@ -1,10 +1,13 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.6
+ * Version: 1.4.7
  * (version above is equal with main plugin file version when this file was updated)
  */
  
 /* LSWC Header changes */
+html {
+    background-color: #212121;
+}
 body:not(.single-product) #wrap_all {
     background-color: #212121 !important;
 }
@@ -16,6 +19,9 @@ body.single-product p+h1 {
 }
 .main_menu a.cart_dropdown_link {
 	padding: 0 20px !important;
+}
+div.container * {
+    overflow-wrap: break-word;
 }
 @media only screen and (max-width: 860px) {
 	.main_menu a.cart_dropdown_link {
@@ -123,11 +129,14 @@ body.single-product p+h1 {
 	#header.scrolled .logo {
 		margin-top: -70px;
 	}
+	body.admin-bar #header.scrolled .logo {
+		margin-top: -116px;
+	}
 	#header:not(.scrolled) .logo {
 		margin-top: 0px;
 	}
 	#header .logo {
-		transition-duration: .5s;
+		transition-duration: .4s;
 		transition-timing-function: cubic-bezier(0.8, 0, 0.3, 1);
 	}
 }
@@ -366,31 +375,22 @@ form#product-filters option {
 form#product-filters option:disabled {
     color: #444;
 }
-/* set a "sticky_column" class to use wherever is needed */
-/* Apply the stickyness only when scrolled */
-.sticky_column {
-    transition-duration: .5s;
-}
-@media (max-width: 560px) {
-	.sticky_column.scrolled {
-		position: fixed !important;
-		z-index: 999 !important;
-		width: auto !important;
-		right: 20px !important;
-		left: 20px !important;
-		bottom: 100px;
-		margin-bottom: 0 !important;
-		transform: translate(0, 100px);
+/* set a "sticky_column" class to use wherever is needed, BUT we need to set some overflows for this to work */
+@media (max-width: 520px) {
+	.sticky_column {
+		position: sticky !important;
+		top: 80px;
+		z-index:99 !important;
 	}
-	/* Set first wrapper above footer */
-	.container_wrap_first {
-		z-index: 99 !important;
+	body#top {
+		overflow: unset !important;
+		/* margin-top: -140px; */
 	}
-	/* Put the Clear link above, only for sticky, only when scrolled */
-	.sticky_column.scrolled a#reset-product-filters {
-		position: absolute;
-		top: -24px;
-		right: 5px;
+	div#wrap_all {
+		overflow: unset !important;
+	}
+	.responsive #top #wrap_all #header {
+		margin: -140px 0 0 0 !important;
 	}
 }
 

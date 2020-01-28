@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.6
+ * Version: 1.4.7
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -18,7 +18,7 @@ function appScrollReverse() {
 	if ( appScrollPosition > appScrollInterval )
 		return;
 	$header.removeClass( appClassToAdd );
-	$sticky.removeClass( appClassToAdd );
+	//$sticky.removeClass( appClassToAdd );
 	appScroll = appScrollForward;
 }
 function appScrollForward() {
@@ -26,7 +26,7 @@ function appScrollForward() {
 	if ( appScrollPosition < appScrollInterval )
 		return;
 	$header.addClass( appClassToAdd );
-	$sticky.addClass( appClassToAdd );
+	//$sticky.addClass( appClassToAdd );
 	appScroll = appScrollReverse;
 }
 function appScrollHandler() {
