@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.4.9
+ * Version: 1.4.10
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -1394,7 +1394,10 @@ function molswc_lithe_rack_generator( $atts ) {
 	// get attributes first. in a form that can be used to compose the woocommerce shortcode
 	$int_category = $atts['category'];
 	$int_columns = $atts['columns'];
-	$int_noracks = $atts['no_racks'];
+	$int_noracks = 213440; //$atts['no_racks']; // ... and have the ID passed by in shortcode
+	$noproducts_image = wp_get_attachment_image($int_noracks, array(1000, 250));
+	// <img width="1000" height="250" src="/wp-content/uploads/2020/02/SD2_NoWay_01.png" class="attachment-shop_catalog size-shop_catalog wp-post-image" alt="">
+	
 	// compose the shortcode as it would be put in content but based on atts above
 	$shortcode_composer = '[products category="'.$int_category.'" columns="'.$int_columns.'"]';
 	$woo_shortcode = do_shortcode($shortcode_composer);
@@ -1402,6 +1405,20 @@ function molswc_lithe_rack_generator( $atts ) {
 	$top_image_file_url = plugins_url('images/Rack_Top.png', __FILE__);
 	$bottom_image_file_url = plugins_url('images/Rack_Bottom.png', __FILE__);
 	// start writing the HTML OPENING of the racks
+	
+	$lithe_no_products = '
+		<ul class="products not_available" style="display:none;">
+			<li class="product first type-product status-publish has-post-thumbnail instock taxable purchasable product-type-variable">
+				<div class="inner_product main_color wrapped_style noLightbox  av-product-class-">
+					<a href="#" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">
+						<div class="thumbnail_container">
+							'.$noproducts_image.'
+						</div>
+					</a>
+				</div>
+			</li>
+		</ul>
+	';
 	$lithe_rack_start = '
 		<!-- Rack START: -->
 		<div class="lithe_rack_type_display">
@@ -1420,10 +1437,10 @@ function molswc_lithe_rack_generator( $atts ) {
 	';
 	$lithe_rack_stop = '
 		</div>
-		<!-- Rack END. v03 -->
+		<!-- Rack END. v07 -->
 	';
 	// now put everything in one string
-	$lithe_rack_complete = $lithe_rack_start.$lithe_rack_top.$woo_shortcode.$lithe_rack_bottom.$lithe_rack_stop;
+	$lithe_rack_complete = $lithe_rack_start.$lithe_rack_top.$woo_shortcode.$lithe_no_products.$lithe_rack_bottom.$lithe_rack_stop;
 	// ... and finally return it for usage wherever is needed :-)
 	return $lithe_rack_complete;
 }
