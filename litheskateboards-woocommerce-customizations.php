@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.4.7
+ * Version: 1.4.8
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -1386,6 +1386,25 @@ function molswc_enable_processing_to_on_hold_notification( $order_id, $order ){
     $mailer = WC()->mailer()->get_emails();
     // Finally send the "On Hold" notification
     $mailer['WC_Email_Customer_On_Hold_Order']->trigger( $order_id );
+}
+
+// === Using a shortcode to fire up the board racks, using internally a Woocommerce shortcode and few other params we need for customizing list as rack
+add_shortcode( 'lithe_rack', 'molswc_lithe_rack_generator' );
+function molswc_lithe_rack_generator( $atts ) {
+	$atts = shortcode_atts( array(
+		'no_racks' => 'no-racks-image-here',
+		'category' => 'category-here',
+		'columns' => '1'
+	), $atts, 'lithe_rack' ); 
+	
+	$int_category = $atts['category'];
+	$int_columns = $atts['columns'];
+	$int_noracks = $atts['no_racks'];
+	
+	$shortcode_composer = '[products category="'.$int_category.'" columns="'.$int_columns.'"]';
+	$woo_shortcode = do_shortcode($shortcode_composer);
+	
+	return $woo_shortcode;
 }
 
 // === Fragment cache functions below
