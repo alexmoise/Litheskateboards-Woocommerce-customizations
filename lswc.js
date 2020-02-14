@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.7
+ * Version: 1.4.11
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -375,6 +375,23 @@ function takeOutUnavailableBoards() {
 		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filtercomplete+'"]').fadeIn(); 
 		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filtercomplete+'"]').fadeOut(); 
 	}
+}
+// FUNCTION to show/hide "boards unavailable" board placeholder based on number of dispayed available boards
+function showHideNoBoardsPlaceholder() {
+	jQuery( ".lithe_rack_type_display" ).each(function() {
+	  var boards_hidden = jQuery( this ).find('ul.products:not(.not_available) > li.product:hidden').length;
+	  var boards_showed = jQuery( this ).find('ul.products:not(.not_available) > li.product').length;
+	  if ( boards_showed == boards_hidden ) {
+			jQuery( this ).find('ul.products.not_available > li.product').show();
+			jQuery( this ).find('ul.products.not_available').show();
+	  } else {
+			jQuery( this ).find('ul.products.not_available > li.product').hide();
+			jQuery( this ).find('ul.products.not_available').hide();
+	  }
+	  console.log(
+		boards_hidden + '/' + boards_showed
+	  );
+	});
 }
 // FUNCTION to disable WIDTHS that are not possible in boards filters drop downs
 function disableImpossibleWitdhs() {
