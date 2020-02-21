@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.4.12
+ * Version: 1.4.13
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -879,8 +879,8 @@ function molswc_instock_variations() {
 add_shortcode( 'board_filters', 'molswc_insert_filters_shortcode' );
 function molswc_insert_filters_shortcode(){
 	// pick possible model and width from URL
-	$preselect_model = strtolower(strip_tags($_GET["model"]));
-	$preselect_width = strip_tags($_GET["width"]);
+	// $preselect_model = strtolower(strip_tags($_GET["model"]));
+	// $preselect_width = strip_tags($_GET["width"]);
 	$selectors_html = '
 		<form id="product-filters" class="product-filters">
 			<select id="filterModels" name="Models">

@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.12
+ * Version: 1.4.13
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -335,10 +335,10 @@ function initAttribVariables() {
 // === Boards filtering functions
 // *** Function callers below:
 jQuery(document).ready(function() { rackFiltersInit(); }); // Run some functions to show the boards rack prepared at shop display
-jQuery(document).on('click', '#reset-product-filters', function() { rackFiltersReset(); }); // Reset filters and bring in all boards again
-jQuery(document).delegate( '.product-filters', 'change', function() { takeOutUnavailableBoards(); }); // Fire the "take-out-unavailable-boards" function at each Model/Width chose
-jQuery(document).delegate( 'select[name="Models"]', 'change', function() { disableImpossibleWitdhs(); }); // Disable WIDTHS that are not possible at any MODEL change
-jQuery(document).delegate( 'select[name="Widths"]', 'change', function() { disableImpossibleModels(); }); // Disable MODELS that are not possible at any WIDTH change
+jQuery(document).on( 'click',  '#reset-product-filters', function() { rackFiltersReset(); }); // Reset filters and bring in all boards again
+jQuery(document).on( 'change', '.product-filters', function() { takeOutUnavailableBoards(); showHideNoBoardsPlaceholder(); }); // Fire the (un)available boards management functions
+jQuery(document).on( 'change', 'select[name="Models"]', function() { disableImpossibleWitdhs(); }); // Disable WIDTHS that are not possible at any MODEL change
+jQuery(document).on( 'change', 'select[name="Widths"]', function() { disableImpossibleModels(); }); // Disable MODELS that are not possible at any WIDTH change
 // *** Functions definitions below:
 // FUNCTIONS collection to initialize rack filters at 1st display
 function rackFiltersInit() {
@@ -356,41 +356,41 @@ function rackFiltersReset() {
 	jQuery:document.getElementById('product-filters').reset(); // then reset the 'product-filters'
 	jQuery('.product-filters select option').attr('disabled', 'disabled'); // disable all drop down options ...
 	enableOnlyAvailableModelsAndWidths(); // ...then enable back only those that are available!
-	jQuery ('ul.products li').fadeIn(); // ...and fade in all boards again!
+	jQuery ('div.real_products ul.products li').fadeIn(200); // ...and fade in all boards again!
+	jQuery("#product-filters select").find('option:contains("All")').attr("selected",true); // ... and select the "All.." options once again
+	showHideNoBoardsPlaceholder(); // ... and finally deal with Unavailable Placeholder if needed
 }
 // FUNCTION to take out of "the rack" all not available boards
 function takeOutUnavailableBoards() {
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
 	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
 	if ( filtermodel ) { 
-		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filtermodel+'"]').fadeIn(); 
-		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filtermodel+'"]').fadeOut(); 
+		jQuery ( 'div.real_products ul.products li[data-custom-attribs-list*="'+filtermodel+'"]').fadeIn(200); 
+		jQuery ( 'div.real_products ul.products li' ).not('[data-custom-attribs-list*="'+filtermodel+'"]').fadeOut(200); 
 	}
 	if ( filterwidth ) { 
-		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filterwidth+'"]').fadeIn(); 
-		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filterwidth+'"]').fadeOut(); 
+		jQuery ( 'div.real_products ul.products li[data-custom-attribs-list*="'+filterwidth+'"]').fadeIn(200); 
+		jQuery ( 'div.real_products ul.products li' ).not('[data-custom-attribs-list*="'+filterwidth+'"]').fadeOut(200); 
 	}
 	if ( filtermodel && filterwidth ) { 
 		filtercomplete = filtermodel + ' ' + filterwidth;
-		jQuery ( 'ul.products li[data-custom-attribs-list*="'+filtercomplete+'"]').fadeIn(); 
-		jQuery ( 'ul.products li' ).not('[data-custom-attribs-list*="'+filtercomplete+'"]').fadeOut(); 
+		jQuery ( 'div.real_products ul.products li[data-custom-attribs-list*="'+filtercomplete+'"]').fadeIn(200); 
+		jQuery ( 'div.real_products ul.products li' ).not('[data-custom-attribs-list*="'+filtercomplete+'"]').fadeOut(200); 
 	}
 }
 // FUNCTION to show/hide "boards unavailable" board placeholder based on number of dispayed available boards
-// Use it with: jQuery('#filterWidths').change( function() {   });
 function showHideNoBoardsPlaceholder() {
-	jQuery( ".lithe_rack_type_display" ).each(function() {
-	  var boards_hidden = jQuery( this ).find('.real_products ul.products > li.product:hidden').length;
-	  var boards_showed = jQuery( this ).find('.real_products ul.products > li.product').length;
-	  if ( boards_showed == boards_hidden ) {
-			jQuery( this ).find('.not_products ul.products > li.product').show();
-	  } else {
-			jQuery( this ).find('.not_products ul.products > li.product').hide();
-	  }
-	  console.log(
-		boards_hidden + '/' + boards_showed
-	  );
-	});
+	setTimeout(function() {
+		jQuery( ".lithe_rack_type_display" ).each(function() {
+		  var boards_hidden = jQuery( this ).find('.real_products ul.products > li.product:hidden').length;
+		  var boards_showed = jQuery( this ).find('.real_products ul.products > li.product').length;
+		  if ( boards_showed == boards_hidden ) {
+				jQuery( this ).find('.not_products ul.products > li.product').show();
+		  } else {
+				jQuery( this ).find('.not_products ul.products > li.product').hide();
+		  }
+		});
+	}, 250); // 250 is set to be bigger than the 200 set in fadeIn and fadeOut ops in the takeOutUnavailableBoards() function
 }
 // FUNCTION to disable WIDTHS that are not possible in boards filters drop downs
 function disableImpossibleWitdhs() {
