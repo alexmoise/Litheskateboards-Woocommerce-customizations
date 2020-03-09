@@ -1394,7 +1394,7 @@ function molswc_lithe_rack_generator( $atts ) {
 	// get attributes first. in a form that can be used to compose the woocommerce shortcode
 	$int_category = $atts['category'];
 	$int_columns = $atts['columns'];
-	$int_noracks = 213440; //$atts['no_racks']; // ... and have the ID passed by in shortcode
+	$int_noracks = 213596; //$atts['no_racks']; // ... and have the ID passed by in shortcode (213596)
 	$noproducts_image = wp_get_attachment_image($int_noracks, array(1000, 250));
 	// <img width="1000" height="250" src="/wp-content/uploads/2020/02/SD2_NoWay_01.png" class="attachment-shop_catalog size-shop_catalog wp-post-image" alt="">
 	
@@ -1407,9 +1407,9 @@ function molswc_lithe_rack_generator( $atts ) {
 	// start writing the HTML OPENING of the racks
 	
 	$lithe_no_products = '
-		<div class="woocommerce not_products">
+		<div class="woocommerce not_products" style="display: none;">
 			<ul class="products">
-				<li style="display: none;" class="product first type-product status-publish has-post-thumbnail instock taxable purchasable product-type-variable">
+				<li class="product first type-product status-publish has-post-thumbnail instock taxable purchasable product-type-variable">
 					<div class="inner_product main_color wrapped_style noLightbox  av-product-class-">
 						<a href="#" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">
 							<div class="thumbnail_container">
@@ -1442,7 +1442,7 @@ function molswc_lithe_rack_generator( $atts ) {
 		<!-- Rack END. v07 -->
 	';
 	// now put everything in one string
-	$lithe_rack_complete = $lithe_rack_start.$lithe_rack_top.$woo_shortcode.$lithe_no_products.$lithe_rack_bottom.$lithe_rack_stop;
+	$lithe_rack_complete = $lithe_rack_start.$lithe_rack_top.$woo_shortcode.$lithe_rack_bottom.$lithe_no_products.$lithe_rack_stop;
 	// ... and finally return it for usage wherever is needed :-)
 	return $lithe_rack_complete;
 }

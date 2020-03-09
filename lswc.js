@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.13
+ * Version: 1.4.14
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -348,6 +348,7 @@ function rackFiltersInit() {
 	takeOutUnavailableBoards(); // Then take out unavailable boards - in case model/width comes preselected via GET variables
 	disableImpossibleWitdhs(); // Then arrange the filters to match availability of board combinations - again in case model/width comes preselected via GET variables
 	disableImpossibleModels();
+	console.log('Hey 01');
 }
 // FUNCTION to reset rack filters
 function rackFiltersReset() {
@@ -379,15 +380,19 @@ function takeOutUnavailableBoards() {
 	}
 }
 // FUNCTION to show/hide "boards unavailable" board placeholder based on number of dispayed available boards
-function showHideNoBoardsPlaceholder() {
+function showHideNoBoardsPlaceholder() { 
 	setTimeout(function() {
 		jQuery( ".lithe_rack_type_display" ).each(function() {
 		  var boards_hidden = jQuery( this ).find('.real_products ul.products > li.product:hidden').length;
 		  var boards_showed = jQuery( this ).find('.real_products ul.products > li.product').length;
 		  if ( boards_showed == boards_hidden ) {
-				jQuery( this ).find('.not_products ul.products > li.product').show();
+				jQuery( this ).find('.not_products').show();
+				jQuery( this ).find('.rack_top').hide();
+				jQuery( this ).find('.rack_bottom').hide();
 		  } else {
-				jQuery( this ).find('.not_products ul.products > li.product').hide();
+				jQuery( this ).find('.not_products').hide();
+				jQuery( this ).find('.rack_top').show();
+				jQuery( this ).find('.rack_bottom').show();
 		  }
 		});
 	}, 250); // 250 is set to be bigger than the 200 set in fadeIn and fadeOut ops in the takeOutUnavailableBoards() function
