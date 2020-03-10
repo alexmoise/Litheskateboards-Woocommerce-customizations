@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.15
+ * Version: 1.4.16
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -508,8 +508,9 @@ function URLParametersPreSelectFilters(){
 		if (urlWidth !== null) { jQuery('#filterWidths option[value="'+urlWidth+'"]').prop("selected","selected"); }
 	} else { 
 		// Do something else (TBD what):
-		console.log('Pre-selected options are not possible or invalid.'); 
+		console.log('Pre-selected options are not possible, non-existent or invalid.'); 
 	}
+	showHideNoBoardsPlaceholder();
 };
 
 // === Payment Plans buttons re-fit into their container (used in popup AND in single board page)
