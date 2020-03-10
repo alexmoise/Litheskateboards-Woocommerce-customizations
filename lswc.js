@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.14
+ * Version: 1.4.15
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -348,7 +348,6 @@ function rackFiltersInit() {
 	takeOutUnavailableBoards(); // Then take out unavailable boards - in case model/width comes preselected via GET variables
 	disableImpossibleWitdhs(); // Then arrange the filters to match availability of board combinations - again in case model/width comes preselected via GET variables
 	disableImpossibleModels();
-	console.log('Hey 01');
 }
 // FUNCTION to reset rack filters
 function rackFiltersReset() {
@@ -366,17 +365,17 @@ function takeOutUnavailableBoards() {
 	var filtermodel = jQuery('.product-filters select[name="Models"] :selected').val();
 	var filterwidth = jQuery('.product-filters select[name="Widths"] :selected').val();
 	if ( filtermodel ) { 
-		jQuery ( 'div.real_products ul.products li[data-custom-attribs-list*="'+filtermodel+'"]').fadeIn(200); 
-		jQuery ( 'div.real_products ul.products li' ).not('[data-custom-attribs-list*="'+filtermodel+'"]').fadeOut(200); 
+		jQuery ( 'div.real_products ul.products li[data-custom-attribs-list*="'+filtermodel+'"]').fadeIn(150); 
+		jQuery ( 'div.real_products ul.products li' ).not('[data-custom-attribs-list*="'+filtermodel+'"]').fadeOut(150); 
 	}
 	if ( filterwidth ) { 
-		jQuery ( 'div.real_products ul.products li[data-custom-attribs-list*="'+filterwidth+'"]').fadeIn(200); 
-		jQuery ( 'div.real_products ul.products li' ).not('[data-custom-attribs-list*="'+filterwidth+'"]').fadeOut(200); 
+		jQuery ( 'div.real_products ul.products li[data-custom-attribs-list*="'+filterwidth+'"]').fadeIn(150); 
+		jQuery ( 'div.real_products ul.products li' ).not('[data-custom-attribs-list*="'+filterwidth+'"]').fadeOut(150); 
 	}
 	if ( filtermodel && filterwidth ) { 
 		filtercomplete = filtermodel + ' ' + filterwidth;
-		jQuery ( 'div.real_products ul.products li[data-custom-attribs-list*="'+filtercomplete+'"]').fadeIn(200); 
-		jQuery ( 'div.real_products ul.products li' ).not('[data-custom-attribs-list*="'+filtercomplete+'"]').fadeOut(200); 
+		jQuery ( 'div.real_products ul.products li[data-custom-attribs-list*="'+filtercomplete+'"]').fadeIn(150); 
+		jQuery ( 'div.real_products ul.products li' ).not('[data-custom-attribs-list*="'+filtercomplete+'"]').fadeOut(150); 
 	}
 }
 // FUNCTION to show/hide "boards unavailable" board placeholder based on number of dispayed available boards
@@ -395,7 +394,7 @@ function showHideNoBoardsPlaceholder() {
 				jQuery( this ).find('.rack_bottom').show();
 		  }
 		});
-	}, 250); // 250 is set to be bigger than the 200 set in fadeIn and fadeOut ops in the takeOutUnavailableBoards() function
+	}, 310); // 310 is set to be bigger than the 150 x 2 set in fadeIn and fadeOut ops in the takeOutUnavailableBoards() function
 }
 // FUNCTION to disable WIDTHS that are not possible in boards filters drop downs
 function disableImpossibleWitdhs() {

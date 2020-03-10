@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.4.14
+ * Version: 1.4.15
  * Author: Alex Moise
  * Author URI: https://moise.pro
  */
@@ -1394,7 +1394,7 @@ function molswc_lithe_rack_generator( $atts ) {
 	// get attributes first. in a form that can be used to compose the woocommerce shortcode
 	$int_category = $atts['category'];
 	$int_columns = $atts['columns'];
-	$int_noracks = 213596; //$atts['no_racks']; // ... and have the ID passed by in shortcode (213596)
+	$int_noracks = $atts['no_racks']; // ... and have the ID passed by in shortcode (213596)
 	$noproducts_image = wp_get_attachment_image($int_noracks, array(1000, 250));
 	// <img width="1000" height="250" src="/wp-content/uploads/2020/02/SD2_NoWay_01.png" class="attachment-shop_catalog size-shop_catalog wp-post-image" alt="">
 	

@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.7
+ * Version: 1.4.15
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -328,13 +328,19 @@ main.content { padding-bottom: 0 !important; }
 .lithe_rack_type_display li.product .inner_product_header {
     min-height: 0px !important;
 }
+@media (min-width:768px) {
+	.flex_column_table .lithe_rack_type_display .rack_top {
+		transform: translate(0px, -90%);
+	}
+}
 .lithe_rack_type_display img.rack_top_image {
     display: block;
     width: 100%;
 }
 .lithe_rack_type_display img.rack_bottom_image {
     width: 100%;
-	margin-bottom: -9px;
+	margin-bottom: -2px;
+	display: block;
 }
 .lithe_rack_type_display ul.products:after {
     content: ' ';
