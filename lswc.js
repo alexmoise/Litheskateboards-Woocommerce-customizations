@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.16
+ * Version: 1.4.17
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -336,6 +336,7 @@ function initAttribVariables() {
 // *** Function callers below:
 jQuery(document).ready(function() { rackFiltersInit(); }); // Run some functions to show the boards rack prepared at shop display
 jQuery(document).on( 'click',  '#reset-product-filters', function() { rackFiltersReset(); }); // Reset filters and bring in all boards again
+jQuery(document).on( 'click',  '.not_products a.woocommerce-LoopProduct-link', function() { rackFiltersReset(); }); // Reset filters and bring in all boards again - when clicking the NoBoards placeholder as well
 jQuery(document).on( 'change', '.product-filters', function() { takeOutUnavailableBoards(); showHideNoBoardsPlaceholder(); }); // Fire the (un)available boards management functions
 jQuery(document).on( 'change', 'select[name="Models"]', function() { disableImpossibleWitdhs(); }); // Disable WIDTHS that are not possible at any MODEL change
 jQuery(document).on( 'change', 'select[name="Widths"]', function() { disableImpossibleModels(); }); // Disable MODELS that are not possible at any WIDTH change
