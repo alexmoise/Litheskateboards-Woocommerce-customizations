@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.18
+ * Version: 1.4.19
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -142,6 +142,9 @@ div.container * {
 }
 #header .logo {
 	padding: 5px 0 !important;
+}
+#header_main { 
+	background: #000000; 
 }
 
 /* Various forms tweaking especially for mobiles */
