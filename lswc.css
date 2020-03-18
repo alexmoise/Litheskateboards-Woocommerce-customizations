@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.15
+ * Version: 1.4.18
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -43,15 +43,15 @@ div.container * {
 		max-width: 95% !important;
 	}
 	.responsive #top #header_main #menu-item-shop .cart_dropdown_link {
-		line-height: 70px;
+		line-height: 90px;
 	}
 	.responsive #top #menu-item-shop.cart_dropdown {
 		padding: 0 8px !important;
 	}
 	.responsive #top #header_main > .container .main_menu .av-main-nav > li > a, 
 	.responsive #top #wrap_all .av-logo-container {
-		height: 70px;
-		line-height: 70px;
+		height: 90px;
+		line-height: 90px;
 	}
 	.responsive #top #header_main > .container .main_menu .av-main-nav > li > a {
 		padding: 0 8px 0 8px;
@@ -64,7 +64,7 @@ div.container * {
 	}
 	.responsive #top #wrap_all .main_menu, 
 	.responsive #top .logo {
-		height: 70px !important;
+		height: 90px !important;
 		width: fit-content;
 		width: -moz-fit-content;
 	}
@@ -127,10 +127,10 @@ div.container * {
 	/* Class that's scrolling the logo over the top at first scroll */
 	/* please see the JS for the function that's adding/removing the class */
 	#header.scrolled .logo {
-		margin-top: -70px;
+		margin-top: -90px;
 	}
 	body.admin-bar #header.scrolled .logo {
-		margin-top: -116px;
+		margin-top: -136px;
 	}
 	#header:not(.scrolled) .logo {
 		margin-top: 0px;
@@ -139,6 +139,9 @@ div.container * {
 		transition-duration: .4s;
 		transition-timing-function: cubic-bezier(0.8, 0, 0.3, 1);
 	}
+}
+#header .logo {
+	padding: 5px 0 !important;
 }
 
 /* Various forms tweaking especially for mobiles */
