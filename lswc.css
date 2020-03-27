@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.19
+ * Version: 1.4.20
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -80,6 +80,12 @@ div.container * {
 	#wrap_all > #header {
 		position: fixed !important;
 	}
+	body.admin-bar #wrap_all > #header {
+		top:46px;
+	}
+	body:not(.admin-bar) #wrap_all > #header {
+		top:0;
+	}
 	body:not(.home) > #wrap_all > #main {
 		margin-top: 70px !important;
 	}
@@ -90,12 +96,12 @@ div.container * {
 		padding: 32px 0 0 0 !important;
 	}
 }
-@media only screen and (max-width: 520px) {
+@media (max-width: 520px) {
 	body.home #layerslider_10 {
 		margin-top: 70px !important;
 	}
 	body:not(.home) > #wrap_all > #main {
-		margin-top: 140px !important;
+		margin-top: 180px !important;
 	}
 	#header_main nav.main_menu {
 		display: block !important;
@@ -124,27 +130,58 @@ div.container * {
 	.responsive #top #header_main > .container .main_menu .av-main-nav > li > a {
 		padding: 0 6px 0 6px;
 	}
-	/* Class that's scrolling the logo over the top at first scroll */
-	/* please see the JS for the function that's adding/removing the class */
-	#header.scrolled .logo {
-		margin-top: -90px;
-	}
-	body.admin-bar #header.scrolled .logo {
-		margin-top: -136px;
-	}
-	#header:not(.scrolled) .logo {
-		margin-top: 0px;
-	}
-	#header .logo {
-		transition-duration: .4s;
-		transition-timing-function: cubic-bezier(0.8, 0, 0.3, 1);
-	}
 }
 #header .logo {
 	padding: 5px 0 !important;
 }
 #header_main { 
 	background: #000000; 
+}
+
+/* Set up a "sticky_column" class to use wherever is needed, BUT we first need to set some overflows for this to work */
+/* Please see the JS for the function that's adding/removing the class */
+body#top, div#wrap_all { overflow: unset !important; }
+.sticky_column { position: sticky !important; z-index:99 !important; }
+.sticky_involved, #header { transition-duration: .2s; }
+/* And now, the changes: */
+/* min783 - Ddesktop layout */
+@media (min-width: 783px) {
+	body.admin-bar .sticky_column { top: 90px; }
+	body:not(.admin-bar) .sticky_column { top: 58px; }
+	body.admin-bar .sticky_touched { transform: translateY(-70px); }
+	body:not(.admin-bar) .sticky_touched { transform: translateY(-70px); }
+}
+/* max782 - Admin bar changes */
+@media (max-width: 782px) and (min-width: 768px) {
+	body.admin-bar .sticky_column { top: 104px; }
+	body:not(.admin-bar) .sticky_column { top: 58px; }
+	body.admin-bar .sticky_touched { transform: translateY(-70px); }
+	body:not(.admin-bar) .sticky_touched { transform: translateY(-70px); }
+}
+/* max767 - Lithe header changes */
+@media (max-width: 767px) and (min-width: 521px) {
+	div#wpadminbar { position: fixed; }
+	body.admin-bar .sticky_column { top: 128px; }
+	body:not(.admin-bar) .sticky_column { top: 78px; }
+	body.admin-bar .sticky_touched { transform: translateY(-90px); }
+	body:not(.admin-bar) .sticky_touched { transform: translateY(-90px); }
+}
+/* max520 - Lithe header changes again; */
+@media (max-width: 520px) {
+	div#wpadminbar { position: fixed; }
+	body.admin-bar .sticky_column { top: 138px; }
+	body:not(.admin-bar) .sticky_column { top: 86px; }
+	body.admin-bar .sticky_touched { transform: translateY(-94px); }
+	body:not(.admin-bar) .sticky_touched { transform: translateY(-92px); }
+}
+
+/* Class "scrolled" - it's scrolling the logo over the top at first scroll */
+/* Please see the JS for the function that's adding/removing the class */
+@media (max-width: 520px) {
+	html.responsive body#top.admin-bar #wrap_all #header.scrolled { margin-top: -86px !important; }
+	html.responsive body#top:not(.admin-bar) #wrap_all #header.scrolled { margin-top: -88px !important }
+	html.responsive body#top.admin-bar #wrap_all #header:not(.scrolled) { /* margin-top: -3px; */ }
+	html.responsive body#top:not(.admin-bar) #wrap_all #header:not(.scrolled) { /* margin-top: -4px; */ }
 }
 
 /* Various forms tweaking especially for mobiles */
@@ -386,24 +423,6 @@ form#product-filters option {
 }
 form#product-filters option:disabled {
     color: #444;
-}
-/* set a "sticky_column" class to use wherever is needed, BUT we need to set some overflows for this to work */
-@media (max-width: 520px) {
-	.sticky_column {
-		position: sticky !important;
-		top: 80px;
-		z-index:99 !important;
-	}
-	body#top {
-		overflow: unset !important;
-		/* margin-top: -140px; */
-	}
-	div#wrap_all {
-		overflow: unset !important;
-	}
-	.responsive #top #wrap_all #header {
-		margin: -140px 0 0 0 !important;
-	}
 }
 
 /* xoo Product Popup styling */

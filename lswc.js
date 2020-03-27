@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.17
+ * Version: 1.4.20
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -509,7 +509,7 @@ function URLParametersPreSelectFilters(){
 		if (urlWidth !== null) { jQuery('#filterWidths option[value="'+urlWidth+'"]').prop("selected","selected"); }
 	} else { 
 		// Do something else (TBD what):
-		console.log('Pre-selected options are not possible, non-existent or invalid.'); 
+		console.log('Pre-selected options are not possible, non-existent or invalid'); 
 	}
 	showHideNoBoardsPlaceholder();
 };
@@ -571,4 +571,32 @@ function molswc_add_is_pre_order_info() {
 			}
 		}
 	});
+}
+
+// === Sticky section pushing the main header out of the screen
+jQuery(document).ready(function() {
+	var target1 = document.querySelector('#header');
+	var target2 = document.querySelector('.sticky_column');
+	target1.classList.add('sticky_involved');
+	target2.classList.add('sticky_involved');
+	jQuery(window).scroll(function() {
+		clearTimeout(jQuery.data(this, 'scrollTimer'));
+		jQuery.data(this, 'scrollTimer', setTimeout(function() {
+			console.log(molswc_distanceBetweenElems(target1,target2));		
+			if (molswc_distanceBetweenElems(target1,target2)<1){
+				target1.classList.add('sticky_touched');
+				target2.classList.add('sticky_touched');
+			} else {
+				target1.classList.remove('sticky_touched');
+				target2.classList.remove('sticky_touched');
+			}
+		}, 100)); // trigger this at one 10th of second after user stops scrolling
+	});
+});
+// Function that calculates distance between header and a sticky section (need to count them later and only select first one)
+function molswc_distanceBetweenElems(elem1, elem2) {
+    var e1Rect = elem1.getBoundingClientRect();
+    var e2Rect = elem2.getBoundingClientRect();
+    var distance = e2Rect.top - e1Rect.bottom;
+    return distance;
 }
