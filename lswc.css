@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.20
+ * Version: 1.4.21
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -87,7 +87,7 @@ div.container * {
 		top:0;
 	}
 	body:not(.home) > #wrap_all > #main {
-		margin-top: 70px !important;
+		margin-top: 90px !important;
 	}
 	main.template-shop.content {
 		padding-top: 20px;
@@ -143,6 +143,10 @@ div.container * {
 body#top, div#wrap_all { overflow: unset !important; }
 .sticky_column { position: sticky !important; z-index:99 !important; }
 .sticky_involved, #header { transition-duration: .2s; }
+/* This padding-top below MUST be the same as header height for this to work. Current header height is set in Header Custom Height field in Header section in Theme Options */
+@media (min-width: 768px) {
+	.html_header_top.html_header_sticky #top #wrap_all #main { padding-top: 70px !important; }
+}
 /* And now, the changes: */
 /* min783 - Ddesktop layout */
 @media (min-width: 783px) {
@@ -180,8 +184,8 @@ body#top, div#wrap_all { overflow: unset !important; }
 @media (max-width: 520px) {
 	html.responsive body#top.admin-bar #wrap_all #header.scrolled { margin-top: -86px !important; }
 	html.responsive body#top:not(.admin-bar) #wrap_all #header.scrolled { margin-top: -88px !important }
-	html.responsive body#top.admin-bar #wrap_all #header:not(.scrolled) { /* margin-top: -3px; */ }
-	html.responsive body#top:not(.admin-bar) #wrap_all #header:not(.scrolled) { /* margin-top: -4px; */ }
+	html.responsive body#top.admin-bar #wrap_all #header:not(.scrolled) { /* margin-top: 0px; */ }
+	html.responsive body#top:not(.admin-bar) #wrap_all #header:not(.scrolled) { /* margin-top: 0px; */ }
 }
 
 /* Various forms tweaking especially for mobiles */
