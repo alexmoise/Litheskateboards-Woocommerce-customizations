@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.21
+ * Version: 1.4.22
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -45,25 +45,27 @@ jQuery( window ).scroll( appScrollHandler );
 // (need to count these sticly sections later and only select first one ... or do something else with, or based on, the others)
 // Use var appScrollInterval defined above so it doesn't push the header without being scrolled up first, otherwise it gets ... spooky on mobiles
 jQuery(document).ready(function() {
-	var target1 = document.querySelector('#header');
-	var target2 = document.querySelector('.sticky_column');
-	target1.classList.add('sticky_involved');
-	target2.classList.add('sticky_involved');
-	jQuery(window).scroll(function() {
-		clearTimeout(jQuery.data(this, 'scrollTimer'));
-		jQuery.data(this, 'scrollTimer', setTimeout(function() {
-			// console.log('v10 '+molswc_distanceBetweenElems(target1,target2)+' Offs: '+window.pageYOffset+' Int: '+appScrollInterval);
-			if (molswc_distanceBetweenElems(target1,target2)<0){
-				if ( window.pageYOffset > appScrollInterval ) {
-					target1.classList.add('sticky_touched');
-					target2.classList.add('sticky_touched');
+	if(jQuery(".sticky_column").length > 0) {
+		var target1 = document.querySelector('#header');
+		var target2 = document.querySelector('.sticky_column');
+		target1.classList.add('sticky_involved');
+		target2.classList.add('sticky_involved');
+		jQuery(window).scroll(function() {
+			clearTimeout(jQuery.data(this, 'scrollTimer'));
+			jQuery.data(this, 'scrollTimer', setTimeout(function() {
+				// console.log('v10 '+molswc_distanceBetweenElems(target1,target2)+' Offs: '+window.pageYOffset+' Int: '+appScrollInterval);
+				if (molswc_distanceBetweenElems(target1,target2)<0){
+					if ( window.pageYOffset > appScrollInterval ) {
+						target1.classList.add('sticky_touched');
+						target2.classList.add('sticky_touched');
+					}
+				} else {
+					target1.classList.remove('sticky_touched');
+					target2.classList.remove('sticky_touched');
 				}
-			} else {
-				target1.classList.remove('sticky_touched');
-				target2.classList.remove('sticky_touched');
-			}
-		}, 100)); // trigger this at one 10th of second after user stops scrolling
-	});
+			}, 100)); // trigger this at one 10th of second after user stops scrolling
+		});
+	};
 });
 // Function that calculates distance between bottom of first passed element and top of the second passed element. 
 // Used above to calculate distance between header and a sticky section
