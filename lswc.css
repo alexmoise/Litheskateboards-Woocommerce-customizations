@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.22
+ * Version: 1.4.23
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -154,23 +154,23 @@ body#top, div#wrap_all { overflow: unset !important; }
 /* And now, the changes: */
 /* min783 - Ddesktop layout */
 @media (min-width: 783px) {
-	body.admin-bar .sticky_column { top: 90px; }
-	body:not(.admin-bar) .sticky_column { top: 58px; }
+	body.admin-bar .sticky_column { top: 101px; }
+	body:not(.admin-bar) .sticky_column { top: 69px; }
 	body.admin-bar .sticky_touched { transform: translateY(-70px); }
 	body:not(.admin-bar) .sticky_touched { transform: translateY(-70px); }
 }
 /* max782 - Admin bar changes */
 @media (max-width: 782px) and (min-width: 768px) {
-	body.admin-bar .sticky_column { top: 104px; }
-	body:not(.admin-bar) .sticky_column { top: 58px; }
+	body.admin-bar .sticky_column { top: 115px; }
+	body:not(.admin-bar) .sticky_column { top: 69px; }
 	body.admin-bar .sticky_touched { transform: translateY(-70px); }
 	body:not(.admin-bar) .sticky_touched { transform: translateY(-70px); }
 }
 /* max767 - Lithe header changes */
 @media (max-width: 767px) and (min-width: 521px) {
 	div#wpadminbar { position: fixed; }
-	body.admin-bar .sticky_column { top: 128px; }
-	body:not(.admin-bar) .sticky_column { top: 78px; }
+	body.admin-bar .sticky_column { top: 135px; }
+	body:not(.admin-bar) .sticky_column { top: 89px; }
 	body.admin-bar .sticky_touched { transform: translateY(-90px); }
 	body:not(.admin-bar) .sticky_touched { transform: translateY(-90px); }
 }

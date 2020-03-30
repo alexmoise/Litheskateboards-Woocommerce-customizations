@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.22
+ * Version: 1.4.23
  * (version above is equal with main plugin file version when this file was updated)
  */
 
