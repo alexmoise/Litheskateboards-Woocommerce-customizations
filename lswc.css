@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.24
+ * Version: 1.4.26
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -190,6 +190,12 @@ body#top, div#wrap_all { overflow: unset !important; }
 	html.responsive body#top:not(.admin-bar) #wrap_all #header.scrolled { margin-top: -88px !important }
 	html.responsive body#top.admin-bar #wrap_all #header:not(.scrolled) { /* margin-top: 0px; */ }
 	html.responsive body#top:not(.admin-bar) #wrap_all #header:not(.scrolled) { /* margin-top: 0px; */ }
+}
+
+/* Define a custom full width class for sections */
+.lithe_full_width .container {
+    max-width: 100vw;
+    padding: 0;
 }
 
 /* Various forms tweaking especially for mobiles */
