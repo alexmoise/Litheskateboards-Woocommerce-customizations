@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.26
+ * Version: 1.4.27
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -89,7 +89,7 @@ div.container * {
 	body:not(.admin-bar) #wrap_all > #header {
 		top:0;
 	}
-	body:not(.home) > #wrap_all > #main {
+	body > #wrap_all > #main {
 		margin-top: 90px !important;
 	}
 	main.template-shop.content {
@@ -103,7 +103,7 @@ div.container * {
 	body.home #layerslider_10 {
 		margin-top: 70px !important;
 	}
-	body:not(.home) > #wrap_all > #main {
+	body > #wrap_all > #main {
 		margin-top: 180px !important;
 	}
 	#header_main nav.main_menu {
