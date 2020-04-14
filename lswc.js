@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.23
+ * Version: 1.4.28
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -53,12 +53,10 @@ jQuery(document).ready(function() {
 		jQuery(window).scroll(function() {
 			clearTimeout(jQuery.data(this, 'scrollTimer'));
 			jQuery.data(this, 'scrollTimer', setTimeout(function() {
-				// console.log('v10 '+molswc_distanceBetweenElems(target1,target2)+' Offs: '+window.pageYOffset+' Int: '+appScrollInterval);
-				if (molswc_distanceBetweenElems(target1,target2)<0){
-					if ( window.pageYOffset > appScrollInterval ) {
+				// console.log('v03 '+molswc_distanceBetweenElems(target1,target2)+' Offs: '+window.pageYOffset+' Int: '+appScrollInterval);
+				if ( window.pageYOffset > appScrollInterval && molswc_distanceBetweenElems(target1,target2)<1 ){
 						target1.classList.add('sticky_touched');
 						target2.classList.add('sticky_touched');
-					}
 				} else {
 					target1.classList.remove('sticky_touched');
 					target2.classList.remove('sticky_touched');
