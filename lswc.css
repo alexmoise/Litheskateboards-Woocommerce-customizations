@@ -1,8 +1,29 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.28
+ * Version: 1.4.29
  * (version above is equal with main plugin file version when this file was updated)
  */
+ 
+/* == Custom design classes == */
+.top_aligned_content {
+    vertical-align: top;
+}
+.dimension_button a {
+    color: #12ff1e;
+    line-height: 40px;
+	text-transform: uppercase;
+}
+.dimension_button {
+    background-color: #111111;
+    margin: 5px 0 5px 5px;
+    height: 38px;
+    border-radius: 4px;
+    text-align: center;
+}
+.dimension_button a:hover, 
+.dimension_button a:focus {
+    text-decoration: none;
+}
  
 /* LSWC Header changes */
 html {
