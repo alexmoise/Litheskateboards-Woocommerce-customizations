@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.30
+ * Version: 1.4.31
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -11,7 +11,6 @@
 .dimension_button a {
     color: #12ff1e;
     line-height: 39px;
-    text-transform: uppercase;
     padding: 10px 80px;
 }
 .dimension_button {
