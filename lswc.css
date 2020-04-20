@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.32
+ * Version: 1.4.33
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -217,6 +217,44 @@ body#top, div#wrap_all { overflow: unset !important; }
 .lithe_full_width .container {
     max-width: 100vw;
     padding: 0;
+}
+
+/* Top menu current item in green */
+.menu-item-top-level.current-menu-item > a > .avia-menu-text {
+    background-color: #42d62c;
+    border: 2px solid #42d62c;
+    padding: 9px;
+}
+.menu-item .avia-menu-text {
+    border-radius: 8px !important;
+}
+.sub-menu .current-menu-item > a > .avia-menu-text {
+    font-weight: bold;
+    color: white;
+}
+
+/* AdRoll consent in dark */
+.adroll_consent_banner, 
+.adroll_mini_consent_banner {
+    background-color: #212121 !important;
+    color: white !important;
+}
+.adroll_consent_banner li, 
+.adroll_mini_consent_text > div {
+    color: white !important;
+}
+.adroll_consent_banner a, 
+.adroll_mini_consent_text a {
+    color: dodgerblue !important;
+}
+.adroll_mini_consent_banner .adroll_mini_consent_header svg {
+    fill: dodgerblue;
+}
+.adroll_consent_button, 
+.adroll_mini_consent_button {
+    background: #212121 !important;
+    box-shadow: 0 0 0 0 #666, 0 -1px 0 0 #212121, 0 -5px 5px 0 rgba(10,10,10,.4) !important;
+    border: none !important;
 }
 
 /* Various forms tweaking especially for mobiles */
