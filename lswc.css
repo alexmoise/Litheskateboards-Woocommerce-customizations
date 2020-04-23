@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.4.34
+ * Version: 1.4.35
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -40,6 +40,7 @@ body.single-product p+h1 {
 }
 html, div#main, div#main .avia-section { 
 	max-width: 100vw !important; 
+	float: unset;
 }
 .main_menu a.cart_dropdown_link {
 	padding: 0 20px !important;
