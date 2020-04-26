@@ -1,7 +1,7 @@
 <?php
 /**
  * Uninstall of Litheskateboards Woocommerce customizations plugin.
- * Version: 1.3.6
+ * Version: 1.5.0
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -65,6 +65,9 @@ if ( get_option( 'molswc_delete_options_uninstall' ) ) {
 		'molswc_column_divider_color',
 		'molswc_product_container_width',
 		'molswc_product_container_width_units',
+		'molswc_product_learnmore_button_text',
+		'molswc_product_learnmore_link_type',
+		'molswc_product_learnmore_button_link',
 	);
 	// And finally delete each one
 	foreach ( $molswc_settings_array as $molswc_setting ) {

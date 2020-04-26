@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.4.36
+ * Version: 1.5.0
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 3.0.0
@@ -748,6 +748,7 @@ function molswc_layout_adjustments() {
 	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_price', 15 ); // remove XOO Product Popup actions: price range
 	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_excerpt', 20 ); // remove XOO Product Popup actions: excerpt
 	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_meta', 30 ); // remove XOO Product Popup actions: meta
+	remove_action( 'xoo-qv-summary', 'xoo_qv_product_info',35 ); // remove Learn More default button from XOO popup (will add a custom one later on)
 	remove_action( 'woocommerce_after_single_product_summary','avia_woocommerce_output_related_products',20); // remove related products in single product page:
 	remove_action( 'woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10 );
 	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
@@ -837,6 +838,99 @@ function molswc_start_lithe_rack_type_display() {
 //add_action( 'molswc_after_loop_end', 'molswc_stop_lithe_rack_type_display', 999999 );
 function molswc_stop_lithe_rack_type_display() {
 	echo '</div>';
+}
+
+// === Adding a new custom button after variations buttons in Xoo Popup
+// Display the button in the popup
+add_action( 'xoo-qv-summary', 'molswc_custom_learnmore_button_for_xoopopup', 35 );
+function molswc_custom_learnmore_button_for_xoopopup(){
+	// get global and default data
+	global $product;
+	$product_id = $product->get_id();
+	// Get button text
+	$molswc_product_learnmore_button_text = get_post_meta ($product_id, 'molswc_product_learnmore_button_text')[0];
+	// Set a default button text in case none is defined
+	if( !$molswc_product_learnmore_button_text ) { $molswc_product_learnmore_button_text = 'Learn more'; }
+	// Get link type
+	$molswc_product_learnmore_link_type   = get_post_meta ($product_id, 'molswc_product_learnmore_link_type')[0];
+	// Set it to "normal" in case it is not defined
+	if( !$molswc_product_learnmore_link_type ) { $molswc_product_learnmore_link_type = 'normal'; }
+	// Set the custom link based on link type
+	if( $molswc_product_learnmore_link_type == 'custom' ) { 
+		$molswc_product_learnmore_button_link = get_post_meta ($product_id, 'molswc_product_learnmore_button_link')[0];
+	} else {
+		$molswc_product_learnmore_button_link = get_permalink();
+	}
+	// Set a default link in case still none is defined (for backward compatibility reasons)
+	if( !$molswc_product_learnmore_button_link ) { $molswc_product_learnmore_button_link = get_permalink(); }
+	$html  = '<div class="xoo-qv-plink">';
+	$html .=  '<a href="'.$molswc_product_learnmore_button_link.'">'.$molswc_product_learnmore_button_text.'</a>';
+	$html .= '</div>';
+	echo $html;
+}
+// Register a product meta-box for customizing the Learn More button in Xoo Popup
+add_action( 'add_meta_boxes', 'molswc_customize_learnmore_settings' );
+function molswc_customize_learnmore_settings() {
+    add_meta_box(
+        'molswc_customize_learnmore',			// this is HTML id of the box on edit screen
+        'Customize Learn More button in popup',	// title of the box
+        'molswc_customize_learnmore_content',	// function to be called to display the checkboxes, see the function below
+        'product',		// on which edit screen the box should appear
+        'normal',		// part of page where the box should appear
+        'default'		// priority of the box
+    );
+}
+// Output the meta-box registered above in product edit screen
+function molswc_customize_learnmore_content() {
+	wp_nonce_field( plugin_basename( __FILE__ ), 'customlearnmorenonce' );
+	global $post;
+	$curr_prod_id = $post->ID;
+	// pull the link tupe option from DB first
+	if( get_post_meta( $curr_prod_id, "molswc_product_learnmore_link_type" )[0] == 'normal' ) { $molswc_product_learnmore_link_type_normal = 'checked="checked"'; }
+	if( get_post_meta( $curr_prod_id, "molswc_product_learnmore_link_type" )[0] == 'custom' ) { $molswc_product_learnmore_link_type_custom = 'checked="checked"'; }
+	// if no option set for link type then assume the "normal" one
+	if( !$molswc_product_learnmore_link_type_normal && !$molswc_product_learnmore_link_type_custom ) { $molswc_product_learnmore_link_type_normal = 'checked="checked"'; }
+	// ... then echo the options form in product edit screen
+	echo '
+	<p>Set the button text and link below:</p>
+	<table class="form-table">
+		<tr valign="top">
+			<th scope="row">Button text: </th>
+			<td colspan="4">
+				<input name="molswc_product_learnmore_button_text" type="text" id="molswc_product_learnmore_button_text" style="display: inline-block; width: auto;" aria-describedby="molswc_product_learnmore_button_text" value="'.get_post_meta( $curr_prod_id, "molswc_product_learnmore_button_text" )[0].'" class="regular-text">
+				<span> (displays "Learn more" if empty)</span>
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">Button link type: </th>
+			<td colspan="4"> 
+				<fieldset style="display:inline-block;"> 
+					<label><input name="molswc_product_learnmore_link_type" type="radio" value="normal"'.$molswc_product_learnmore_link_type_normal.'>Normal product link</label><br>
+					<label><input name="molswc_product_learnmore_link_type" type="radio" value="custom"'.$molswc_product_learnmore_link_type_custom.'>Custom link ↴ </label>
+				</fieldset>
+				
+			</td>
+		</tr>
+		<tr valign="top">
+			<th scope="row">Custom link: </th>
+			<td colspan="4">
+				<input name="molswc_product_learnmore_button_link" type="text" id="molswc_product_learnmore_button_link" style="display: inline-block; width: auto;" aria-describedby="molswc_product_learnmore_button_link" value="'.get_post_meta( $curr_prod_id, "molswc_product_learnmore_button_link" )[0].'" class="regular-text">
+				<span> (if this field is empty and type set to "Custom link" above, it will still link to normal product page)</span>
+			</td>
+		</tr>
+	</table>
+	';
+}
+// Save metabox data at product update
+add_action( 'woocommerce_update_product', 'molswc_customize_learnmore_data' );
+function molswc_customize_learnmore_data($curr_prod_id) {
+    // check some conditions before saving the fields
+	if ( !current_user_can('manage_woocommerce') ) { return; }
+    if ( !wp_verify_nonce( $_POST['customlearnmorenonce'], plugin_basename( __FILE__ ) ) ) { return; }
+    // ... then store colors data in custom post meta based on field values 
+    if ( isset( $_POST['molswc_product_learnmore_button_text'] ) ) {  update_post_meta( $curr_prod_id, 'molswc_product_learnmore_button_text', strip_tags($_POST['molswc_product_learnmore_button_text']) ); }
+	if ( isset( $_POST['molswc_product_learnmore_link_type'] ) ) {  update_post_meta( $curr_prod_id, 'molswc_product_learnmore_link_type', strip_tags($_POST['molswc_product_learnmore_link_type']) ); }
+	if ( isset( $_POST['molswc_product_learnmore_button_link'] ) ) {  update_post_meta( $curr_prod_id, 'molswc_product_learnmore_button_link', strip_tags($_POST['molswc_product_learnmore_button_link']) ); }
 }
 
 // === Outputting JS variables in HTML, for using them later in JS file
