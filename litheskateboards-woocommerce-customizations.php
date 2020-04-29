@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.5.0
+ * Version: 1.5.1
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 3.0.0
@@ -538,12 +538,14 @@ function molswc_styles_for_custom_product_colors() {
 			/* Product name (title) */
 			body.postid-".$displayed_id." .lithe_board_section h1 { color: ".$molswc_product_name_color." !important; }
 			body.postid-".$displayed_id." .lithe_board_section h2 { color: ".$molswc_product_name_color." !important; }
+			/* Main column title */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody label.product_column_title { color: ".$molswc_column_title_color." !important; }
 			/* Column titles */
 			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .tr .each-attrib .label.td label { color: ".$molswc_column_title_color." !important; }
-			/* column dividers */
+			/* Column dividers */
 			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td .each-attrib:not(:first-child) { border-left-color: ".$molswc_column_divider_color." !important; }
 			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td .each-attrib .label.td { border-bottom-color: ".$molswc_column_divider_color." !important; }
-			/* container width */
+			/* Container width */
 			body.postid-".$displayed_id." .lithe_board_section > .container { width: ".$molswc_product_container_width.$molswc_product_container_width_units." !important; }
 			";
 		} else {
@@ -591,9 +593,11 @@ function molswc_styles_for_custom_product_colors() {
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .xoo-qv-plink { border-color: ".$molswc_learnmore_button_border_color." !important; }
 			/* Product name (title) */
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product h1.product_title { color: ".$molswc_product_name_color." !important; }
+			/* Main column title */
+			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody label.product_column_title { color: ".$molswc_column_title_color." !important; }
 			/* Column titles */
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .tr .each-attrib .label.td label { color: ".$molswc_column_title_color." !important; }
-			/* column dividers */
+			/* Column dividers */
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td .each-attrib:not(:first-child) { border-left-color: ".$molswc_column_divider_color." !important; }
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td .each-attrib .label.td { border-bottom-color: ".$molswc_column_divider_color." !important; }
 			";

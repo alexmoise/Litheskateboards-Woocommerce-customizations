@@ -68,6 +68,7 @@ if ( get_option( 'molswc_delete_options_uninstall' ) ) {
 		'molswc_product_learnmore_button_text',
 		'molswc_product_learnmore_link_type',
 		'molswc_product_learnmore_button_link',
+		'molswc_product_options_table_header_text',
 	);
 	// And finally delete each one
 	foreach ( $molswc_settings_array as $molswc_setting ) {

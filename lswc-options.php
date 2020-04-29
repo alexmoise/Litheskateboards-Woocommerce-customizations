@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.5.0
+ * Version: 1.5.1
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -65,6 +65,7 @@ function molswc_register_settings() {
 		'molswc_product_learnmore_button_text',
 		'molswc_product_learnmore_link_type',
 		'molswc_product_learnmore_button_link',
+		'molswc_product_options_table_header_text',
 	);
 	// Then register each of them
 	foreach ( $molswc_settings_array as $molswc_setting ) {
@@ -379,7 +380,19 @@ function molswc_admin_options_page_callback() { ?>
 	</table>
 	
 	<?php submit_button(); ?>
-
+	
+	<h2>Product options table title</h2>
+	<p>Type in the title of product options table. Will be used in both popup and single product page.</p>
+	
+	<table class="form-table">
+		<tr valign="top">
+			<th scope="row">Product options table title:</th>
+			<td> 
+				<input name="molswc_product_options_table_header_text" type="text" id="molswc_product_options_table_header_text" aria-describedby="molswc_product_options_table_header_text" value="<?php echo strip_tags(get_option( 'molswc_product_options_table_header_text' )); ?>" class="regular-text">
+			</td>
+		</tr>
+	</table>
+	
 	<h2>Designated options</h2>
 	<p>Comma separated list of attributes used to create the columns in the product page and pop-up. Example: "Vert, Street".</p>
 	

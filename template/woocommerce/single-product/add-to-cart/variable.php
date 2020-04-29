@@ -9,7 +9,7 @@
  * Modified to use radio buttons instead of dropdowns
  * @author 8manos
  * 
- * Lithe version: 1.0.26
+ * Lithe version: 1.5.1
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -53,7 +53,7 @@ if ( !Pj_Fragment_Cache::output( $fragm_cache_key, $fragm_cache_args ) ) { // co
 			<div class="tbody">
 				<?php foreach ( $attributes as $name => $options ) : ?>
 					<div class="select attribute-<?php echo sanitize_title($name); if ( taxonomy_exists( $name ) ) { echo ' tax_attrib'; } else { echo ' custom_attrib'; } ?> tr">
-						<div class="label td"><label for="<?php echo sanitize_title( $name ); ?>"><?php echo wc_attribute_label( $name ); ?></label></div>
+						<div class="label td"><label class="product_column_title" for="<?php echo sanitize_title( $name ); ?>"><?php echo get_option( "molswc_product_options_table_header_text" ); ?></label></div>
 						<?php
 						$sanitized_name = sanitize_title( $name );
 						if ( isset( $_REQUEST[ 'attribute_' . $sanitized_name ] ) ) {
