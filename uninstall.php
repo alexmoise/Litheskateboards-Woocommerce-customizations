@@ -1,7 +1,7 @@
 <?php
 /**
  * Uninstall of Litheskateboards Woocommerce customizations plugin.
- * Version: 1.5.0
+ * Version: 1.5.1
  * (version above is equal with main plugin file version when this file was updated)
  */
 
