@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.5.1
+ * Version: 1.5.2
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 3.0.0
@@ -164,35 +164,60 @@ function molswc_custom_buttons_colors_content() {
 				<span>(check this to use attributes below; otherwise defaults will be applied)</span>
 			</td>
 		</tr>
+		
 		<tr valign="top">
 			<th scope="row">Product container width: </th>
 			<td> 
 				<input name="molswc_product_container_width" type="number" id="molswc_product_container_width" style="display: inline-block; width: auto;" aria-describedby="molswc_product_container_width" value="'.get_post_meta( $curr_prod_id, "molswc_product_container_width" )[0].'" placeholder="'.strip_tags(get_option( "molswc_product_container_width" )).'" class="regular-text">
 			</td>
-			<td colspan="3"> 
+			<td colspan="5"> 
 				<fieldset style="width:60px; display:inline-block;">
 					<label><input name="molswc_product_container_width_units" type="radio" value="px"'.$molswc_product_container_width_units_px.'>px</label><br>
 					<label><input name="molswc_product_container_width_units" type="radio" value="%"'.$molswc_product_container_width_units_percent.'>&percnt;</label>
 				</fieldset>
 				<span style="width:calc(100% - 65px); display:inline-block;">Both value and units must be set here; otherwise the defaults will be used instead.<br>'.$molswc_product_container_width_default_units.'</span>
 			</td>
-		
 		</tr>
+		
 		<tr valign="top">
 			<th scope="row">Background color: </th>
-			<td colspan="4"> 
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
 				<input name="molswc_product_background_color" type="text" id="molswc_product_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_product_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_product_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_product_background_color" )).'" class="regular-text">
 			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
 		</tr>
+		
 		<tr valign="top">
 			<th scope="row">IN STOCK button colors: </th>
 			<td> 
-				<span>Normal color:</span>
+				<span>Normal label color:</span>
 				<input name="molswc_instock_label_color" type="text" id="molswc_instock_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_label_color" )).'" class="regular-text">
 			</td>
 			<td> 
-				<span>Hover color:</span>
+				<span>Hover label color:</span>
 				<input name="molswc_instock_label_hover_color" type="text" id="molswc_instock_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_label_hover_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal background color:</span>
+				<input name="molswc_instock_background_color" type="text" id="molswc_instock_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_background_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover background color:</span>
+				<input name="molswc_instock_background_hover_color" type="text" id="molswc_instock_background_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_background_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_background_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_background_hover_color" )).'" class="regular-text">
 			</td>
 			<td> 
 				<span>Normal border color:</span>
@@ -203,15 +228,24 @@ function molswc_custom_buttons_colors_content() {
 				<input name="molswc_instock_border_hover_color" type="text" id="molswc_instock_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_instock_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_instock_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_instock_border_hover_color" )).'" class="regular-text">
 			</td>
 		</tr>
+		
 		<tr valign="top">
 			<th scope="row">BACK ORDER button colors: </th>
 			<td> 
-				<span>Normal color:</span>
+				<span>Normal label color:</span>
 				<input name="molswc_backorder_label_color" type="text" id="molswc_backorder_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_label_color" )).'" class="regular-text">
 			</td>
 			<td> 
-				<span>Hover color:</span>
+				<span>Hover label color:</span>
 				<input name="molswc_backorder_label_hover_color" type="text" id="molswc_backorder_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_label_hover_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal background color:</span>
+				<input name="molswc_backorder_background_color" type="text" id="molswc_backorder_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_background_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover background color:</span>
+				<input name="molswc_backorder_background_hover_color" type="text" id="molswc_backorder_background_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_background_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_background_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_background_hover_color" )).'" class="regular-text">
 			</td>
 			<td> 
 				<span>Normal border color:</span>
@@ -222,15 +256,24 @@ function molswc_custom_buttons_colors_content() {
 				<input name="molswc_backorder_border_hover_color" type="text" id="molswc_backorder_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_backorder_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_backorder_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_backorder_border_hover_color" )).'" class="regular-text">
 			</td>
 		</tr>
+		
 		<tr valign="top">
 			<th scope="row">PRE ORDER button colors: </th>
 			<td> 
-				<span>Normal color:</span>
+				<span>Normal label color:</span>
 				<input name="molswc_preorder_label_color" type="text" id="molswc_preorder_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_label_color" )).'" class="regular-text">
 			</td>
 			<td> 
-				<span>Hover color:</span>
+				<span>Hover label color:</span>
 				<input name="molswc_preorder_label_hover_color" type="text" id="molswc_preorder_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_label_hover_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal background color:</span>
+				<input name="molswc_preorder_background_color" type="text" id="molswc_preorder_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_background_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover background color:</span>
+				<input name="molswc_preorder_background_hover_color" type="text" id="molswc_preorder_background_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_background_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_background_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_background_hover_color" )).'" class="regular-text">
 			</td>
 			<td> 
 				<span>Normal border color:</span>
@@ -241,15 +284,24 @@ function molswc_custom_buttons_colors_content() {
 				<input name="molswc_preorder_border_hover_color" type="text" id="molswc_preorder_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_preorder_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_preorder_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_preorder_border_hover_color" )).'" class="regular-text">
 			</td>
 		</tr>
+		
 		<tr valign="top">
 			<th scope="row">N/A button colors: </th>
 			<td> 
-				<span>Normal color:</span>
+				<span>Normal label color:</span>
 				<input name="molswc_notavailable_label_color" type="text" id="molswc_notavailable_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_label_color" )).'" class="regular-text">
 			</td>
 			<td> 
-				<span>Hover color:</span>
+				<span>Hover label color:</span>
 				<input name="molswc_notavailable_label_hover_color" type="text" id="molswc_notavailable_label_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_label_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_label_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_label_hover_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Normal background color:</span>
+				<input name="molswc_notavailable_background_color" type="text" id="molswc_notavailable_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_background_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Hover background color:</span>
+				<input name="molswc_notavailable_background_hover_color" type="text" id="molswc_notavailable_background_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_background_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_background_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_background_hover_color" )).'" class="regular-text">
 			</td>
 			<td> 
 				<span>Normal border color:</span>
@@ -260,11 +312,23 @@ function molswc_custom_buttons_colors_content() {
 				<input name="molswc_notavailable_border_hover_color" type="text" id="molswc_notavailable_border_hover_color" style="display: inline-block; width: auto;" aria-describedby="molswc_notavailable_border_hover_color" value="'.get_post_meta( $curr_prod_id, "molswc_notavailable_border_hover_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_notavailable_border_hover_color" )).'" class="regular-text">
 			</td>
 		</tr>
+		
 		<tr valign="top">
 			<th scope="row">Selected button colors: </th>
 			<td> 
 				<span style="display: block;">Label color:</span>
 				<input name="molswc_selected_button_label_color" type="text" id="molswc_selected_button_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_selected_button_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_selected_button_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_selected_button_label_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			
+			<td> 
+				<span style="display: block;">Background color:</span>
+				<input name="molswc_selected_button_background_color" type="text" id="molswc_selected_button_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_selected_button_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_selected_button_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_selected_button_background_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
 			</td>
 			<td> 
 				<span style="display: block;">Border color:</span>
@@ -273,10 +337,8 @@ function molswc_custom_buttons_colors_content() {
 			<td> 
 				<span style="display: block;">&nbsp;</span>
 			</td>
-			<td> 
-				<span style="display: block;">&nbsp;</span>
-			</td>
 		</tr>
+		
 		<tr valign="top">
 			<th scope="row">Payment button colors: </th>
 			<td> 
@@ -288,6 +350,14 @@ function molswc_custom_buttons_colors_content() {
 				<input name="molswc_payment_button_text_color" type="text" id="molswc_payment_button_text_color" style="display: inline-block; width: auto;" aria-describedby="molswc_payment_button_text_color" value="'.get_post_meta( $curr_prod_id, "molswc_payment_button_text_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_payment_button_text_color" )).'" class="regular-text">
 			</td>
 			<td> 
+				<span style="display: block;">Background color:</span>
+				<input name="molswc_payment_button_background_color" type="text" id="molswc_payment_button_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_payment_button_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_payment_button_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_payment_button_background_color" )).'" class="regular-text">
+			</td>
+			
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
 				<span style="display: block;">Border color:</span>
 				<input name="molswc_payment_button_border_color" type="text" id="molswc_payment_button_border_color" style="display: inline-block; width: auto;" aria-describedby="molswc_payment_button_border_color" value="'.get_post_meta( $curr_prod_id, "molswc_payment_button_border_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_payment_button_border_color" )).'" class="regular-text">
 			</td>
@@ -295,11 +365,22 @@ function molswc_custom_buttons_colors_content() {
 				<span style="display: block;">&nbsp;</span>
 			</td>
 		</tr>
+		
 		<tr valign="top">
 			<th scope="row">Clear little button colors: </th>
 			<td> 
 				<span style="display: block;">Label color:</span>
 				<input name="molswc_clear_button_label_color" type="text" id="molswc_clear_button_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_clear_button_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_clear_button_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_clear_button_label_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">Background color:</span>
+				<input name="molswc_clear_button_background_color" type="text" id="molswc_clear_button_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_clear_button_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_clear_button_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_clear_button_background_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
 			</td>
 			<td> 
 				<span style="display: block;">Border color:</span>
@@ -308,15 +389,23 @@ function molswc_custom_buttons_colors_content() {
 			<td> 
 				<span style="display: block;">&nbsp;</span>
 			</td>
-			<td> 
-				<span style="display: block;">&nbsp;</span>
-			</td>
 		</tr>
+		
 		<tr valign="top">
 			<th scope="row">Learn More button colors: </th>
 			<td> 
 				<span style="display: block;">Label color:</span>
 				<input name="molswc_learnmore_button_label_color" type="text" id="molswc_learnmore_button_label_color" style="display: inline-block; width: auto;" aria-describedby="molswc_learnmore_button_label_color" value="'.get_post_meta( $curr_prod_id, "molswc_learnmore_button_label_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_learnmore_button_label_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">Background color:</span>
+				<input name="molswc_learnmore_button_background_color" type="text" id="molswc_learnmore_button_background_color" style="display: inline-block; width: auto;" aria-describedby="molswc_learnmore_button_background_color" value="'.get_post_meta( $curr_prod_id, "molswc_learnmore_button_background_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_learnmore_button_background_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
 			</td>
 			<td> 
 				<span style="display: block;">Border color:</span>
@@ -325,10 +414,8 @@ function molswc_custom_buttons_colors_content() {
 			<td> 
 				<span style="display: block;">&nbsp;</span>
 			</td>
-			<td> 
-				<span style="display: block;">&nbsp;</span>
-			</td>
 		</tr>
+		
 		<tr valign="top">
 			<th scope="row">Extra pop up colors: </th>
 			<td> 
@@ -342,6 +429,12 @@ function molswc_custom_buttons_colors_content() {
 			<td> 
 				<span style="display: block;">Column divider color:</span>
 				<input name="molswc_column_divider_color" type="text" id="molswc_column_divider_color" style="display: inline-block; width: auto;" aria-describedby="molswc_column_divider_color" value="'.get_post_meta( $curr_prod_id, "molswc_column_divider_color" )[0].'" placeholder="'.strip_tags(get_option( "molswc_column_divider_color" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
 			</td>
 			<td> 
 				<span style="display: block;">&nbsp;</span>
