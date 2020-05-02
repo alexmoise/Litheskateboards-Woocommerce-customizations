@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.5.3
+ * Version: 1.5.4
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 3.0.0
@@ -440,6 +440,32 @@ function molswc_custom_buttons_colors_content() {
 				<span style="display: block;">&nbsp;</span>
 			</td>
 		</tr>
+		
+		<tr valign="top">
+			<th scope="row">Buttons border radius: <span style="display: block; font-weight: normal;">(always in PX)</span></th>
+			<td> 
+				<span>Product options radius:</span>
+				<input name="molswc_product_options_button_radius" type="number" id="molswc_product_options_button_radius" style="display: inline-block; width: auto;" aria-describedby="molswc_product_options_button_radius" value="'.get_post_meta( $curr_prod_id, "molswc_product_options_button_radius" )[0].'" placeholder="'.strip_tags(get_option( "molswc_product_options_button_radius" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Buy Now button radius:</span>
+				<input name="molswc_product_buynow_button_radius" type="number" id="molswc_product_buynow_button_radius" style="display: inline-block; width: auto;" aria-describedby="molswc_product_buynow_button_radius" value="'.get_post_meta( $curr_prod_id, "molswc_product_buynow_button_radius" )[0].'" placeholder="'.strip_tags(get_option( "molswc_product_buynow_button_radius" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Clear button radius:</span>
+				<input name="molswc_product_clearoptions_button_radius" type="number" id="molswc_product_clearoptions_button_radius" style="display: inline-block; width: auto;" aria-describedby="molswc_product_clearoptions_button_radius" value="'.get_post_meta( $curr_prod_id, "molswc_product_clearoptions_button_radius" )[0].'" placeholder="'.strip_tags(get_option( "molswc_product_clearoptions_button_radius" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span>Learn More button radius:</span>
+				<input name="molswc_product_learnmore_button_radius" type="number" id="molswc_product_learnmore_button_radius" style="display: inline-block; width: auto;" aria-describedby="molswc_product_learnmore_button_radius" value="'.get_post_meta( $curr_prod_id, "molswc_product_learnmore_button_radius" )[0].'" placeholder="'.strip_tags(get_option( "molswc_product_learnmore_button_radius" )).'" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+		</tr>
 	</table>
 	';
 }
@@ -499,6 +525,10 @@ function molswc_custom_field_data($curr_prod_id) {
 	if ( isset( $_POST['molswc_column_divider_color'] ) ) { update_post_meta( $curr_prod_id, 'molswc_column_divider_color', strip_tags($_POST['molswc_column_divider_color']) ); }
 	if ( isset( $_POST['molswc_product_container_width'] ) ) { update_post_meta( $curr_prod_id, 'molswc_product_container_width', strip_tags($_POST['molswc_product_container_width']) ); }
 	if ( isset( $_POST['molswc_product_container_width_units'] ) ) { update_post_meta( $curr_prod_id, 'molswc_product_container_width_units', strip_tags($_POST['molswc_product_container_width_units']) ); }
+	if ( isset( $_POST['molswc_product_options_button_radius'] ) ) { update_post_meta( $curr_prod_id, 'molswc_product_options_button_radius', strip_tags($_POST['molswc_product_options_button_radius']) ); }
+	if ( isset( $_POST['molswc_product_buynow_button_radius'] ) ) { update_post_meta( $curr_prod_id, 'molswc_product_buynow_button_radius', strip_tags($_POST['molswc_product_buynow_button_radius']) ); }
+	if ( isset( $_POST['molswc_product_clearoptions_button_radius'] ) ) { update_post_meta( $curr_prod_id, 'molswc_product_clearoptions_button_radius', strip_tags($_POST['molswc_product_clearoptions_button_radius']) ); }
+	if ( isset( $_POST['molswc_product_learnmore_button_radius'] ) ) { update_post_meta( $curr_prod_id, 'molswc_product_learnmore_button_radius', strip_tags($_POST['molswc_product_learnmore_button_radius']) ); }
 }
 // Output custom product colors styles as defined in Product Edit screen *or* Plugin Options page, depending on the individual product option
 add_action( 'wp_head', 'molswc_styles_for_custom_product_colors', 99999 );
@@ -553,6 +583,9 @@ function molswc_styles_for_custom_product_colors() {
 			if ( get_post_meta ($displayed_id, 'molswc_clear_button_border_color')[0] ) { $molswc_clear_button_border_color = get_post_meta ($displayed_id, 'molswc_clear_button_border_color')[0]; } else { $molswc_clear_button_border_color = strip_tags(get_option( 'molswc_clear_button_border_color' )); }
 			if ( get_post_meta ($displayed_id, 'molswc_learnmore_button_label_color')[0] ) { $molswc_learnmore_button_label_color = get_post_meta ($displayed_id, 'molswc_learnmore_button_label_color')[0]; } else { $molswc_learnmore_button_label_color = strip_tags(get_option( 'molswc_learnmore_button_label_color' )); }
 			if ( get_post_meta ($displayed_id, 'molswc_learnmore_button_border_color')[0] ) { $molswc_learnmore_button_border_color = get_post_meta ($displayed_id, 'molswc_learnmore_button_border_color')[0]; } else { $molswc_learnmore_button_border_color = strip_tags(get_option( 'molswc_learnmore_button_border_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_product_name_color')[0] ) { $molswc_product_name_color = get_post_meta ($displayed_id, 'molswc_product_name_color')[0]; } else { $molswc_product_name_color = strip_tags(get_option( 'molswc_product_name_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_column_title_color')[0] ) { $molswc_column_title_color = get_post_meta ($displayed_id, 'molswc_column_title_color')[0]; } else { $molswc_column_title_color = strip_tags(get_option( 'molswc_column_title_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_column_divider_color')[0] ) { $molswc_column_divider_color = get_post_meta ($displayed_id, 'molswc_column_divider_color')[0]; } else { $molswc_column_divider_color = strip_tags(get_option( 'molswc_column_divider_color' )); }
 			if ( get_post_meta ($displayed_id, 'molswc_instock_background_color')[0] ) { $molswc_instock_background_color = get_post_meta ($displayed_id, 'molswc_instock_background_color')[0]; } else { $molswc_instock_background_color = strip_tags(get_option( 'molswc_instock_background_color' )); }
 			if ( get_post_meta ($displayed_id, 'molswc_instock_background_hover_color')[0] ) { $molswc_instock_background_hover_color = get_post_meta ($displayed_id, 'molswc_instock_background_hover_color')[0]; } else { $molswc_instock_background_hover_color = strip_tags(get_option( 'molswc_instock_background_hover_color' )); }
 			if ( get_post_meta ($displayed_id, 'molswc_backorder_background_color')[0] ) { $molswc_backorder_background_color = get_post_meta ($displayed_id, 'molswc_backorder_background_color')[0]; } else { $molswc_backorder_background_color = strip_tags(get_option( 'molswc_backorder_background_color' )); }
@@ -565,9 +598,10 @@ function molswc_styles_for_custom_product_colors() {
 			if ( get_post_meta ($displayed_id, 'molswc_payment_button_background_color')[0] ) { $molswc_payment_button_background_color = get_post_meta ($displayed_id, 'molswc_payment_button_background_color')[0]; } else { $molswc_payment_button_background_color = strip_tags(get_option( 'molswc_payment_button_background_color' )); }
 			if ( get_post_meta ($displayed_id, 'molswc_clear_button_background_color')[0] ) { $molswc_clear_button_background_color = get_post_meta ($displayed_id, 'molswc_clear_button_background_color')[0]; } else { $molswc_clear_button_background_color = strip_tags(get_option( 'molswc_clear_button_background_color' )); }
 			if ( get_post_meta ($displayed_id, 'molswc_learnmore_button_background_color')[0] ) { $molswc_learnmore_button_background_color = get_post_meta ($displayed_id, 'molswc_learnmore_button_background_color')[0]; } else { $molswc_learnmore_button_background_color = strip_tags(get_option( 'molswc_learnmore_button_background_color' )); }
-			if ( get_post_meta ($displayed_id, 'molswc_product_name_color')[0] ) { $molswc_product_name_color = get_post_meta ($displayed_id, 'molswc_product_name_color')[0]; } else { $molswc_product_name_color = strip_tags(get_option( 'molswc_product_name_color' )); }
-			if ( get_post_meta ($displayed_id, 'molswc_column_title_color')[0] ) { $molswc_column_title_color = get_post_meta ($displayed_id, 'molswc_column_title_color')[0]; } else { $molswc_column_title_color = strip_tags(get_option( 'molswc_column_title_color' )); }
-			if ( get_post_meta ($displayed_id, 'molswc_column_divider_color')[0] ) { $molswc_column_divider_color = get_post_meta ($displayed_id, 'molswc_column_divider_color')[0]; } else { $molswc_column_divider_color = strip_tags(get_option( 'molswc_column_divider_color' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_product_options_button_radius')[0] ) { $molswc_product_options_button_radius = get_post_meta ($displayed_id, 'molswc_product_options_button_radius')[0]; } else { $molswc_product_options_button_radius = strip_tags(get_option( 'molswc_product_options_button_radius' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_product_buynow_button_radius')[0] ) { $molswc_product_buynow_button_radius = get_post_meta ($displayed_id, 'molswc_product_buynow_button_radius')[0]; } else { $molswc_product_buynow_button_radius = strip_tags(get_option( 'molswc_product_buynow_button_radius' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_product_clearoptions_button_radius')[0] ) { $molswc_product_clearoptions_button_radius = get_post_meta ($displayed_id, 'molswc_product_clearoptions_button_radius')[0]; } else { $molswc_product_clearoptions_button_radius = strip_tags(get_option( 'molswc_product_clearoptions_button_radius' )); }
+			if ( get_post_meta ($displayed_id, 'molswc_product_learnmore_button_radius')[0] ) { $molswc_product_learnmore_button_radius = get_post_meta ($displayed_id, 'molswc_product_learnmore_button_radius')[0]; } else { $molswc_product_learnmore_button_radius = strip_tags(get_option( 'molswc_product_learnmore_button_radius' )); }
 			// container width and its units are a special case: both value and units must be set, otherwise we'll use defaults - this is to avoid situations like having set 90% in defaults and overriding the percent with "px" locally, resulting in a 90 pixels wide container
 			// so we IF them both at once and set the values for both of them accordingly
 			if ( get_post_meta ($displayed_id, 'molswc_product_container_width')[0] && get_post_meta ($displayed_id, 'molswc_product_container_width_units')[0] ) { 
@@ -605,6 +639,9 @@ function molswc_styles_for_custom_product_colors() {
 			$molswc_clear_button_border_color = strip_tags(get_option( 'molswc_clear_button_border_color' ));
 			$molswc_learnmore_button_label_color = strip_tags(get_option( 'molswc_learnmore_button_label_color' ));
 			$molswc_learnmore_button_border_color = strip_tags(get_option( 'molswc_learnmore_button_border_color' ));
+			$molswc_product_name_color = strip_tags(get_option( 'molswc_product_name_color' ));
+			$molswc_column_title_color = strip_tags(get_option( 'molswc_column_title_color' ));
+			$molswc_column_divider_color = strip_tags(get_option( 'molswc_column_divider_color' ));
 			$molswc_instock_background_color = strip_tags(get_option( 'molswc_instock_background_color' ));
 			$molswc_instock_background_hover_color = strip_tags(get_option( 'molswc_instock_background_hover_color' ));
 			$molswc_backorder_background_color = strip_tags(get_option( 'molswc_backorder_background_color' ));
@@ -617,9 +654,10 @@ function molswc_styles_for_custom_product_colors() {
 			$molswc_payment_button_background_color = strip_tags(get_option( 'molswc_payment_button_background_color' ));
 			$molswc_clear_button_background_color = strip_tags(get_option( 'molswc_clear_button_background_color' ));
 			$molswc_learnmore_button_background_color = strip_tags(get_option( 'molswc_learnmore_button_background_color' ));
-			$molswc_product_name_color = strip_tags(get_option( 'molswc_product_name_color' ));
-			$molswc_column_title_color = strip_tags(get_option( 'molswc_column_title_color' ));
-			$molswc_column_divider_color = strip_tags(get_option( 'molswc_column_divider_color' ));
+			$molswc_product_options_button_radius = strip_tags(get_option( 'molswc_product_options_button_radius' ));
+			$molswc_product_buynow_button_radius = strip_tags(get_option( 'molswc_product_buynow_button_radius' ));
+			$molswc_product_clearoptions_button_radius = strip_tags(get_option( 'molswc_product_clearoptions_button_radius' ));
+			$molswc_product_learnmore_button_radius = strip_tags(get_option( 'molswc_product_learnmore_button_radius' ));
 			$molswc_product_container_width = strip_tags(get_option( 'molswc_product_container_width' ));
 			$molswc_product_container_width_units = strip_tags(get_option( 'molswc_product_container_width_units' ));
 		}
@@ -630,6 +668,10 @@ function molswc_styles_for_custom_product_colors() {
 			/* Product: ".$displayed_id.", custom option: ".$molswc_use_custom_button_colors_value." */
 			/* The background */
 			body.postid-".$displayed_id." .lithe_board_section { background-color: ".$curr_prod_background_color."; }
+			/* Border Radius (Learn More not available here in Single Product) */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib { border-radius: ".$molswc_product_options_button_radius."px !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax { border-radius: ".$molswc_product_buynow_button_radius."px !important; }
+			body.postid-".$displayed_id." .lithe_board_section a.reset_variations { border-radius: ".$molswc_product_clearoptions_button_radius."px !important; }			
 			/* In Stock */
 			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked) { border-color: ".$molswc_instock_border_color." !important; background: ".$molswc_instock_background_color." !important; }
 			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked) .inner-attrib { color: ".$molswc_instock_label_color." !important; }
@@ -683,6 +725,11 @@ function molswc_styles_for_custom_product_colors() {
 			/* Product: ".$displayed_id.", custom option: ".$molswc_use_custom_button_colors_value." */
 			/* The background */
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product { background-color: ".$curr_prod_background_color."; }
+			/* Border Radius */
+			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib { border-radius: ".$molswc_product_options_button_radius."px !important; }
+			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax { border-radius: ".$molswc_product_buynow_button_radius."px !important; }
+			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product a.reset_variations { border-radius: ".$molswc_product_clearoptions_button_radius."px !important; }
+			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .xoo-qv-plink { border-radius: ".$molswc_product_learnmore_button_radius."px !important; }
 			/* In Stock */
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked) { border-color: ".$molswc_instock_border_color." !important; background: ".$molswc_instock_background_color." !important; }
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked) .inner-attrib { color: ".$molswc_instock_label_color." !important; }

@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.5.1
+ * Version: 1.5.4
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -467,7 +467,6 @@ main.content { padding-bottom: 0 !important; }
 	clear: both;
 }
 .lithe_rack_type_display .real_products ul.products {
-   /* margin: -1.4vw 0 0 0; */
    margin: 0;
 }
 
@@ -586,9 +585,7 @@ form#product-filters option:disabled {
 	padding: 10px 20px;
 }
 .xoo-qv-container .xoo-qv-main .xoo-qv-plink {
-	background-color: transparent;
     border: 1px solid;
-    border-radius: 4px;
     padding: 0;
     display: block;
     margin: 40px 12px;
@@ -642,7 +639,6 @@ a.reset_variations {
     right: 12px;
     padding: 10px;
     border: 1px solid;
-    border-radius: 5px;
     line-height: 1px;
 }
 /* product options "table" styling */
@@ -737,7 +733,6 @@ body.single-product .container .product_title.entry-title {
 .table.variations .tbody .value.td > div.tax, 
 .table.variations .tbody .value-buttons.td > div.attrib {
 	border: 1px solid;
-	border-radius: 5px;
 	margin: 8px;
 	cursor: pointer;
 	text-align: center;
@@ -763,9 +758,6 @@ body.single-product .container .product_title.entry-title {
 	cursor: not-allowed; 
 }
 /* also make buttons from chosen attributes */
-.table.variations .tbody .tr:not(:last-child) .label.td {
-    /* display: none; */
-}
 .table.variations .tbody .tr:not(:last-child) .label.td > label.product_column_title {
     font-size: 22px !important;
 }

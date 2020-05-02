@@ -1,7 +1,7 @@
 <?php
 /**
  * Uninstall of Litheskateboards Woocommerce customizations plugin.
- * Version: 1.5.1
+ * Version: 1.5.4
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -63,12 +63,28 @@ if ( get_option( 'molswc_delete_options_uninstall' ) ) {
 		'molswc_product_name_color',
 		'molswc_column_title_color',
 		'molswc_column_divider_color',
-		'molswc_product_container_width',
-		'molswc_product_container_width_units',
 		'molswc_product_learnmore_button_text',
 		'molswc_product_learnmore_link_type',
 		'molswc_product_learnmore_button_link',
 		'molswc_product_options_table_header_text',
+		'molswc_instock_background_color',
+		'molswc_instock_background_hover_color',
+		'molswc_backorder_background_color',
+		'molswc_backorder_background_hover_color',
+		'molswc_preorder_background_color',
+		'molswc_preorder_background_hover_color',
+		'molswc_notavailable_background_color',
+		'molswc_notavailable_background_hover_color',
+		'molswc_selected_button_background_color',
+		'molswc_payment_button_background_color',
+		'molswc_clear_button_background_color',
+		'molswc_learnmore_button_background_color',
+		'molswc_product_options_button_radius',
+		'molswc_product_buynow_button_radius',
+		'molswc_product_clearoptions_button_radius',
+		'molswc_product_learnmore_button_radius',
+		'molswc_product_container_width',
+		'molswc_product_container_width_units',
 	);
 	// And finally delete each one
 	foreach ( $molswc_settings_array as $molswc_setting ) {

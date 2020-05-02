@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.5.2
+ * Version: 1.5.4
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -60,13 +60,10 @@ function molswc_register_settings() {
 		'molswc_product_name_color',
 		'molswc_column_title_color',
 		'molswc_column_divider_color',
-		'molswc_product_container_width',
-		'molswc_product_container_width_units',
 		'molswc_product_learnmore_button_text',
 		'molswc_product_learnmore_link_type',
 		'molswc_product_learnmore_button_link',
 		'molswc_product_options_table_header_text',
-		
 		'molswc_instock_background_color',
 		'molswc_instock_background_hover_color',
 		'molswc_backorder_background_color',
@@ -79,6 +76,12 @@ function molswc_register_settings() {
 		'molswc_payment_button_background_color',
 		'molswc_clear_button_background_color',
 		'molswc_learnmore_button_background_color',
+		'molswc_product_options_button_radius',
+		'molswc_product_buynow_button_radius',
+		'molswc_product_clearoptions_button_radius',
+		'molswc_product_learnmore_button_radius',
+		'molswc_product_container_width',
+		'molswc_product_container_width_units',
 	);
 	// Then register each of them
 	foreach ( $molswc_settings_array as $molswc_setting ) {
@@ -462,6 +465,32 @@ function molswc_admin_options_page_callback() { ?>
 			</td>
 			<td> 
 				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+			<td> 
+				<span style="display: block;">&nbsp;</span>
+			</td>
+		</tr>
+		
+		<tr valign="top">
+			<th scope="row">Buttons border radius: <span style="display: block; font-weight: normal;">(always in PX)</span></th> 
+			<td> 
+				<span style="display: block;">Product options radius:</span>
+				<input name="molswc_product_options_button_radius" type="number" id="molswc_product_options_button_radius" style="display: inline-block; width: auto;" aria-describedby="molswc_product_options_button_radius" value="<?php echo strip_tags(get_option( 'molswc_product_options_button_radius' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Buy Now button radius:</span>
+				<input name="molswc_product_buynow_button_radius" type="number" id="molswc_product_buynow_button_radius" style="display: inline-block; width: auto;" aria-describedby="molswc_product_buynow_button_radius" value="<?php echo strip_tags(get_option( 'molswc_product_buynow_button_radius' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Clear button radius:</span>
+				<input name="molswc_product_clearoptions_button_radius" type="number" id="molswc_product_clearoptions_button_radius" style="display: inline-block; width: auto;" aria-describedby="molswc_product_clearoptions_button_radius" value="<?php echo strip_tags(get_option( 'molswc_product_clearoptions_button_radius' )); ?>" class="regular-text">
+			</td>
+			<td> 
+				<span style="display: block;">Learn More button radius:</span>
+				<input name="molswc_product_learnmore_button_radius" type="number" id="molswc_product_learnmore_button_radius" style="display: inline-block; width: auto;" aria-describedby="molswc_product_learnmore_button_radius" value="<?php echo strip_tags(get_option( 'molswc_product_learnmore_button_radius' )); ?>" class="regular-text">
 			</td>
 			<td> 
 				<span style="display: block;">&nbsp;</span>
