@@ -4,11 +4,11 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.5.5
+ * Version: 1.5.6
  * Author: Alex Moise
  * Author URI: https://moise.pro
- * WC requires at least: 3.0.0
- * WC tested up to: 4.0.1
+ * WC requires at least: 4.9.0
+ * WC tested up to: 4.4.1
  */
 
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -670,7 +670,7 @@ function molswc_styles_for_custom_product_colors() {
 			body.postid-".$displayed_id." .lithe_board_section { background-color: ".$curr_prod_background_color."; }
 			/* Border Radius (Learn More not available here in Single Product) */
 			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib { border-radius: ".$molswc_product_options_button_radius."px !important; }
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax { border-radius: ".$molswc_product_buynow_button_radius."px !important; }
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > .buying.tax > .button_wrapper { border-radius: ".$molswc_product_buynow_button_radius."px !important; }
 			body.postid-".$displayed_id." .lithe_board_section a.reset_variations { border-radius: ".$molswc_product_clearoptions_button_radius."px !important; }			
 			/* In Stock */
 			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.var_stock_instock:not(.radio-checked) { border-color: ".$molswc_instock_border_color." !important; background: ".$molswc_instock_background_color." !important; }
@@ -696,11 +696,11 @@ function molswc_styles_for_custom_product_colors() {
 			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.radio-checked { border-color: ".$molswc_selected_button_border_color." !important; background: ".$molswc_selected_button_background_color." !important; }
 			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td div.attrib.radio-checked .inner-attrib { color: ".$molswc_selected_button_label_color." !important; }
 			/* Payment buttons */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > label { color: ".$molswc_payment_button_title_color." !important; } /* Title */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > span.attribPrice { color: ".$molswc_payment_button_text_color." !important; } /* Price */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > span.attribStockStatus { color: ".$molswc_payment_button_text_color." !important; } /* Stock */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax > span.attrib-description { color: ".$molswc_payment_button_text_color." !important; } /* Description */
-			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > div.tax { border-color: ".$molswc_payment_button_border_color." !important; background: ".$molswc_payment_button_background_color." !important; } /* Border */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > .buying.tax > .button_wrapper > label { color: ".$molswc_payment_button_title_color." !important; } /* Title */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > .buying.tax > span.attribPrice { color: ".$molswc_payment_button_text_color." !important; } /* Price */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > .buying.tax > span.attribStockStatus { color: ".$molswc_payment_button_text_color." !important; } /* Stock */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > .buying.tax > .button_wrapper > span.attrib-description { color: ".$molswc_payment_button_text_color." !important; } /* Description */
+			body.postid-".$displayed_id." .lithe_board_section .table.variations .tbody .value.td > .buying.tax > .button_wrapper { border-color: ".$molswc_payment_button_border_color." !important; background: ".$molswc_payment_button_background_color." !important; } /* Border */
 			/* Clear little button */
 			body.postid-".$displayed_id." .lithe_board_section a.reset_variations { color: ".$molswc_clear_button_label_color." !important; } 
 			body.postid-".$displayed_id." .lithe_board_section a.reset_variations:active { color: ".$molswc_clear_button_label_color." !important; } 
@@ -727,7 +727,7 @@ function molswc_styles_for_custom_product_colors() {
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product { background-color: ".$curr_prod_background_color."; }
 			/* Border Radius */
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib { border-radius: ".$molswc_product_options_button_radius."px !important; }
-			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax { border-radius: ".$molswc_product_buynow_button_radius."px !important; }
+			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > .buying.tax > .button_wrapper { border-radius: ".$molswc_product_buynow_button_radius."px !important; }
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product a.reset_variations { border-radius: ".$molswc_product_clearoptions_button_radius."px !important; }
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .xoo-qv-plink { border-radius: ".$molswc_product_learnmore_button_radius."px !important; }
 			/* In Stock */
@@ -754,11 +754,11 @@ function molswc_styles_for_custom_product_colors() {
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.radio-checked { border-color: ".$molswc_selected_button_border_color." !important; background: ".$molswc_selected_button_background_color." !important; }
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td div.attrib.radio-checked .inner-attrib { color: ".$molswc_selected_button_label_color." !important; }
 			/* Payment buttons */
-			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax > label { color: ".$molswc_payment_button_title_color." !important; } /* Title */
-			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax > span.attribPrice { color: ".$molswc_payment_button_text_color." !important; } /* Price */
-			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax > span.attribStockStatus { color: ".$molswc_payment_button_text_color." !important; } /* Stock */
-			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax > span.attrib-description { color: ".$molswc_payment_button_text_color." !important; } /* Description */
-			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > div.tax { border-color: ".$molswc_payment_button_border_color." !important; background: ".$molswc_payment_button_background_color." !important; } /* Border */
+			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > .buying.tax > .button_wrapper > label { color: ".$molswc_payment_button_title_color." !important; } /* Title */
+			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > .buying.tax > span.attribPrice { color: ".$molswc_payment_button_text_color." !important; } /* Price */
+			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > .buying.tax > span.attribStockStatus { color: ".$molswc_payment_button_text_color." !important; } /* Stock */
+			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > .buying.tax > .button_wrapper > span.attrib-description { color: ".$molswc_payment_button_text_color." !important; } /* Description */
+			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product .table.variations .tbody .value.td > .buying.tax > .button_wrapper { border-color: ".$molswc_payment_button_border_color." !important; background: ".$molswc_payment_button_background_color." !important; } /* Border */
 			/* Clear little button */
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product a.reset_variations { color: ".$molswc_clear_button_label_color." !important; } 
 			.xoo-qv-container .xoo-qv-main > div.product.post-".$displayed_id.".type-product a.reset_variations:active { color: ".$molswc_clear_button_label_color." !important; } 
@@ -912,7 +912,13 @@ if ( ! function_exists( 'print_attribute_radio_tax' ) ) {
 		$id = esc_attr( $name . '_v_' . $value . '_p_'. $product->get_id() ); //added product ID at the end of the name to target single products
 		$checked = checked( $checked_value, $value, false );
 		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
-		printf( '<div class="tax" data-text-name="%2$s"><input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s /><label class="tax option" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</label><span class="attrib-description">%6$s</span></div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description );
+		printf( '<div class="buying tax" data-text-name="%2$s">
+					<div class="button_wrapper" data-button-for="%2$s">
+						<input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s />
+						<label class="tax option" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</label>
+						<span class="attrib-description">%6$s</span>
+					</div>
+				</div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description );
 	}
 }
 
