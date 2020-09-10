@@ -9,7 +9,7 @@
  * Modified to use radio buttons instead of dropdowns
  * @author 8manos
  * 
- * Lithe version: 1.5.1
+ * Lithe version: 1.5.7
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -74,8 +74,20 @@ if ( !Pj_Fragment_Cache::output( $fragm_cache_key, $fragm_cache_args ) ) { // co
 										if ( ! in_array( $term->slug, $options ) ) {
 											continue;
 										}
+										// Keep data of the attribute designated to generate an Add to Cart button. 
+										// That should be only one, so care should be taken upstream while defining it!
+										if ( in_array( $term->term_id, molswc_designated_addtocart_attributes() ) ) {
+											$addtocart_attrib['id'] = $term->term_id;
+											$addtocart_attrib['ckvalue'] = $checked_value;
+											$addtocart_attrib['slug'] = $term->slug;
+											$addtocart_attrib['name'] = $term->name;
+											$addtocart_attrib['sanename'] = $sanitized_name;
+											$addtocart_attrib['desc'] = $term->description;
+										}
 										print_attribute_radio_tax( $checked_value, $term->slug, $term->name, $sanitized_name, $term->description ); 
 									}
+									// Now go on and generate that Add to Cart button (with a special function)
+									print_attribute_radio_tax_addtocart( $addtocart_attrib['ckvalue'], $addtocart_attrib['slug'], $addtocart_attrib['name'], $addtocart_attrib['sanename'], $addtocart_attrib['desc'] );
 								} else {
 									$chosen_attribs = molswc_designated_options(); // defined in main PHP file of the plugin
 									$all_attribs_string = implode("&",array_map(function($a) {return implode(" ",$a);},$attributes)); // create a string from all atributes multidimensional array

@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.5.6
+ * Version: 1.5.7
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -165,16 +165,16 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	jQuery('span.attribStockStatus').remove(); // First remove it from where it is displayed so it won't get displayed twice
 	// ... then check if the currently "checked" button has "in_stock" status and if so, display "estdelivery_instock" variable defined for  in HTML
 	if ( molswc_check_current_status() == 'var_stock_instock' && typeof estdelivery_instock !== 'undefined' ) { 
-		jQuery('.table.variations .tax_attrib .buying.tax').prepend('<span class="attribStockStatus">'+estdelivery_instock+'</span>');
+		jQuery('.table.variations .tax_attrib .buying.tax:not(.addtocart)').prepend('<span class="attribStockStatus">'+estdelivery_instock+'</span>');
 	}
 	// ... then check if the currently "checked" button has "backorder" status and if so, display "estdelivery_backorder" variable defined in HTML
 	if ( molswc_check_current_status() == 'var_stock_backorder' && typeof estdelivery_backorder !== 'undefined' ) { 
-		jQuery('.table.variations .tax_attrib .buying.tax').prepend('<span class="attribStockStatus">'+estdelivery_backorder+'</span>');
+		jQuery('.table.variations .tax_attrib .buying.tax:not(.addtocart)').prepend('<span class="attribStockStatus">'+estdelivery_backorder+'</span>');
 	}
 	
 	// ... otherwise check if the currently "checked" button has "preorder" status and if so, display "estdelivery_preorder" variable defined in HTML
 	if ( molswc_check_current_status() == 'var_stock_preorder' && typeof estdelivery_preorder !== 'undefined' ) { 
-		jQuery('.table.variations .tax_attrib .buying.tax').prepend('<span class="attribStockStatus">'+estdelivery_preorder+'</span>');
+		jQuery('.table.variations .tax_attrib .buying.tax:not(.addtocart)').prepend('<span class="attribStockStatus">'+estdelivery_preorder+'</span>');
 	}
 	
 	// Finally add Pre Order status to Payment Plan direct purchase buttons

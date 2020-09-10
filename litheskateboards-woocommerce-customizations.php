@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.5.6
+ * Version: 1.5.7
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 4.9.0
@@ -83,7 +83,7 @@ function molswc_shop_title_tag(){
 	}
 }
 // Go straight to Checkout when a Payment Method button has been pressed
-add_filter('woocommerce_add_to_cart_redirect', 'molswc_go_to_checkout');
+// add_filter('woocommerce_add_to_cart_redirect', 'molswc_go_to_checkout');
 function molswc_go_to_checkout() {
 	global $woocommerce;
 	$checkout_url = wc_get_checkout_url();
@@ -101,6 +101,12 @@ function molswc_designated_options() {
 	$designated_options = explode(',', $raw_designated_options); // create an array with options
 	array_walk($designated_options, 'molswc_trim_value'); // remove possible white space at the beginning or the end of each array element (using previously defined trim function)
 	return $designated_options; // finally return the array to wherever is needed
+}
+// Get the Attribute ID we'll use to output the Add to Cart button
+// We'll create a meta field to that attribute whith a checkbox, to mark those attributes that will be returned by this function ;-)
+function molswc_designated_addtocart_attributes() {
+	$designated_addtocart_attributes = array('82');
+	return $designated_addtocart_attributes;
 }
 // Exclude the products in these categories from displaying *on the shop page only*
 add_action( 'woocommerce_product_query', 'molswc_custom_boards_query' );
@@ -917,6 +923,24 @@ if ( ! function_exists( 'print_attribute_radio_tax' ) ) {
 						<input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s />
 						<label class="tax option" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</label>
 						<span class="attrib-description">%6$s</span>
+					</div>
+				</div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description );
+	}
+}
+// A function that generates the independent Add to Cart button for products
+// That should be only one, so care should be taken upstream while defining it!
+if ( ! function_exists( 'print_attribute_radio_tax_addtocart' ) ) {
+	function print_attribute_radio_tax_addtocart( $checked_value, $value, $label, $name, $attrib_description ) {
+		global $product;
+		$input_name = 'attribute_' . esc_attr( $name ) ;
+		$esc_value = esc_attr( $value );
+		$id = esc_attr( $name . '_v_' . $value . '_p_'. $product->get_id() ); //added product ID at the end of the name to target single products
+		$checked = checked( $checked_value, $value, false );
+		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
+		printf( '<div class="buying tax addtocart" data-text-name="%2$s">
+					<div class="button_wrapper addtocart" data-addtocart-for="%2$s">
+						<input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s />
+						<label class="tax option addtocart" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">Add to Cart</label>
 					</div>
 				</div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description );
 	}
