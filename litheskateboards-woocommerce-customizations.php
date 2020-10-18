@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.5.7
+ * Version: 1.5.8
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 4.9.0
@@ -87,6 +87,14 @@ function molswc_shop_title_tag(){
 function molswc_go_to_checkout() {
 	global $woocommerce;
 	$checkout_url = wc_get_checkout_url();
+ /* // Trying to conditionally redirect to cart
+	// Best thing so far is to redirect if "pay_in_full = TRUE" but that will also redirect when clicking Buy Now, beside the Add to Cart button ...
+	$cart = WC()->cart->get_cart();
+	$variation = end($cart)['variation'];
+	$output_label = 'Try on 3 - ';
+	$something_to_output = $cart;
+	molswc_debug_to_file($output_label, $something_to_output);
+ */
 	return $checkout_url;
 }
 // Extend conditional variations limit
@@ -948,6 +956,7 @@ if ( ! function_exists( 'print_attribute_radio_tax_addtocart' ) ) {
 
 // === Layout and output customization below:
 // Various Woocommerce layout adjustments
+// More layouts adjustments done also in Shortcodes displaying Decks Rack and Soft Goods - see the "add_shortcode" functions a bit further below this file
 add_action('init', 'molswc_layout_adjustments');
 function molswc_layout_adjustments() {
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_excerpt', 20 ); // remove short description from original place ...
@@ -960,10 +969,7 @@ function molswc_layout_adjustments() {
 	remove_action( 'xoo-qv-summary', 'woocommerce_template_single_meta', 30 ); // remove XOO Product Popup actions: meta
 	remove_action( 'xoo-qv-summary', 'xoo_qv_product_info',35 ); // remove Learn More default button from XOO popup (will add a custom one later on)
 	remove_action( 'woocommerce_after_single_product_summary','avia_woocommerce_output_related_products',20); // remove related products in single product page:
-	remove_action( 'woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10 );
-	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
 	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_show_product_loop_sale_flash', 10 );
-	remove_action( 'woocommerce_after_shop_loop_item', 'avia_add_cart_button', 16 );
 	remove_action( 'woocommerce_before_shop_loop', 'avia_woocommerce_frontend_search_params', 20 ); // remove ordering and products per page
 	remove_action( 'woocommerce_before_single_product_summary', 'woocommerce_show_product_sale_flash', 10 ); // get rid of sale flash
 	remove_action( 'woocommerce_single_product_summary', 'woocommerce_template_single_meta', 40 ); // no more SKU and Cats on product page
@@ -1048,6 +1054,90 @@ function molswc_start_lithe_rack_type_display() {
 //add_action( 'molswc_after_loop_end', 'molswc_stop_lithe_rack_type_display', 999999 );
 function molswc_stop_lithe_rack_type_display() {
 	echo '</div>';
+}
+
+// === Using a shortcode to fire up the board racks, using internally a Woocommerce shortcode and few other params we need for customizing list as rack
+add_shortcode( 'lithe_rack', 'molswc_lithe_rack_generator' );
+function molswc_lithe_rack_generator( $atts ) {
+	// Since we're in Decks display let's remove some unneeded parts of the product list
+	remove_action( 'woocommerce_shop_loop_item_title', 'woocommerce_template_loop_product_title', 10 );
+	remove_action( 'woocommerce_after_shop_loop_item_title', 'woocommerce_template_loop_price', 10 );
+	remove_action( 'woocommerce_after_shop_loop_item', 'avia_add_cart_button', 16 ); 
+	
+	// get attributes first. in a form that can be used to compose the woocommerce shortcode
+	$int_category = $atts['category'];
+	$int_columns = $atts['columns'];
+	$int_noracks = $atts['no_racks']; // ... and have the ID passed by in shortcode (213596)
+	$noproducts_image = wp_get_attachment_image($int_noracks, array(1000, 250));
+	// <img width="1000" height="250" src="/wp-content/uploads/2020/02/SD2_NoWay_01.png" class="attachment-shop_catalog size-shop_catalog wp-post-image" alt="">
+	
+	// compose the shortcode as it would be put in content but based on atts above
+	$shortcode_composer = '[products category="'.$int_category.'" class="real_products" columns="'.$int_columns.'"]';
+	$woo_shortcode = do_shortcode($shortcode_composer);
+	// now get the top and bottom images for rack
+	$top_image_file_url = plugins_url('images/Rack_Top.png', __FILE__);
+	$bottom_image_file_url = plugins_url('images/Rack_Bottom.png', __FILE__);
+	// start writing the HTML OPENING of the racks
+	
+	$lithe_no_products = '
+		<div class="woocommerce not_products" style="display: none;">
+			<ul class="products">
+				<li class="product first type-product status-publish has-post-thumbnail instock taxable purchasable product-type-variable">
+					<div class="inner_product main_color wrapped_style noLightbox  av-product-class-">
+						<a href="#" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">
+							<div class="thumbnail_container">
+								'.$noproducts_image.'
+							</div>
+						</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+	';
+	$lithe_rack_start = '
+		<!-- Rack START: -->
+		<div class="lithe_rack_type_display">
+	';
+	$lithe_rack_top = '
+		<div class="rack_top">
+			<img class="rack_top_image" src="'.$top_image_file_url.'" alt="Lithe Skateboards Rack Top">
+		</div>
+	';
+	// $woo_shortcode will be inserted here, see below
+	// writing the HTML CLOSING of the racks
+	$lithe_rack_bottom = '
+		<div class="rack_bottom">
+			<img class="rack_bottom_image" src="'.$bottom_image_file_url.'" alt="Lithe Skateboards Rack Bottom">
+		</div>
+	';
+	$lithe_rack_stop = '
+		</div>
+		<!-- Rack END. v07 -->
+	';
+	// now put everything in one string
+	$lithe_rack_complete = $lithe_rack_start.$lithe_rack_top.$woo_shortcode.$lithe_rack_bottom.$lithe_no_products.$lithe_rack_stop;
+	// ... and finally return it for usage wherever is needed :-)
+	return $lithe_rack_complete;
+}
+
+// === Using a shortcode to fire up the soft goods list, using internally a Woocommerce shortcode and few other params we need for customizing that list 
+add_shortcode( 'lithe_softgoods', 'molswc_lithe_softgoods_generator' );
+function molswc_lithe_softgoods_generator( $atts ) {
+	// get attributes first. in a form that can be used to compose the woocommerce shortcode
+	$int_category = $atts['category'];
+	$int_columns = $atts['columns'];
+	$int_noproducts = $atts['noproducts']; // ... and have the ID passed by in shortcode (??)
+	$noproducts_image = wp_get_attachment_image($int_noproducts, array(1000, 250));
+	
+	// compose the shortcode as it would be put in content but based on atts above
+	$shortcode_composer = '[products category="'.$int_category.'" class="real_softgoods" columns="'.$int_columns.'"]';
+	$woo_shortcode = do_shortcode($shortcode_composer);
+	
+	// transfer the shortcode content into a new variable, making it ready to add more HTML before its start and after its end
+	$lithe_softgoods_complete = $woo_shortcode;
+	
+	// ... and finally return it for usage wherever is needed :-)
+	return $lithe_softgoods_complete;
 }
 
 // === Adding a new custom button after variations buttons in Xoo Popup
@@ -1692,65 +1782,6 @@ function molswc_enable_processing_to_on_hold_notification( $order_id, $order ){
     $mailer = WC()->mailer()->get_emails();
     // Finally send the "On Hold" notification
     $mailer['WC_Email_Customer_On_Hold_Order']->trigger( $order_id );
-}
-
-// === Using a shortcode to fire up the board racks, using internally a Woocommerce shortcode and few other params we need for customizing list as rack
-add_shortcode( 'lithe_rack', 'molswc_lithe_rack_generator' );
-function molswc_lithe_rack_generator( $atts ) {
-	// get attributes first. in a form that can be used to compose the woocommerce shortcode
-	$int_category = $atts['category'];
-	$int_columns = $atts['columns'];
-	$int_noracks = $atts['no_racks']; // ... and have the ID passed by in shortcode (213596)
-	$noproducts_image = wp_get_attachment_image($int_noracks, array(1000, 250));
-	// <img width="1000" height="250" src="/wp-content/uploads/2020/02/SD2_NoWay_01.png" class="attachment-shop_catalog size-shop_catalog wp-post-image" alt="">
-	
-	// compose the shortcode as it would be put in content but based on atts above
-	$shortcode_composer = '[products category="'.$int_category.'" class="real_products" columns="'.$int_columns.'"]';
-	$woo_shortcode = do_shortcode($shortcode_composer);
-	// now get the top and bottom images for rack
-	$top_image_file_url = plugins_url('images/Rack_Top.png', __FILE__);
-	$bottom_image_file_url = plugins_url('images/Rack_Bottom.png', __FILE__);
-	// start writing the HTML OPENING of the racks
-	
-	$lithe_no_products = '
-		<div class="woocommerce not_products" style="display: none;">
-			<ul class="products">
-				<li class="product first type-product status-publish has-post-thumbnail instock taxable purchasable product-type-variable">
-					<div class="inner_product main_color wrapped_style noLightbox  av-product-class-">
-						<a href="#" class="woocommerce-LoopProduct-link woocommerce-loop-product__link">
-							<div class="thumbnail_container">
-								'.$noproducts_image.'
-							</div>
-						</a>
-					</div>
-				</li>
-			</ul>
-		</div>
-	';
-	$lithe_rack_start = '
-		<!-- Rack START: -->
-		<div class="lithe_rack_type_display">
-	';
-	$lithe_rack_top = '
-		<div class="rack_top">
-			<img class="rack_top_image" src="'.$top_image_file_url.'" alt="Lithe Skateboards Rack Top">
-		</div>
-	';
-	// $woo_shortcode will be inserted here, see below
-	// writing the HTML CLOSING of the racks
-	$lithe_rack_bottom = '
-		<div class="rack_bottom">
-			<img class="rack_bottom_image" src="'.$bottom_image_file_url.'" alt="Lithe Skateboards Rack Bottom">
-		</div>
-	';
-	$lithe_rack_stop = '
-		</div>
-		<!-- Rack END. v07 -->
-	';
-	// now put everything in one string
-	$lithe_rack_complete = $lithe_rack_start.$lithe_rack_top.$woo_shortcode.$lithe_rack_bottom.$lithe_no_products.$lithe_rack_stop;
-	// ... and finally return it for usage wherever is needed :-)
-	return $lithe_rack_complete;
 }
 
 // === Fragment cache functions below

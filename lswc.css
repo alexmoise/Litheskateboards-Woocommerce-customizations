@@ -911,6 +911,25 @@ div#av_section_1 {
     color: #12ff1e;
 }
 
+/* Soft Goods styling */
+/* Opening class is:  */
+/* .real_softgoods    */
+.real_softgoods ul.products.columns-1 > li.product {
+    width: 100%;
+}
+.real_softgoods ul.products.columns-2 > li.product {
+    width: 49.5%;
+}
+.real_softgoods ul.products.columns-3 > li.product {
+    width: 32.6%;
+}
+.real_softgoods ul.products.columns-4 > li.product {
+    width: 24.25%;
+}
+.real_softgoods a.xoo-qv-button {
+    display: none !important;
+}
+
 
 /* Mobile Scroll Hint Icon */
 @media (min-width:768px){
