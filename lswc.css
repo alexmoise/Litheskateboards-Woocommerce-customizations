@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.5.9
+ * Version: 1.5.10
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -737,7 +737,8 @@ ul.tabs.wc-tabs {
 }
 /* Hiding the Add To Cart button */
 /* ... but only for .lithe_board_section class - that MUST be added manually in Avia Builder */
-.lithe_board_section form.variations_form.cart .single_variation_wrap {
+.lithe_board_section form.variations_form.cart .single_variation_wrap, 
+.xoo-qv-container form.variations_form.cart .single_variation_wrap {
   display: none !important;
 }
 /* hiding Payment Plans title */
