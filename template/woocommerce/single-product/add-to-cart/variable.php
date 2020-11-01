@@ -4,18 +4,19 @@
  *
  * @author  WooThemes
  * @package WooCommerce/Templates
- * @version 3.0.0
+ * @version 3.4.0
  *
  * Modified to use radio buttons instead of dropdowns
  * @author 8manos
  * 
- * Lithe version: 1.5.11
+ * Lithe version: 1.5.12
  * (version above is equal with main plugin file version when this file was updated)
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 global $product;
+global $woocommerce;
 
 $attribute_keys  = array_keys( $attributes );
 $variations_json = wp_json_encode( $available_variations );
