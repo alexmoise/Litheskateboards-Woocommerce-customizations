@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.5.10
+ * Version: 1.5.11
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 4.9.0
@@ -1231,6 +1231,55 @@ function molswc_customize_learnmore_data($curr_prod_id) {
     if ( isset( $_POST['molswc_product_learnmore_button_text'] ) ) {  update_post_meta( $curr_prod_id, 'molswc_product_learnmore_button_text', strip_tags($_POST['molswc_product_learnmore_button_text']) ); }
 	if ( isset( $_POST['molswc_product_learnmore_link_type'] ) ) {  update_post_meta( $curr_prod_id, 'molswc_product_learnmore_link_type', strip_tags($_POST['molswc_product_learnmore_link_type']) ); }
 	if ( isset( $_POST['molswc_product_learnmore_button_link'] ) ) {  update_post_meta( $curr_prod_id, 'molswc_product_learnmore_button_link', strip_tags($_POST['molswc_product_learnmore_button_link']) ); }
+}
+
+// === Adding the Add to Cart display type option
+// Register a product meta-box for choosing an Add to Cart display type
+add_action( 'add_meta_boxes', 'molswc_choose_single_product_display_type' );
+function molswc_choose_single_product_display_type() {
+    add_meta_box(
+        'molswc_choose_single_product_display_type',			// this is HTML id of the box on edit screen
+        'Customize Add to Cart display type in Single Product page',	// title of the box
+        'molswc_choose_single_product_display_type_content',	// function to be called to display the checkboxes, see the function below
+        'product',		// on which edit screen the box should appear
+        'normal',		// part of page where the box should appear
+        'default'		// priority of the box
+    );
+}
+// Output the meta-box registered above in product edit screen
+function molswc_choose_single_product_display_type_content() {
+	wp_nonce_field( plugin_basename( __FILE__ ), 'choosesingleproductdisplaytypenonce' );
+	global $post;
+	$curr_prod_id = $post->ID;
+	// pull the link tupe option from DB first
+	if( get_post_meta( $curr_prod_id, "molswc_choose_single_product_display_type" )[0] == 'board' ) { $molswc_choose_single_product_display_type_board = 'checked="checked"'; }
+	if( get_post_meta( $curr_prod_id, "molswc_choose_single_product_display_type" )[0] == 'soft'  ) { $molswc_choose_single_product_display_type_soft =  'checked="checked"'; }
+	// if no option set for link type then assume the "normal" one
+	if( !$molswc_choose_single_product_display_type_board && !$molswc_choose_single_product_display_type_soft ) { $molswc_choose_single_product_display_type_board = 'checked="checked"'; }
+	// ... then echo the options form in product edit screen
+	echo '
+	<p>Set the Add to Cart type to display for this product:</p>
+	<table class="form-table">
+		<tr valign="top">
+			<th scope="row">Add to Cart display type: </th>
+			<td colspan="4"> 
+				<fieldset style="display:inline-block;"> 
+					<label><input name="molswc_choose_single_product_display_type" type="radio" value="board"'.$molswc_choose_single_product_display_type_board.'>Board type display (with buttons)</label><br>
+					<label><input name="molswc_choose_single_product_display_type" type="radio" value="soft"'.$molswc_choose_single_product_display_type_soft.'>Accessories type display (with drop-down)</label>
+				</fieldset>
+			</td>
+		</tr>
+	</table>
+	';
+}
+// Save metabox data at product update
+add_action( 'woocommerce_update_product', 'molswc_choose_single_product_display_type_data' );
+function molswc_choose_single_product_display_type_data($curr_prod_id) {
+    // check some conditions before saving the fields
+	if ( !current_user_can('manage_woocommerce') ) { return; }
+    if ( !wp_verify_nonce( $_POST['choosesingleproductdisplaytypenonce'], plugin_basename( __FILE__ ) ) ) { return; }
+    // ... then store the data in custom post meta based on field values 
+	if ( isset( $_POST['molswc_choose_single_product_display_type'] ) ) {  update_post_meta( $curr_prod_id, 'molswc_choose_single_product_display_type', strip_tags($_POST['molswc_choose_single_product_display_type']) ); }
 }
 
 // === Outputting JS variables in HTML, for using them later in JS file
