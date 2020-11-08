@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.5.5
+ * Version: 1.5.14
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -13,23 +13,17 @@
     line-height: 39px;
     display: block;
 }
-.dimension_button a:hover, 
-.dimension_button a:focus {
-    text-decoration: none;
-}
 .dimension_button {
-	margin: 5px 0 5px 6px;
     background-color: #111111;
+    margin: 5px 0 5px 3px;
     height: 38px;
     border-radius: 4px;
     text-align: center;
 	border: 1px solid #444444;
 }
-@media (max-width:767px) {
-	.dimension_button {	margin: 5px 0; }
-}
-@media (min-width:768px) {
-	.dimension_button {	margin: 5px 0 5px 6px; }
+.dimension_button a:hover, 
+.dimension_button a:focus {
+    text-decoration: none;
 }
  
 /* LSWC Header changes */
@@ -48,7 +42,6 @@ body.single-product p+h1 {
 html, div#main, div#main .avia-section { 
 	max-width: 100vw !important; 
 	float: unset;
-	min-height: unset;
 }
 .main_menu a.cart_dropdown_link {
 	padding: 0 20px !important;
@@ -176,7 +169,6 @@ div.container * {
 /* Please see the JS for the function that's adding/removing the class */
 body#top, div#wrap_all { overflow: unset !important; }
 .sticky_column { position: sticky !important; z-index:99 !important; }
-.sticky_column .no_margin { margin: 0 !important; }
 .sticky_involved, #header { transition-duration: .2s; }
 /* This padding-top below MUST be the same as header height for this to work. Current header height is set in Header Custom Height field in Header section in Theme Options */
 @media (min-width: 768px) {
@@ -479,8 +471,15 @@ main.content { padding-bottom: 0 !important; }
 }
 
 /* Product filters (via shortcode) */
-form#product-filters {
-    margin-bottom: 0;
+@media (min-width: 768px) {
+  form.product-filters select {
+	width: calc(50% - 2px) !important;
+  }
+}
+@media (max-width: 767px) {
+  form.product-filters select {
+	width: 100% !important;
+  }
 }
 form.product-filters select {
   color: #cbcbcb !important;
