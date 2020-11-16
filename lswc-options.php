@@ -1,7 +1,7 @@
 <?php
 /**
  * Settings Page for Litheskateboards Woocommerce customizations
- * Version: 1.5.4
+ * Version: 1.5.11
  * (version above is equal with main plugin file version when this file was updated)
  */
 if ( ! defined( 'ABSPATH' ) ) {	exit(0);}
@@ -82,6 +82,7 @@ function molswc_register_settings() {
 		'molswc_product_learnmore_button_radius',
 		'molswc_product_container_width',
 		'molswc_product_container_width_units',
+		'molswc_choose_single_product_display_type',
 	);
 	// Then register each of them
 	foreach ( $molswc_settings_array as $molswc_setting ) {

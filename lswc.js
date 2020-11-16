@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.4.28
+ * Version: 1.5.7
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -96,7 +96,7 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 	jQuery("div.xoo-qv-summary > h1.product_title.entry-title").detach().prependTo("div.xoo-qv-main > div.product.type-product"); // move the title in DOM
 	// jQuery("div.xoo-qv-plink").detach().appendTo("div.xoo-qv-main"); // also move Read More button
 	jQuery( '.xoo-qv-inner-modal input[disabled="disabled"]' ).parent('div').toggleClass('has-been-disabled',true);
-	jQuery('.xoo-qv-container .table.variations .tbody .value.td div.tax').attr('style', 'display:none;'); // pre-hide payment plans
+	jQuery('.xoo-qv-container .table.variations .tbody .value.td .buying.tax').attr('style', 'display:none;'); // pre-hide payment plans
 	setTimeout(function() { jQuery('.scroll-hint').fadeOut('slow'); }, 5000);  // removing scroll hint icon after a while ...
 	molswcDisableScroll(); // prevent body scrolling under the popup
 	jQuery('.xoo-qv-main').bind('destroyed', function() { molswcEnableScroll(); filtercomplete = ''; }) // do stuff when popup closes, based on special event registered above ;-)
@@ -104,14 +104,14 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 		jQuery(this).fadeTo("fast",1);
 	});
 	setTimeout(function() { jQuery('.xoo-qv-container .table.variations > .tbody > .select.tr').addClass('after-removed'); }, 1000);
-	jQuery('.xoo-qv-container div.tax').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
+	jQuery('.xoo-qv-container .buying.tax .button_wrapper').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
 		if (!jQuery(this).hasClass( "has-been-disabled" ))
 		{
 			jQuery(this).find('input[type="radio"]').prop('checked', true);
-			jQuery(".table.variations div.tax:not(.has-been-disabled)").attr('style', 'cursor: not-allowed;');
-			jQuery(".table.variations div.tax:not(.has-been-disabled)").off();
-			jQuery(".table.variations div.tax:not(.has-been-disabled) *").off();
-			jQuery(".table.variations div.tax:not(.has-been-disabled)").fadeTo("fast",0.2);
+			jQuery(".table.variations .buying.tax:not(.has-been-disabled)").attr('style', 'cursor: not-allowed;');
+			jQuery(".table.variations .buying.tax:not(.has-been-disabled)").off();
+			jQuery(".table.variations .buying.tax:not(.has-been-disabled) *").off();
+			jQuery(".table.variations .buying.tax:not(.has-been-disabled)").fadeTo("fast",0.2);
 			jQuery(this).closest("form").submit();
 		}
 	});
@@ -149,7 +149,7 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	
 	// Hide Payment Plan description if only one plan remains
 	if ( subs_user == 'no' ) {
-		if ( jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').length == 1 )
+		if ( jQuery('.table.variations .tbody .value.td .buying.tax:not(.has-been-disabled)').length == 1 )
 		{
 			jQuery(".table.variations .tax > .attrib-description").toggleClass('hide-because-is-single',true);
 		} else {
@@ -165,16 +165,16 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 	jQuery('span.attribStockStatus').remove(); // First remove it from where it is displayed so it won't get displayed twice
 	// ... then check if the currently "checked" button has "in_stock" status and if so, display "estdelivery_instock" variable defined for  in HTML
 	if ( molswc_check_current_status() == 'var_stock_instock' && typeof estdelivery_instock !== 'undefined' ) { 
-		jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">'+estdelivery_instock+'</span>');
+		jQuery('.table.variations .tax_attrib .buying.tax:not(.addtocart)').prepend('<span class="attribStockStatus">'+estdelivery_instock+'</span>');
 	}
 	// ... then check if the currently "checked" button has "backorder" status and if so, display "estdelivery_backorder" variable defined in HTML
 	if ( molswc_check_current_status() == 'var_stock_backorder' && typeof estdelivery_backorder !== 'undefined' ) { 
-		jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">'+estdelivery_backorder+'</span>');
+		jQuery('.table.variations .tax_attrib .buying.tax:not(.addtocart)').prepend('<span class="attribStockStatus">'+estdelivery_backorder+'</span>');
 	}
 	
 	// ... otherwise check if the currently "checked" button has "preorder" status and if so, display "estdelivery_preorder" variable defined in HTML
 	if ( molswc_check_current_status() == 'var_stock_preorder' && typeof estdelivery_preorder !== 'undefined' ) { 
-		jQuery('.tax > .attrib-description').before('<span class="attribStockStatus">'+estdelivery_preorder+'</span>');
+		jQuery('.table.variations .tax_attrib .buying.tax:not(.addtocart)').prepend('<span class="attribStockStatus">'+estdelivery_preorder+'</span>');
 	}
 	
 	// Finally add Pre Order status to Payment Plan direct purchase buttons
@@ -186,7 +186,7 @@ jQuery( document ).delegate( '.table.variations', 'change', function() {
 // === III. Product display functions -> SINGLE PRODUCT PAGE ONLY: ===
 // Pre-hide payment plans in single product page
 jQuery(document).ready(function() {
-	jQuery('.single-product .table.variations .tbody .value.td div.tax').attr('style', 'display:none;');
+	jQuery('.single-product .table.variations .tbody .value.td .buying.tax').attr('style', 'display:none;');
 });
 // Add "has-been-disabled" class to initially disabled elements
 jQuery(window).on('load', function() {
@@ -214,14 +214,14 @@ jQuery(document).on('mouseleave', '.xoo-qv-button', function($) {
 });
 
 // === Submit the form automatically (adding product to cart) when Payment Plan option is chosen ===
-jQuery('body.single-product .table.variations div.tax').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
+jQuery('body.single-product .table.variations .buying.tax .button_wrapper').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
 	if (!jQuery(this).hasClass( "has-been-disabled" ))
 	{
 		jQuery(this).find('input[type="radio"]').prop('checked', true);
-		jQuery(".table.variations div.tax:not(.has-been-disabled)").attr('style', 'cursor: not-allowed;');
-		jQuery(".table.variations div.tax:not(.has-been-disabled)").off();
-		jQuery(".table.variations div.tax:not(.has-been-disabled) *").off();
-		jQuery(".table.variations div.tax:not(.has-been-disabled)").fadeTo("fast",0.2);
+		jQuery(".table.variations .buying.tax:not(.has-been-disabled)").attr('style', 'cursor: not-allowed;');
+		jQuery(".table.variations .buying.tax:not(.has-been-disabled)").off();
+		jQuery(".table.variations .buying.tax:not(.has-been-disabled) *").off();
+		jQuery(".table.variations .buying.tax:not(.has-been-disabled)").fadeTo("fast",0.2);
 		jQuery(this).closest("form").submit();
 	}
 });
@@ -322,7 +322,7 @@ function appendAttribPrices() {
 	attribPrices = fselectedPlanAttribIDs();
 	for (var priceOf in attribPrices) {
 		var priceAmount = attribPrices[priceOf];
-		jQuery('label[value="'+priceOf+'"]').after('<span class="attribPrice">$'+priceAmount+'</span>');
+		jQuery('.button_wrapper[data-button-for="'+priceOf+'"]').before('<span class="attribPrice">$'+priceAmount+'</span>');
 	}
 }
 
@@ -555,24 +555,24 @@ function URLParametersPreSelectFilters(){
 function molswcPaymentsButtonsReFit() {
 	var paymentsCnt;
 	if ( typeof resetHasBeenPressed !== 'undefined' && resetHasBeenPressed == 1 ) {
-		jQuery('.table.variations .tbody .value.td div.tax').attr('style', 'display:none;')
+		jQuery('.table.variations .tbody .value.td .buying.tax').attr('style', 'display:none;')
 		resetHasBeenPressed = 0;
 	}
 	// fade out has-been-disabled
-	jQuery('.table.variations .tbody .value.td div.tax.has-been-disabled').fadeOut(250);
-	jQuery('.table.variations .tbody .value.td div.tax.has-been-disabled span.attrib-description').fadeOut(250);
+	jQuery('.table.variations .tbody .value.td .buying.tax.has-been-disabled').fadeOut(250);
+	jQuery('.table.variations .tbody .value.td .buying.tax.has-been-disabled span.attrib-description').fadeOut(250);
 	// count the not disabled ones and set variable depending on screen width:
 	// var windwindth = jQuery(window).width(); console.log('WindWidth= '+windwindth);
 	if (jQuery(window).width() < 560) {
 		paymentsCnt = '1';
 	} else {
-		paymentsCnt = jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').length;
+		paymentsCnt = jQuery('.table.variations .tbody .value.td .buying.tax:not(.has-been-disabled)').length;
 	}
 	setTimeout(function() { // then wait 250 and set the widths:
 		// jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled)').attr('style', 'width: calc((100% / '+paymentsCnt+') - 14px) !important;'); 
 		setTimeout(function() { // then wait another 250 and fade in what's not disabled:
-			jQuery('#table-variations div.tax:not(.has-been-disabled)').fadeIn(250);
-			jQuery('.table.variations .tbody .value.td div.tax:not(.has-been-disabled) span.attrib-description:not(.hide-because-is-single)').fadeIn(250);
+			jQuery('#table-variations .buying.tax:not(.has-been-disabled)').fadeIn(250);
+			jQuery('.table.variations .tbody .value.td .buying.tax:not(.has-been-disabled) span.attrib-description:not(.hide-because-is-single)').fadeIn(250);
 		}, 250);
 	}, 250);
 }
@@ -603,7 +603,7 @@ function molswc_add_is_pre_order_info() {
 			var curr_pre_order = this.is_pre_order;
 			if (curr_pre_order == 'yes') {
 				var curr_paying_plan = this.attributes["attribute_pa_paying-plan"];
-				jQuery('div.tax[data-text-name="'+curr_paying_plan+'"] .attribStockStatus').before('<span class="attribPreorderStatus">'+pre_order_message+'</span>');
+				jQuery('.button_wrapper[data-button-for="'+curr_paying_plan+'"] .attribStockStatus').before('<span class="attribPreorderStatus">'+pre_order_message+'</span>');
 			}
 		}
 	});

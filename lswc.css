@@ -587,6 +587,7 @@ form#product-filters option:disabled {
     color: #cbcbcb;
     font-size: 14px !important;
     padding: 1px;
+	display: block;
 }
 .xoo-qv-container .custom_attrib.tr:after {
 	content: ' ';
@@ -694,12 +695,13 @@ a.reset_variations {
 	white-space: normal;
 	padding: 0 5px !important;
 	font-size: 14px;
+	display: block;
 }
 .table.variations .tbody .tr:last-child .value.td > div > label {
 	font-size: 16px !important;
 }
 .table.variations .tbody .tr:last-child .value.td > div {
-	padding: 0 4px;
+	/* padding: 0 4px; */
 }
 /* style the new code of radio buttons, so it won't be affected by the right margin necessary for the stock hint */
 #table-variations .inner-attrib input {
@@ -733,7 +735,9 @@ ul.tabs.wc-tabs {
   display: none;
 }
 /* Hiding the Add To Cart button */
-form.variations_form.cart .single_variation_wrap {
+/* ... but only for .lithe_board_section class - that MUST be added manually in Avia Builder */
+.lithe_board_section form.variations_form.cart .single_variation_wrap, 
+.xoo-qv-container form.variations_form.cart .single_variation_wrap {
   display: none !important;
 }
 /* hiding Payment Plans title */
@@ -759,12 +763,15 @@ body.single-product .container .product_title.entry-title {
 }
 
 /* == MAKE BUTTONS - ALL == */
-.table.variations .tbody .value.td > div.tax, 
+.table.variations .tbody .value.td > div.tax > .button_wrapper, 
 .table.variations .tbody .value-buttons.td > div.attrib {
 	border: 1px solid;
 	margin: 8px;
 	cursor: pointer;
 	text-align: center;
+}
+.table.variations .tbody .value.td > div.tax > .button_wrapper > label {
+	cursor: pointer;
 }
 .table.variations .tbody .value.td label.attrib.option .inner-attrib span.stock_hint {
     margin: 0 10px;
@@ -772,7 +779,7 @@ body.single-product .container .product_title.entry-title {
 	color: inherit !important;
 }
 /* here were the buttons colors */
-.value.td > div > input[type='radio'], 
+.value.td > div > .button_wrapper > input[type='radio'], 
 .value-buttons.td > div > input[type='radio'], 
 .value.td > .each-attrib > div > input[type='radio'] {
     display: none;
@@ -828,6 +835,7 @@ body.single-product .container .product_title.entry-title {
 .table.variations span.attribPrice, 
 .table.variations span.attribStockStatus {
   display: block;
+  text-align: center;
 }
 .table.variations span.attribPreorderStatus {
   display: block;
@@ -836,11 +844,13 @@ body.single-product .container .product_title.entry-title {
 .table.variations span.attribPrice {
   font-size: 16px;
   font-weight: bold;
+  color: #cbcbcb;
+  text-align: center;
 }
 .table.variations span.attribStockStatus {
   font-size: 14px;
 }
-.table.variations .tbody .value.td div.tax, 
+.table.variations .tbody .value.td div.tax >.button_wrapper, 
 .table.variations .tbody .value.td div.attrib  {
     transition: all 0.25s;
     -webkit-transition: all 0.25s;
@@ -850,13 +860,13 @@ body.single-product .container .product_title.entry-title {
 		white-space: nowrap;
 	}
 	.table.variations .tbody .tr .value.td > div.tax {
-		width: calc(100% - 14px) !important;
+		/* width: calc(100% - 14px) !important; */
 	}
 }
 @media (max-width:559px){
 	.table.variations .tbody .value.td > div, 
 	.table.variations .tbody .value-buttons.td > div {
-	  width: calc(100% - 16px) !important;
+	  /* width: calc(100% - 16px) !important; */
 	}
 }
 
@@ -900,6 +910,25 @@ div#av_section_1 {
 }
 .mspc-content .mspc-variation, .mspc-content .mspc-variation.active > .mspc-clearfix .mspc-attribute-title {
     color: #12ff1e;
+}
+
+/* Soft Goods styling */
+/* Opening class is:  */
+/* .real_softgoods    */
+.real_softgoods ul.products.columns-1 > li.product {
+    width: 100%;
+}
+.real_softgoods ul.products.columns-2 > li.product {
+    width: 49.5%;
+}
+.real_softgoods ul.products.columns-3 > li.product {
+    width: 32.6%;
+}
+.real_softgoods ul.products.columns-4 > li.product {
+    width: 24.25%;
+}
+.real_softgoods a.xoo-qv-button {
+    display: none !important;
 }
 
 
