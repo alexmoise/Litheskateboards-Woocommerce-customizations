@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.5.12
+ * Version: 1.5.14
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 4.9.0
@@ -1304,6 +1304,8 @@ echo "
 // Used in "content-product.php" file in this plugin
 // Product Filters JS works based on data added by this function to those LI elements
 function molswc_instock_variations() {
+	$data_custom_attribs_list = array();
+	$data_custom_attribs_list_all = array();
 	global $product; 
 	$variations1=$product->get_children();
 	foreach ($variations1 as $value) { 
@@ -1408,20 +1410,23 @@ function molswc_disable_variations_user_based( $active, $variation ) {
 add_action( 'woocommerce_reduce_order_stock', array('Wc_class', 'molswc_stock_adjutments'));
 class Wc_class {
 	public static function molswc_stock_adjutments($order) {
+		$peer_vars_working_array = array();
 		foreach ( $order->get_items() as $item_id => $item_values ) { // Iterating though each order items
 			$item_qty = $item_values['qty']; // Item quantity
 			$current_var_id = $item_values['variation_id']; // current variation ID 
-			$current_var = wc_get_product( $current_var_id ); // Get an instance of the current variation object
-			$current_var_stock = $current_var->get_stock_quantity(); // Get the stock quantity of the current_var
-			$prepared_data = molswc_get_peer_variations_prepare( $current_var_id );
-			$peer_vars = molswc_get_peer_variations($prepared_data['parent_id'], $prepared_data['attrib_to_use_for_peering'], $prepared_data['value_to_use_for_peering']); // Just get the peer variations
-			foreach ( $peer_vars as $peer_var ) {
-			// Start creating the $peer_vars_working_array to store the IDs of variations along with the appropriate stock level
-				if ( !isset($peer_vars_working_array[$peer_var]) ) { // if this peer variations is not in working array ...
-					$peer_vars_working_array[$peer_var] = $current_var_stock; // ...add it with ID as index and current stock as value
-				} else { // otherwise ...
-					$new_peer_var_stock_value = $peer_vars_working_array[$peer_var] - $item_qty; // ...subtract current variation quantity from the value stored in the working array ...
-					$peer_vars_working_array[$peer_var] = $new_peer_var_stock_value; // ...and store the new value in the working array
+			if ( $current_var_id ) {
+				$current_var = wc_get_product( $current_var_id ); // Get an instance of the current variation object
+				$current_var_stock = $current_var->get_stock_quantity(); // Get the stock quantity of the current_var
+				$prepared_data = molswc_get_peer_variations_prepare( $current_var_id );
+				$peer_vars = molswc_get_peer_variations($prepared_data['parent_id'], $prepared_data['attrib_to_use_for_peering'], $prepared_data['value_to_use_for_peering']); // Just get the peer variations
+				foreach ( $peer_vars as $peer_var ) {
+				// Start creating the $peer_vars_working_array to store the IDs of variations along with the appropriate stock level
+					if ( !isset($peer_vars_working_array[$peer_var]) ) { // if this peer variations is not in working array ...
+						$peer_vars_working_array[$peer_var] = $current_var_stock; // ...add it with ID as index and current stock as value
+					} else { // otherwise ...
+						$new_peer_var_stock_value = $peer_vars_working_array[$peer_var] - $item_qty; // ...subtract current variation quantity from the value stored in the working array ...
+						$peer_vars_working_array[$peer_var] = $new_peer_var_stock_value; // ...and store the new value in the working array
+					}
 				}
 			}
 		}
@@ -1609,13 +1614,15 @@ function molswc_store_variation_backorder_stock_level( $variations ) {
 // Returns an array, check the items below to pick them
 // Use: $truelevel = molswc_calculate_true_stock_level($variation_id)['true_stock_level'];
 function molswc_calculate_true_stock_level($variation_id) {
-	$variation_instance = wc_get_product( $variation_id ); // Get an instance of the current variation object
-	$true_stock_data['woo_stock_level'] = $variation_instance->get_stock_quantity(); // Get the stock quantity of the current_var
-	if(!is_numeric($true_stock_data['woo_stock_level'])) { $true_stock_data['woo_stock_level'] = 0; } // ... but set it to zero if it doesn't come out
-	$true_stock_data['backorder_stock_level'] = get_post_meta( $variation_id, 'backorder_stock_level', true ); // Get the backorder_stock_level of the current_var
-	if(!is_numeric($true_stock_data['backorder_stock_level'])) { $true_stock_data['backorder_stock_level'] = 0; } // ... but set it to zero if it doesn't come out
-	$true_stock_data['true_stock_level'] = $true_stock_data['woo_stock_level'] + $true_stock_data['backorder_stock_level']; // Calculate true stock level
-	return $true_stock_data;
+	if($variation_id) {
+		$variation_instance = wc_get_product( $variation_id ); // Get an instance of the current variation object
+		$true_stock_data['woo_stock_level'] = $variation_instance->get_stock_quantity(); // Get the stock quantity of the current_var
+		if(!is_numeric($true_stock_data['woo_stock_level'])) { $true_stock_data['woo_stock_level'] = 0; } // ... but set it to zero if it doesn't come out
+		$true_stock_data['backorder_stock_level'] = get_post_meta( $variation_id, 'backorder_stock_level', true ); // Get the backorder_stock_level of the current_var
+		if(!is_numeric($true_stock_data['backorder_stock_level'])) { $true_stock_data['backorder_stock_level'] = 0; } // ... but set it to zero if it doesn't come out
+		$true_stock_data['true_stock_level'] = $true_stock_data['woo_stock_level'] + $true_stock_data['backorder_stock_level']; // Calculate true stock level
+		return $true_stock_data;
+	}
 }
 // Calculate true stock STATUS by variation ID
 // Returns an array, check the items below to pick them
@@ -1643,11 +1650,13 @@ add_action( 'woocommerce_reduce_order_stock', array('Wc_class_preorder_adjustmen
 class Wc_class_preorder_adjustments {
 	public static function molswc_adjust_preorder_status($order) {
 		foreach ( $order->get_items() as $item_id => $item_values ) { // Iterating though each order items
-			$prepared_data = molswc_get_peer_variations_prepare($item_values['variation_id']);
-			$peer_vars = molswc_get_peer_variations($prepared_data['parent_id'], $prepared_data['attrib_to_use_for_peering'], $prepared_data['value_to_use_for_peering']); // Just get the peer variations
-			// Simplest plug in function below. Just add each variation ID to an array that we'll process later, as soon as this foreach loop finishes 
-			foreach($peer_vars as $peer_var) {
-				$peer_vars_working[] = $peer_var;
+			if ( $item_values['variation_id'] ) {
+				$prepared_data = molswc_get_peer_variations_prepare($item_values['variation_id']);
+				$peer_vars = molswc_get_peer_variations($prepared_data['parent_id'], $prepared_data['attrib_to_use_for_peering'], $prepared_data['value_to_use_for_peering']); // Just get the peer variations
+				// Simplest plug in function below. Just add each variation ID to an array that we'll process later, as soon as this foreach loop finishes 
+				foreach($peer_vars as $peer_var) {
+					$peer_vars_working[] = $peer_var;
+				}
 			}
 		}
 		// Main plug in function below - could do anything to process data fetched above
