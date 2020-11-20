@@ -3,7 +3,7 @@
 /**
  * Variation form for Board type products
  * 
- * Lithe version: 1.5.11
+ * Lithe version: 1.5.15
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -55,7 +55,7 @@ defined( 'ABSPATH' ) || exit;
 										print_attribute_radio_tax( $checked_value, $term->slug, $term->name, $sanitized_name, $term->description ); 
 									}
 									// Now go on and generate that Add to Cart button (with a special function)
-									print_attribute_radio_tax_addtocart( $addtocart_attrib['ckvalue'], $addtocart_attrib['slug'], $addtocart_attrib['name'], $addtocart_attrib['sanename'], $addtocart_attrib['desc'] );
+									// print_attribute_radio_tax_addtocart( $addtocart_attrib['ckvalue'], $addtocart_attrib['slug'], $addtocart_attrib['name'], $addtocart_attrib['sanename'], $addtocart_attrib['desc'] );
 								} else {
 									$chosen_attribs = molswc_designated_options(); // defined in main PHP file of the plugin
 									$all_attribs_string = implode("&",array_map(function($a) {return implode(" ",$a);},$attributes)); // create a string from all atributes multidimensional array

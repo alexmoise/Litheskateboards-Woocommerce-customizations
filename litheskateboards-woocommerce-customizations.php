@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.5.14
+ * Version: 1.5.15
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 4.9.0
@@ -927,11 +927,11 @@ if ( ! function_exists( 'print_attribute_radio_tax' ) ) {
 		$checked = checked( $checked_value, $value, false );
 		$filtered_label = apply_filters( 'woocommerce_variation_option_name', $label, esc_attr( $name ) );
 		printf( '<div class="buying tax" data-text-name="%2$s">
-					<div class="button_wrapper" data-button-for="%2$s">
+					<label class="button_wrapper" for="%3$s" data-button-for="%2$s">
 						<input type="radio" name="%1$s" value="%2$s" id="%3$s" %4$s />
-						<label class="tax option" value="%2$s" for="%3$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</label>
+						<span class="tax option attrib-description" value="%2$s" data-text-fullname="%5$s" data-text-b="%5$s">%5$s</span>
 						<span class="attrib-description">%6$s</span>
-					</div>
+					</label>
 				</div>', $input_name, $esc_value, $id, $checked, $filtered_label, $attrib_description );
 	}
 }
