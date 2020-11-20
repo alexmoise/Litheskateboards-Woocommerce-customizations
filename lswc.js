@@ -1,6 +1,6 @@
 /**
  * JS functions for Litheskateboards Woocommerce customizations plugin
- * Version: 1.5.7
+ * Version: 1.5.15
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -53,7 +53,6 @@ jQuery(document).ready(function() {
 		jQuery(window).scroll(function() {
 			clearTimeout(jQuery.data(this, 'scrollTimer'));
 			jQuery.data(this, 'scrollTimer', setTimeout(function() {
-				// console.log('v03 '+molswc_distanceBetweenElems(target1,target2)+' Offs: '+window.pageYOffset+' Int: '+appScrollInterval);
 				if ( window.pageYOffset > appScrollInterval && molswc_distanceBetweenElems(target1,target2)<1 ){
 						target1.classList.add('sticky_touched');
 						target2.classList.add('sticky_touched');
@@ -107,12 +106,9 @@ jQuery( document ).on('animationend', '.xoo-qv-inner-modal', function($) {
 	jQuery('.xoo-qv-container .buying.tax .button_wrapper').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
 		if (!jQuery(this).hasClass( "has-been-disabled" ))
 		{
-			jQuery(this).find('input[type="radio"]').prop('checked', true);
-			jQuery(".table.variations .buying.tax:not(.has-been-disabled)").attr('style', 'cursor: not-allowed;');
-			jQuery(".table.variations .buying.tax:not(.has-been-disabled)").off();
-			jQuery(".table.variations .buying.tax:not(.has-been-disabled) *").off();
-			jQuery(".table.variations .buying.tax:not(.has-been-disabled)").fadeTo("fast",0.2);
-			jQuery(this).closest("form").submit();
+			setTimeout(function() {	
+				jQuery('form.variations_form.cart').submit();
+			}, 100);
 		}
 	});
 	if ( typeof filtercomplete !== 'undefined' ) {
@@ -214,16 +210,13 @@ jQuery(document).on('mouseleave', '.xoo-qv-button', function($) {
 });
 
 // === Submit the form automatically (adding product to cart) when Payment Plan option is chosen ===
-jQuery('body.single-product .table.variations .buying.tax .button_wrapper').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
+jQuery('.buying.tax .button_wrapper').click(function (e) { // execute the stuff below when clicking on a Payment Plan button
 	if (!jQuery(this).hasClass( "has-been-disabled" ))
-	{
-		jQuery(this).find('input[type="radio"]').prop('checked', true);
-		jQuery(".table.variations .buying.tax:not(.has-been-disabled)").attr('style', 'cursor: not-allowed;');
-		jQuery(".table.variations .buying.tax:not(.has-been-disabled)").off();
-		jQuery(".table.variations .buying.tax:not(.has-been-disabled) *").off();
-		jQuery(".table.variations .buying.tax:not(.has-been-disabled)").fadeTo("fast",0.2);
-		jQuery(this).closest("form").submit();
-	}
+		{
+			setTimeout(function() {		
+				jQuery('form.variations_form.cart').submit();
+			}, 100);
+		}
 });
 
 // === Under The XOO Popup scroll handling: ===
@@ -319,10 +312,12 @@ function fselectedPlanAttribIDs() {
 // Now get the slug & price pairs, look for the slug and add the price in a <span> after the Payment Plan with the slug as value attribute
 function appendAttribPrices() { 
 	jQuery('span.attribPrice').remove();
+	jQuery('.tax_attrib .buying.tax').toggleClass('has-been-disabled',true);
 	attribPrices = fselectedPlanAttribIDs();
 	for (var priceOf in attribPrices) {
 		var priceAmount = attribPrices[priceOf];
 		jQuery('.button_wrapper[data-button-for="'+priceOf+'"]').before('<span class="attribPrice">$'+priceAmount+'</span>');
+		jQuery('.tax_attrib .buying.tax[data-text-name="'+priceOf+'"]').toggleClass('has-been-disabled',false);
 	}
 }
 
@@ -545,7 +540,7 @@ function URLParametersPreSelectFilters(){
 		if (urlWidth !== null) { jQuery('#filterWidths option[value="'+urlWidth+'"]').prop("selected","selected"); }
 	} else { 
 		// Do something else (TBD what):
-		console.log('Pre-selected options are not possible, non-existent or invalid'); 
+		// console.log('Pre-selected options are not possible, non-existent or invalid'); 
 	}
 	showHideNoBoardsPlaceholder();
 };
