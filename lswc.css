@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.5.14
+ * Version: 1.5.15
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -763,14 +763,14 @@ body.single-product .container .product_title.entry-title {
 }
 
 /* == MAKE BUTTONS - ALL == */
-.table.variations .tbody .value.td > div.tax > .button_wrapper, 
+.table.variations .tbody .value.td > .buying.tax > .button_wrapper, 
 .table.variations .tbody .value-buttons.td > div.attrib {
 	border: 1px solid;
 	margin: 8px;
 	cursor: pointer;
 	text-align: center;
 }
-.table.variations .tbody .value.td > div.tax > .button_wrapper > label {
+.table.variations .tbody .buying.tax > .button_wrapper {
 	cursor: pointer;
 }
 .table.variations .tbody .value.td label.attrib.option .inner-attrib span.stock_hint {
@@ -792,6 +792,10 @@ body.single-product .container .product_title.entry-title {
 }
 .value-buttons.td > div.attrib.has-been-disabled > label { 
 	cursor: not-allowed; 
+}
+/* Hide those Paying Plans that are not available */
+.buying.tax.has-been-disabled {
+    display: none !important;
 }
 /* also make buttons from chosen attributes */
 .table.variations .tbody .tr:not(:last-child) .label.td > label.product_column_title {
