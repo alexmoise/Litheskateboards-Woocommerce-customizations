@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.5.16
+ * Version: 1.5.17
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -408,8 +408,10 @@ main.content { padding-bottom: 0 !important; }
 	padding: 30px 165px 30px 30px !important;
 }
 .molswc_custom_notices_wrapper .woocommerce-message > a.button {
-    white-space: nowrap;
+	white-space: nowrap;
     padding: 8px;
+    font-size: 17px;
+    line-height: 28px;
 }
 .container_wrap.container_wrap_first {
     border: none;
