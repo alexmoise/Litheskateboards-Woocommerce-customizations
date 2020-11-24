@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.5.15
+ * Version: 1.5.17
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -400,6 +400,22 @@ h3#ship-to-different-address {
 div#main { background-color: #212121;}
 main.content { padding-bottom: 0 !important; }
 .menu-item-top-level.current-menu-item > a > .avia-menu-text { color: black !important; }
+
+/* Custom notifications styles and helpers */
+.molswc_custom_notices_wrapper .woocommerce-message {
+    margin: 20px auto !important;
+    max-width: 1000px;
+	padding: 30px 165px 30px 30px !important;
+}
+.molswc_custom_notices_wrapper .woocommerce-message > a.button {
+	white-space: nowrap;
+    padding: 8px;
+    font-size: 17px;
+    line-height: 28px;
+}
+.container_wrap.container_wrap_first {
+    border: none;
+}
 
 /* Rack type product archive */
 .lithe_rack_type_display .products .product {

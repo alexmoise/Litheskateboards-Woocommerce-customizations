@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.5.15
+ * Version: 1.5.17
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 4.9.0
@@ -82,6 +82,14 @@ function molswc_shop_title_tag(){
 		return 'Shop - Lithe Skateboards';
 	}
 }
+// Add the Woocommerce notification right after opening div#main container, so the notices get displayed in any page
+add_action( 'ava_after_main_container', 'molswc_custom_notices' );
+function molswc_custom_notices() { 
+	echo '<div class="molswc_custom_notices_wrapper">';
+	wc_print_notices(); 
+	echo '</div>';
+}
+
 // Go straight to Checkout when a Payment Method button has been pressed
 // add_filter('woocommerce_add_to_cart_redirect', 'molswc_go_to_checkout');
 function molswc_go_to_checkout() {
