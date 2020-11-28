@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.7.1
+ * Version: 1.7.2
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -905,12 +905,26 @@ body.single-product .container .product_title.entry-title {
     white-space: nowrap;
     cursor: pointer;
 }
-.variations_form.soft-goods .single_add_to_cart_button {
+.variations_form.soft-goods .single_add_to_cart_button, 
+form.cart .single_add_to_cart_button {
     padding: 9px 15px !important;
 }
 .variations_form.soft-goods .reset_variations {
     right: 2px;
     bottom: -23px;
+}
+
+/* [lithe_single_addtocart] shortcode buttons */
+.single-addtocart-shortcode {
+    border: 1px solid #12ff1e !important;
+    border-radius: 5px;
+    padding: 10px 20px;
+	cursor: pointer;
+}
+.single-addtocart-shortcode a {
+    color: #12ff1e;
+    font-size: 20px;
+	text-decoration: none;
 }
 
 /* Bottom section styling */

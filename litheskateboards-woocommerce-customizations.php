@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.7.1
+ * Version: 1.7.2
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 4.9.0
@@ -1062,6 +1062,31 @@ function molswc_start_lithe_rack_type_display() {
 //add_action( 'molswc_after_loop_end', 'molswc_stop_lithe_rack_type_display', 999999 );
 function molswc_stop_lithe_rack_type_display() {
 	echo '</div>';
+}
+
+// === Creating shortcodes to add to cart the current product
+// Without args it will add to cart 1 piece of current product
+// Complete args example: [lithe_single_addtocart quantity="3" text="Buy 3!"] 
+add_shortcode( 'lithe_single_addtocart', 'molswc_single_addtocart_shortcode' );
+function molswc_single_addtocart_shortcode( $atts ) {
+	global $product;
+	if( is_product() && $product->is_type('simple') ) {
+		$int_prod_id = $product->id;
+		$int_quantity = wp_strip_all_tags($atts['quantity']);
+		$int_text = wp_strip_all_tags($atts['text']);
+		if(empty($int_quantity)) { $int_quantity = '1'; }
+		if(empty($int_text)) { $int_text = 'Add to Cart'; }
+		$lithe_button_complete = '
+			<span class="single-addtocart-shortcode">
+				<a href="?add-to-cart='.$int_prod_id.'&quantity='.$int_quantity.'">'.$int_text.'</a>
+			</span>
+		';	
+	} else {
+		if( current_user_can('edit_pages') ) {
+			$lithe_button_complete = '<span style="color: red; font-size: 14px;"><strong>lithe_single_addtocart</strong> shortcode only works in single & simple products (only admins and editors can see this notice)</span>';
+		}
+	}
+	return $lithe_button_complete;
 }
 
 // === Using a shortcode to fire up the board racks, using internally a Woocommerce shortcode and few other params we need for customizing list as rack
