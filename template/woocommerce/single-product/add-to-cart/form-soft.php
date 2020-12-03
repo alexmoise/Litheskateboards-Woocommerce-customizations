@@ -4,7 +4,7 @@
  * Variation form for Soft-goods type products
  * (derived directly from original Woocommerce variable.php)
  * 
- * Lithe version: 1.5.12
+ * Lithe version: 1.7.1
  * (version above is equal with main plugin file version when this file was updated)
  */
 
@@ -12,18 +12,20 @@ defined( 'ABSPATH' ) || exit;
 
 ?>
 
-<form class="variations_form cart" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() ) ); ?>" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->get_id() ); ?>" data-product_variations="<?php echo htmlspecialchars( wp_json_encode( $available_variations ) ) ?>">
+<form class="variations_form cart soft-goods" action="<?php echo esc_url( apply_filters( 'woocommerce_add_to_cart_form_action', $product->get_permalink() ) ); ?>" method="post" enctype='multipart/form-data' data-product_id="<?php echo absint( $product->get_id() ); ?>" data-product_variations="<?php echo htmlspecialchars( wp_json_encode( $available_variations ) ) ?>">
 	<?php do_action( 'woocommerce_before_variations_form' ); ?>
 
 	<?php if ( empty( $available_variations ) && false !== $available_variations ) : ?>
 		<p class="stock out-of-stock"><?php esc_html_e( 'This product is currently out of stock and unavailable.', 'woocommerce' ); ?></p>
 	<?php else : ?>
-		<table class="variations" cellspacing="0">
+		<table class="variations soft-goods" cellspacing="0">
 			<tbody>
 				<?php foreach ( $attributes as $name => $options ) : ?>
 					<?php $sanitized_name = sanitize_title( $name ); ?>
 					<tr class="attribute-<?php echo esc_attr( $sanitized_name ); ?>">
 						<td class="label"><label for="<?php echo esc_attr( $sanitized_name ); ?>"><?php echo wc_attribute_label( $name ); ?></label></td>
+					</tr>
+					<tr class="attributes">
 						<?php
 						if ( isset( $_REQUEST[ 'attribute_' . $sanitized_name ] ) ) {
 							$checked_value = $_REQUEST[ 'attribute_' . $sanitized_name ];
