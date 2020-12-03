@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.5.17
+ * Version: 1.7.3
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -888,6 +888,58 @@ body.single-product .container .product_title.entry-title {
 	.table.variations .tbody .value-buttons.td > div {
 	  /* width: calc(100% - 16px) !important; */
 	}
+}
+
+/* Soft Goods Buttons */
+.variations.soft-goods .attributes div {
+    display: inline-block;
+    margin: auto 5px;
+}
+.variations.soft-goods .attributes input[type="radio"] {
+    display: none;
+}
+.variations.soft-goods .attributes label {
+    width: 50px;
+    padding: 10px;
+    border: 1px solid #444;
+    white-space: nowrap;
+    cursor: pointer;
+}
+.variations_form.soft-goods .single_add_to_cart_button, 
+form.cart .single_add_to_cart_button {
+    padding: 9px 15px !important;
+}
+.variations_form.soft-goods .reset_variations {
+    right: 2px;
+    bottom: -23px;
+}
+
+/* [lithe_single_addtocart] shortcode buttons */
+.single-addtocart-shortcode-wrapper {
+    display: block;
+    text-align: center;
+}
+.single-addtocart-shortcode {
+	border: 1px solid #42d62c !important;
+    border-radius: 20px;
+    padding: 5px 20px;
+    cursor: pointer;
+    background-color: #42d62c;
+    display: inline-block;
+}
+.single-addtocart-shortcode:hover {
+    background-color: #3bc028;
+    border-color: #3bc028;
+}
+.single-addtocart-shortcode a {
+    color: #0a0a0a;
+    font-size: 20px;
+    font-weight: bold;
+	text-decoration: none;
+}
+.single-addtocart-shortcode a:hover {
+    color: #0a0a0a;
+	text-align: center;
 }
 
 /* Bottom section styling */
