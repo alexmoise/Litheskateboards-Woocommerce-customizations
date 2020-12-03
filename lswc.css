@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.7.2
+ * Version: 1.7.3
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -915,16 +915,31 @@ form.cart .single_add_to_cart_button {
 }
 
 /* [lithe_single_addtocart] shortcode buttons */
+.single-addtocart-shortcode-wrapper {
+    display: block;
+    text-align: center;
+}
 .single-addtocart-shortcode {
-    border: 1px solid #12ff1e !important;
-    border-radius: 5px;
-    padding: 10px 20px;
-	cursor: pointer;
+	border: 1px solid #42d62c !important;
+    border-radius: 20px;
+    padding: 5px 20px;
+    cursor: pointer;
+    background-color: #42d62c;
+    display: inline-block;
+}
+.single-addtocart-shortcode:hover {
+    background-color: #3bc028;
+    border-color: #3bc028;
 }
 .single-addtocart-shortcode a {
-    color: #12ff1e;
+    color: #0a0a0a;
     font-size: 20px;
+    font-weight: bold;
 	text-decoration: none;
+}
+.single-addtocart-shortcode a:hover {
+    color: #0a0a0a;
+	text-align: center;
 }
 
 /* Bottom section styling */
