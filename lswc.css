@@ -1,6 +1,6 @@
 /**
  * CSS styles for Litheskateboards Woocommerce customizations
- * Version: 1.7.3
+ * Version: 1.7.4
  * (version above is equal with main plugin file version when this file was updated)
  */
  
@@ -163,6 +163,11 @@ div.container * {
 #header_main { 
 	background: #000000; 
 	max-width: 100vw;
+}
+
+/* Footer adjustments, only for few pages */
+.woocommerce-cart #footer-page {
+    margin-top: 20px;
 }
 
 /* Set up a "sticky_column" class to use wherever is needed, BUT we first need to set some overflows for this to work */
@@ -915,9 +920,17 @@ form.cart .single_add_to_cart_button {
 }
 
 /* [lithe_single_addtocart] shortcode buttons */
-.single-addtocart-shortcode-wrapper {
-    display: block;
-    text-align: center;
+@media (max-width:767px){
+	.single-addtocart-shortcode-wrapper {
+		display: block;
+		text-align: center;
+	}
+}
+@media (min-width:768px){
+	.single-addtocart-shortcode-wrapper {
+		display: block;
+		text-align: right;
+	}
 }
 .single-addtocart-shortcode {
 	border: 1px solid #42d62c !important;
