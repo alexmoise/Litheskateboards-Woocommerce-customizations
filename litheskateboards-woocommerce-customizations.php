@@ -4,7 +4,7 @@
  * Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * GitHub Plugin URI: https://github.com/alexmoise/Litheskateboards-Woocommerce-customizations
  * Description: A custom plugin to add some JS, CSS and PHP functions for Woocommerce customizations. Main goals are: 1. have product options displayed as buttons in product popup and in single product page, 2. have the last option (Payment Plan) show up only after selecting a Width corresponding to a Model, 3. jump directly to checkout after selecting the last option (Payment Plan). Works based on "Quick View WooCommerce" by XootiX for popup, on "WooCommerce Variation Price Hints" by Wisslogic for price calculations and also on "WC Variations Radio Buttons" for transforming selects into buttons. Also uses the "YITH Pre-Order for WooCommerce" plugin as a base plugin for handling the Pre Order functions. For details/troubleshooting please contact me at <a href="https://moise.pro/contact/">https://moise.pro/contact/</a>
- * Version: 1.8.0
+ * Version: 1.8.1
  * Author: Alex Moise
  * Author URI: https://moise.pro
  * WC requires at least: 4.9.0
@@ -1959,6 +1959,14 @@ function molswc_check_fragments( $fragment_partial_key ) {
     global $wpdb;
     $result = $wpdb->query( "SELECT * FROM {$wpdb->options} WHERE option_name LIKE '%{$fragment_partial_key}%'" );
 	return $result;
+}
+
+// A function that deletes all product fragments if the right key is set as URL parameter
+add_action ('init', 'molswc_fragments_purging_at_access');
+function molswc_fragments_purging_at_access() {
+	if ( strip_tags($_GET['fragdele']) == 'yes' ) {
+		$delete_result = molswc_delete_fragments( 'molswc_cached_fragment_prod_form' ); 
+	}
 }
 
 ?>
